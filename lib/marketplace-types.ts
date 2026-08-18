@@ -76,3 +76,14 @@ export type Order = {
   createdAt: string;
   items: OrderItem[];
 };
+
+export type OrderWithClient = Order & { clientName: string };
+
+/** Progression linéaire du kanban de suivi, côté traiteur. "annulee" reste hors kanban. */
+export const ORDER_STATUS_FLOW: OrderStatus[] = [
+  "nouvelle",
+  "acceptee",
+  "en_preparation",
+  "prete",
+  "recuperee",
+];

@@ -68,9 +68,14 @@ export default async function DevenirTraiteur() {
               Votre établissement est visible sur la marketplace. Les commandes reçues
               apparaîtront ici.
             </p>
-            <ButtonLink href={`/marketplace/${traiteur.id}`} variant="outlineTeal" size="sm">
-              Voir ma fiche publique
-            </ButtonLink>
+            <div className="flex flex-col gap-2">
+              <ButtonLink href="/devenir-traiteur/commandes" size="sm">
+                Voir mes commandes
+              </ButtonLink>
+              <ButtonLink href={`/marketplace/${traiteur.id}`} variant="outlineTeal" size="sm">
+                Voir ma fiche publique
+              </ButtonLink>
+            </div>
           </Card>
         )}
 
