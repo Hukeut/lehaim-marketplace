@@ -117,6 +117,24 @@ export async function getAllTraiteursForAdmin(): Promise<Traiteur[]> {
   return (data ?? []).map(traiteurFrom);
 }
 
+/** Tous les produits d'un traiteur (actifs et inactifs), pour la gestion de son menu. */
+export async function getMyTraiteurProducts(traiteurId: string): Promise<Product[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("traiteur_products")
+    .select("*")
+    .eq("traiteur_id", traiteurId)
+    .order("created_at", { ascending: false });
+  return (data ?? []).map(productFrom);
+}
+
+/** Un produit précis, pour son formulaire de modification (l'appelant doit vérifier la propriété). */
+export async function getProductById(id: string): Promise<Product | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("traiteur_products").select("*").eq("id", id).maybeSingle();
+  return data ? productFrom(data) : null;
+}
+
 /** Les commandes d'un traiteur (toutes, hors annulées), pour son kanban de suivi. */
 export async function getTraiteurOrders(traiteurId: string): Promise<OrderWithClient[]> {
   const supabase = await createClient();

@@ -5,7 +5,7 @@ import { getMyTraiteur } from "@/lib/marketplace";
 import { TraiteurOnboardingForm } from "@/components/marketplace/TraiteurOnboardingForm";
 import { BackButton } from "@/components/BackButton";
 import { BrandMark } from "@/components/BrandMark";
-import { ButtonLink, Card, StatusPill } from "@/components/ui";
+import { Card, StatusPill } from "@/components/ui";
 import { Check, Clock, XCircle } from "@/components/icons";
 
 export default async function DevenirTraiteur() {
@@ -43,7 +43,7 @@ export default async function DevenirTraiteur() {
         )}
 
         {traiteur && traiteur.status === "pending" && (
-          <Card className="p-4">
+          <Card className="mb-3.5 p-4">
             <div className="mb-2 flex items-center gap-2">
               <Clock size={18} className="text-gold-deep" />
               <StatusPill tone="warning">En attente de validation</StatusPill>
@@ -52,35 +52,27 @@ export default async function DevenirTraiteur() {
             <p className="text-[12.5px] leading-relaxed text-ink/60">
               Votre dossier a été soumis et est en cours de vérification par l&apos;équipe lehaim
               (patente, cacherout si renseignée). Vous recevrez une notification dès qu&apos;il
-              sera validé — ou refusé avec le motif, pour pouvoir le corriger.
+              sera validé — ou refusé avec le motif, pour pouvoir le corriger. Vous pouvez déjà
+              compléter votre menu et vos informations ci-dessous.
             </p>
           </Card>
         )}
 
         {traiteur && traiteur.status === "approved" && (
-          <Card className="p-4">
+          <Card className="mb-3.5 p-4">
             <div className="mb-2 flex items-center gap-2">
               <Check size={18} className="text-olive-deep" />
               <StatusPill tone="success">Approuvé</StatusPill>
             </div>
             <h2 className="mb-1.5 font-display text-[15px] font-semibold">{traiteur.name}</h2>
-            <p className="mb-4 text-[12.5px] leading-relaxed text-ink/60">
-              Votre établissement est visible sur la marketplace. Les commandes reçues
-              apparaîtront ici.
+            <p className="text-[12.5px] leading-relaxed text-ink/60">
+              Votre établissement est visible sur la marketplace.
             </p>
-            <div className="flex flex-col gap-2">
-              <ButtonLink href="/devenir-traiteur/commandes" size="sm">
-                Voir mes commandes
-              </ButtonLink>
-              <ButtonLink href={`/marketplace/${traiteur.id}`} variant="outlineTeal" size="sm">
-                Voir ma fiche publique
-              </ButtonLink>
-            </div>
           </Card>
         )}
 
         {traiteur && traiteur.status === "rejected" && (
-          <Card className="p-4">
+          <Card className="mb-3.5 p-4">
             <div className="mb-2 flex items-center gap-2">
               <XCircle size={18} className="text-coral-deep" />
               <StatusPill tone="urgent">Refusé</StatusPill>
@@ -88,8 +80,26 @@ export default async function DevenirTraiteur() {
             <h2 className="mb-1.5 font-display text-[15px] font-semibold">{traiteur.name}</h2>
             <p className="text-[12.5px] leading-relaxed text-ink/60">
               {traiteur.rejectionReason ??
-                "Votre dossier n'a pas été validé. Contactez l'équipe lehaim pour en savoir plus."}
+                "Votre dossier n'a pas été validé. Contactez l'équipe lehaim pour en savoir plus."}{" "}
+              Vous pouvez corriger vos informations ci-dessous.
             </p>
+          </Card>
+        )}
+
+        {traiteur && (
+          <Card>
+            <DashRow href="/devenir-traiteur/menu" label="Mon menu" />
+            {traiteur.status === "approved" && (
+              <DashRow href="/devenir-traiteur/commandes" label="Mes commandes" />
+            )}
+            <DashRow
+              href="/devenir-traiteur/profil"
+              label="Mes informations"
+              last={traiteur.status !== "approved"}
+            />
+            {traiteur.status === "approved" && (
+              <DashRow href={`/marketplace/${traiteur.id}`} label="Voir ma fiche publique" last />
+            )}
           </Card>
         )}
 
@@ -101,5 +111,17 @@ export default async function DevenirTraiteur() {
         </p>
       </div>
     </main>
+  );
+}
+
+function DashRow({ href, label, last = false }: { href: string; label: string; last?: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={`flex items-center justify-between px-3.5 py-3.5 ${last ? "" : "border-b border-line-soft"}`}
+    >
+      <span className="text-[12.5px] font-bold">{label}</span>
+      <span className="text-ink/30">›</span>
+    </Link>
   );
 }

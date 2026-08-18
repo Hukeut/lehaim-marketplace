@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getMyTraiteur } from "@/lib/marketplace";
 import type { ActionState } from "@/app/actions";
 
 async function requireUser() {
@@ -74,6 +75,127 @@ export async function registerTraiteur(
 
   revalidatePath("/devenir-traiteur");
   redirect("/devenir-traiteur");
+}
+
+/* ------------------------------------------------------------------ */
+/* Espace fournisseur — menu et informations                           */
+/* ------------------------------------------------------------------ */
+
+export async function addProduct(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase, user } = await requireUser();
+  if (!user) return { ok: false, message: "Connectez-vous d'abord." };
+
+  const traiteur = await getMyTraiteur();
+  if (!traiteur) return { ok: false, message: "Créez d'abord votre profil traiteur." };
+
+  const title = text(formData, "title");
+  if (!title) return { ok: false, message: "Le nom du plat est obligatoire." };
+  const price = Number(String(formData.get("price") ?? "0").replace(",", "."));
+  if (!Number.isFinite(price) || price <= 0) {
+    return { ok: false, message: "Le prix doit être un nombre positif." };
+  }
+
+  const { error } = await supabase.from("traiteur_products").insert({
+    traiteur_id: traiteur.id,
+    title,
+    description: text(formData, "description"),
+    price,
+    category: text(formData, "category") ?? "plat",
+    quantity_hint: text(formData, "quantity_hint"),
+    allergens: formData.getAll("allergens"),
+  });
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath("/devenir-traiteur/menu");
+  redirect("/devenir-traiteur/menu");
+}
+
+export async function updateProduct(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase, user } = await requireUser();
+  if (!user) return { ok: false, message: "Connectez-vous d'abord." };
+
+  const productId = String(formData.get("product_id") ?? "");
+  if (!productId) return { ok: false, message: "Plat introuvable." };
+
+  const title = text(formData, "title");
+  if (!title) return { ok: false, message: "Le nom du plat est obligatoire." };
+  const price = Number(String(formData.get("price") ?? "0").replace(",", "."));
+  if (!Number.isFinite(price) || price <= 0) {
+    return { ok: false, message: "Le prix doit être un nombre positif." };
+  }
+
+  const { error } = await supabase
+    .from("traiteur_products")
+    .update({
+      title,
+      description: text(formData, "description"),
+      price,
+      category: text(formData, "category") ?? "plat",
+      quantity_hint: text(formData, "quantity_hint"),
+      allergens: formData.getAll("allergens"),
+      active: formData.get("active") === "on",
+    })
+    .eq("id", productId);
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath("/devenir-traiteur/menu");
+  redirect("/devenir-traiteur/menu");
+}
+
+export async function toggleProductActive(productId: string, active: boolean) {
+  const { supabase, user } = await requireUser();
+  if (!user) return;
+  await supabase.from("traiteur_products").update({ active }).eq("id", productId);
+  revalidatePath("/devenir-traiteur/menu");
+}
+
+export async function deleteProduct(productId: string) {
+  const { supabase, user } = await requireUser();
+  if (!user) return;
+  await supabase.from("traiteur_products").delete().eq("id", productId);
+  revalidatePath("/devenir-traiteur/menu");
+}
+
+export async function updateTraiteurProfile(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase, user } = await requireUser();
+  if (!user) return { ok: false, message: "Connectez-vous d'abord." };
+
+  const traiteur = await getMyTraiteur();
+  if (!traiteur) return { ok: false, message: "Profil introuvable." };
+
+  const name = text(formData, "name");
+  if (!name) return { ok: false, message: "Le nom du commerce est obligatoire." };
+
+  const { error } = await supabase
+    .from("traiteurs")
+    .update({
+      name,
+      address: text(formData, "address"),
+      phone: text(formData, "phone"),
+      patente_number: text(formData, "patente_number"),
+      hechsher_name: text(formData, "hechsher_name"),
+      delivery_available: formData.get("delivery_available") === "on",
+      delivery_zone: text(formData, "delivery_zone"),
+    })
+    .eq("id", traiteur.id);
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath("/devenir-traiteur");
+  revalidatePath("/devenir-traiteur/profil");
+  revalidatePath(`/marketplace/${traiteur.id}`);
+  return { ok: true, message: "Informations mises à jour." };
 }
 
 /* ------------------------------------------------------------------ */
