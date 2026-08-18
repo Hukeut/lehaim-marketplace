@@ -45,6 +45,21 @@ export default async function PersonnaliserMissions({
           items={recommendQuantities(shabbat.guestTarget)}
         />
 
+        <Card className="mb-4">
+          <Link href="/marketplace" className="flex items-center gap-3 p-3.5">
+            <span className="flex size-[38px] shrink-0 items-center justify-center rounded-xl bg-coral/16 text-[17px]">
+              🧺
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-[12.5px] font-bold">Commander chez un traiteur</div>
+              <div className="text-[10.5px] text-ink/50">
+                Pas envie de cuisiner ? Réservez des plats prêts
+              </div>
+            </div>
+            <span className="text-ink/30">›</span>
+          </Link>
+        </Card>
+
         {ORDER.map((category) => {
           const missions = ops.missions.filter((m) => m.category === category);
           if (!missions.length) return null;
