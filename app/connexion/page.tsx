@@ -90,7 +90,21 @@ function Connexion() {
       return;
     }
 
-    router.push(mode === "signup" ? afterSignup : suite);
+    let destination = mode === "signup" ? afterSignup : suite;
+
+    // Pas de destination explicite : si ce compte a déjà un dossier
+    // fournisseur, on l'emmène directement sur son espace (statut, menu,
+    // commandes...) plutôt que sur l'accueil participant.
+    if (!requested && data.user) {
+      const { data: traiteur } = await supabase
+        .from("traiteurs")
+        .select("id")
+        .eq("owner_id", data.user.id)
+        .maybeSingle();
+      if (traiteur) destination = "/devenir-traiteur";
+    }
+
+    router.push(destination);
     router.refresh();
   }
 
