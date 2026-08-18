@@ -142,6 +142,64 @@ export async function createOrder(
 }
 
 /* ------------------------------------------------------------------ */
+/* Espace admin — validation des traiteurs                             */
+/* ------------------------------------------------------------------ */
+
+async function requireAdmin() {
+  const { supabase, user } = await requireUser();
+  if (!user) return { supabase, isAdmin: false };
+  const { data } = await supabase.rpc("is_marketplace_admin");
+  return { supabase, isAdmin: Boolean(data) };
+}
+
+export async function approveTraiteur(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase, isAdmin } = await requireAdmin();
+  if (!isAdmin) return { ok: false, message: "Accès réservé aux admins." };
+
+  const traiteurId = String(formData.get("traiteur_id") ?? "");
+  if (!traiteurId) return { ok: false, message: "Traiteur introuvable." };
+
+  const { error } = await supabase
+    .from("traiteurs")
+    .update({ status: "approved", rejection_reason: null })
+    .eq("id", traiteurId);
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath("/admin/traiteurs");
+  revalidatePath(`/admin/traiteurs/${traiteurId}`);
+  revalidatePath("/marketplace");
+  return { ok: true, message: "Traiteur approuvé." };
+}
+
+export async function rejectTraiteur(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase, isAdmin } = await requireAdmin();
+  if (!isAdmin) return { ok: false, message: "Accès réservé aux admins." };
+
+  const traiteurId = String(formData.get("traiteur_id") ?? "");
+  if (!traiteurId) return { ok: false, message: "Traiteur introuvable." };
+  const reason = text(formData, "reason");
+
+  const { error } = await supabase
+    .from("traiteurs")
+    .update({ status: "rejected", rejection_reason: reason })
+    .eq("id", traiteurId);
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath("/admin/traiteurs");
+  revalidatePath(`/admin/traiteurs/${traiteurId}`);
+  revalidatePath("/marketplace");
+  return { ok: true, message: "Traiteur rejeté." };
+}
+
+/* ------------------------------------------------------------------ */
 /* Suivi commandes côté traiteur                                       */
 /* ------------------------------------------------------------------ */
 

@@ -2,9 +2,12 @@ import Link from "next/link";
 import { Toggle } from "@/components/interactive";
 import { SignOutButton } from "@/components/SignOutButton";
 import { Card, Overline, TopBar } from "@/components/ui";
+import { isMarketplaceAdmin } from "@/lib/marketplace";
 
 /** 20 · Réglages */
-export default function Reglages() {
+export default async function Reglages() {
+  const isAdmin = await isMarketplaceAdmin();
+
   return (
     <main className="flex min-h-dvh flex-1 flex-col sm:min-h-0">
       <TopBar title="Réglages" back="/profil" />
@@ -39,6 +42,15 @@ export default function Reglages() {
           <Row href="/etats" label="États d'interface" />
           <Row href="/legacy" label="Ancienne version (stand-by)" last />
         </Card>
+
+        {isAdmin && (
+          <>
+            <Overline>Équipe lehaim</Overline>
+            <Card className="mb-4.5">
+              <Row href="/admin/traiteurs" label="Validation traiteurs" last />
+            </Card>
+          </>
+        )}
 
         <Card className="px-3.5 py-3.5">
           <SignOutButton />

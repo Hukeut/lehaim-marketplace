@@ -96,6 +96,24 @@ export async function getMyTraiteur(): Promise<Traiteur | null> {
   return data ? traiteurFrom(data) : null;
 }
 
+/** Vrai si la personne connectée fait partie de la liste blanche admin. */
+export async function isMarketplaceAdmin(): Promise<boolean> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("is_marketplace_admin");
+  if (error) return false;
+  return Boolean(data);
+}
+
+/** Tous les traiteurs (tous statuts), pour l'espace admin. Réservé aux admins par RLS. */
+export async function getAllTraiteursForAdmin(): Promise<Traiteur[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("traiteurs")
+    .select("*")
+    .order("created_at", { ascending: false });
+  return (data ?? []).map(traiteurFrom);
+}
+
 /** Une commande + ses lignes, pour la page de confirmation. */
 export async function getOrder(id: string): Promise<Order | null> {
   const supabase = await createClient();
