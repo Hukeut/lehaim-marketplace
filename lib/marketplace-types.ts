@@ -9,6 +9,29 @@ export type ProductCategory = "plat" | "entree" | "salade" | "dessert" | "boisso
 export type OrderStatus = "nouvelle" | "acceptee" | "en_preparation" | "prete" | "recuperee" | "annulee";
 export type Fulfillment = "retrait" | "livraison";
 
+export type Allergen =
+  | "gluten"
+  | "fruits_a_coque"
+  | "oeufs"
+  | "lactose"
+  | "soja"
+  | "arachide"
+  | "poisson"
+  | "crustaces"
+  | "sesame";
+
+export const ALLERGEN_LABEL: Record<Allergen, { emoji: string; label: string }> = {
+  gluten: { emoji: "🌾", label: "Gluten" },
+  fruits_a_coque: { emoji: "🥜", label: "Fruits à coque" },
+  oeufs: { emoji: "🥚", label: "Œufs" },
+  lactose: { emoji: "🥛", label: "Lactose" },
+  soja: { emoji: "🫘", label: "Soja" },
+  arachide: { emoji: "🥜", label: "Arachide" },
+  poisson: { emoji: "🐟", label: "Poisson" },
+  crustaces: { emoji: "🦐", label: "Crustacés" },
+  sesame: { emoji: "🫙", label: "Sésame" },
+};
+
 export const CATEGORY_LABEL: Record<ProductCategory, string> = {
   plat: "Plat",
   entree: "Entrée",
@@ -52,6 +75,7 @@ export type Product = {
   category: ProductCategory;
   quantityHint: string | null;
   active: boolean;
+  allergens: Allergen[];
 };
 
 export type OrderItem = {

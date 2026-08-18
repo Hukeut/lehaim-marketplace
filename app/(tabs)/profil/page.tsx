@@ -84,6 +84,8 @@ export default async function Profil() {
         <Row href="/profil/modifier" label="Modifier le profil" />
         <Row href="/reglages" label="Notifications" />
         <Row href="/shabbats" label="Historique" />
+        <Row href="/devenir-traiteur" label="Espace fournisseur" />
+        <Row href="/marketplace" label="Marketplace" />
         {account ? (
           <div className="px-0.5 py-3.5">
             <SignOutButton />

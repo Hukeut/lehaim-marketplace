@@ -32,11 +32,18 @@ export default async function TraiteurPage({
             {traiteur.address}
           </p>
         )}
-        {traiteur.deliveryAvailable && (
-          <span className="mb-2 inline-block rounded-full bg-teal/12 px-2.5 py-1 text-[10px] font-extrabold text-teal-deep">
-            Livraison disponible {traiteur.deliveryZone ? `· ${traiteur.deliveryZone}` : ""}
-          </span>
-        )}
+        <div className="mb-2 flex flex-wrap gap-1.5">
+          {traiteur.hechsherName && (
+            <span className="inline-block rounded-full bg-gold-wash px-2.5 py-1 text-[10px] font-extrabold text-gold-ink">
+              ✡️ Cacherout vérifiée · {traiteur.hechsherName}
+            </span>
+          )}
+          {traiteur.deliveryAvailable && (
+            <span className="inline-block rounded-full bg-teal/12 px-2.5 py-1 text-[10px] font-extrabold text-teal-deep">
+              Livraison disponible {traiteur.deliveryZone ? `· ${traiteur.deliveryZone}` : ""}
+            </span>
+          )}
+        </div>
       </div>
 
       <TraiteurCatalog traiteurId={traiteur.id} traiteurName={traiteur.name} products={products} />

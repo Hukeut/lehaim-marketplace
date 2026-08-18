@@ -9,6 +9,7 @@ import type {
   ProductCategory,
   OrderStatus,
   Fulfillment,
+  Allergen,
 } from "@/lib/marketplace-types";
 
 /** Types et constantes ré-exportés pour compat : voir lib/marketplace-types.ts (safe côté client). */
@@ -42,6 +43,7 @@ function productFrom(row: Record<string, unknown>): Product {
     category: row.category as ProductCategory,
     quantityHint: (row.quantity_hint as string) ?? null,
     active: Boolean(row.active),
+    allergens: ((row.allergens as string[]) ?? []) as Allergen[],
   };
 }
 

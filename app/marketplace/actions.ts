@@ -67,6 +67,7 @@ export async function registerTraiteur(
     price: productPrice,
     category: text(formData, "product_category") ?? "plat",
     quantity_hint: text(formData, "product_quantity_hint"),
+    allergens: formData.getAll("product_allergens"),
   });
 
   if (productError) return { ok: false, message: productError.message };

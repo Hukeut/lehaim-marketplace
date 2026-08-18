@@ -4,8 +4,11 @@ import { useActionState } from "react";
 import { registerTraiteur } from "@/app/marketplace/actions";
 import type { ActionState } from "@/app/actions";
 import { Button, Field, Overline } from "@/components/ui";
+import { ALLERGEN_LABEL, type Allergen } from "@/lib/marketplace-types";
 
 const initial: ActionState = { ok: false, message: null };
+
+const ALLERGEN_OPTIONS = Object.keys(ALLERGEN_LABEL) as Allergen[];
 
 const inputClass =
   "w-full rounded-field bg-white px-4 py-3.5 text-[13px] font-bold shadow-[var(--shadow-card)] outline-none focus:ring-2 focus:ring-teal/40";
@@ -104,6 +107,22 @@ export function TraiteurOnboardingForm() {
               className={inputClass}
             />
           </Field>
+          <div>
+            <div className="mb-1.5 text-[11px] font-bold text-ink/55">
+              Allergènes potentiels (optionnel)
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {ALLERGEN_OPTIONS.map((code) => (
+                <label
+                  key={code}
+                  className="flex items-center gap-1.5 rounded-full border-[1.5px] border-line-soft bg-white px-3 py-2 text-[11.5px] font-bold shadow-[var(--shadow-pill)] has-[:checked]:border-coral has-[:checked]:bg-coral-wash"
+                >
+                  <input type="checkbox" name="product_allergens" value={code} className="size-3.5" />
+                  {ALLERGEN_LABEL[code].emoji} {ALLERGEN_LABEL[code].label}
+                </label>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 

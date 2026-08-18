@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, StickyFooter, Button, Overline } from "@/components/ui";
-import { CATEGORY_LABEL, type Product } from "@/lib/marketplace-types";
+import { ALLERGEN_LABEL, CATEGORY_LABEL, type Product } from "@/lib/marketplace-types";
 
 type CartState = Record<string, number>;
 
@@ -107,6 +107,18 @@ export function TraiteurCatalog({
                             </span>
                           ) : null}
                         </div>
+                        {product.allergens.length > 0 && (
+                          <div className="mt-1.5 flex flex-wrap gap-1">
+                            {product.allergens.map((code) => (
+                              <span
+                                key={code}
+                                className="rounded-full bg-gold-wash px-2 py-0.5 text-[9.5px] font-bold text-gold-ink"
+                              >
+                                {ALLERGEN_LABEL[code]?.emoji} {ALLERGEN_LABEL[code]?.label}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         {qty > 0 && (
