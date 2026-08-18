@@ -2,9 +2,10 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { BackButton } from "@/components/BackButton";
 import { Button, Field, TextInput } from "@/components/ui";
-import { Check, Google } from "@/components/icons";
+import { Basket, Check, Google } from "@/components/icons";
 import { LogoTile } from "@/components/Wordmark";
 import { createClient } from "@/lib/supabase/client";
 
@@ -218,6 +219,14 @@ function Connexion() {
           <Google size={17} />
           Continuer avec Google
         </Button>
+
+        <Link
+          href="/devenir-traiteur"
+          className="mt-2.5 flex items-center justify-center gap-2 rounded-full border-[1.5px] border-line-soft bg-white px-4 py-3 text-[12.5px] font-bold text-ink shadow-[var(--shadow-pill)]"
+        >
+          <Basket size={16} className="text-coral" />
+          Fournisseur, traiteur ou restaurateur ?
+        </Link>
 
         <p className="mt-auto pt-6 text-center text-xs text-ink/50">
           {mode === "signin" ? (
