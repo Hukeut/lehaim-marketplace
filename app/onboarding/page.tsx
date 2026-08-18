@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ButtonLink, ProgressBar, Screen } from "@/components/ui";
+import { Basket } from "@/components/icons";
 import { STEP_PATH, stepProgress, stepsLeft } from "@/lib/onboarding";
 import { getOnboardingState } from "@/lib/onboarding-state";
 
@@ -56,6 +57,14 @@ function Welcome() {
                 Se connecter
               </Link>
             </p>
+
+            <Link
+              href="/devenir-traiteur"
+              className="mt-1 flex items-center justify-center gap-2 rounded-full border-[1.5px] border-line-soft bg-white px-4 py-3 text-[12.5px] font-bold text-ink shadow-[var(--shadow-pill)]"
+            >
+              <Basket size={16} className="text-coral" />
+              Fournisseur, traiteur ou restaurateur ?
+            </Link>
           </div>
         </div>
       </div>
