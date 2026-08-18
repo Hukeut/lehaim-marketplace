@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, StickyFooter, Button, Overline } from "@/components/ui";
-import { CATEGORY_LABEL, type Product } from "@/lib/marketplace";
+import { CATEGORY_LABEL, type Product } from "@/lib/marketplace-types";
 
 type CartState = Record<string, number>;
 
