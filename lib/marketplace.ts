@@ -91,12 +91,16 @@ export async function getMyTraiteur(): Promise<Traiteur | null> {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
+  // .limit(1) plutôt que .maybeSingle() : reste robuste même si un compte
+  // finit par posséder plusieurs lignes (ex. données de test), au lieu
+  // d'échouer silencieusement et de repasser par le formulaire vierge.
   const { data } = await supabase
     .from("traiteurs")
     .select("*")
     .eq("owner_id", user.id)
-    .maybeSingle();
-  return data ? traiteurFrom(data) : null;
+    .order("created_at", { ascending: true })
+    .limit(1);
+  return data?.[0] ? traiteurFrom(data[0]) : null;
 }
 
 /** Vrai si la personne connectée fait partie de la liste blanche admin. */
