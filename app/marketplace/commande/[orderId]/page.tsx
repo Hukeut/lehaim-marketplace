@@ -66,9 +66,14 @@ export default async function CommandeConfirmee({
         </p>
       </div>
 
-      <ButtonLink href="/marketplace" variant="secondary" size="sm">
-        Retour à la marketplace
-      </ButtonLink>
+      <div className="flex w-full flex-col gap-2">
+        <ButtonLink href="/marketplace/mes-commandes" size="sm">
+          Suivre mes commandes
+        </ButtonLink>
+        <ButtonLink href="/marketplace" variant="secondary" size="sm">
+          Retour à la marketplace
+        </ButtonLink>
+      </div>
     </main>
   );
 }

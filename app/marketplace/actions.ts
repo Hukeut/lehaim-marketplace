@@ -140,7 +140,6 @@ export async function updateProduct(
       category: text(formData, "category") ?? "plat",
       quantity_hint: text(formData, "quantity_hint"),
       allergens: formData.getAll("allergens"),
-      active: formData.get("active") === "on",
     })
     .eq("id", productId);
 
@@ -148,13 +147,6 @@ export async function updateProduct(
 
   revalidatePath("/devenir-traiteur/menu");
   redirect("/devenir-traiteur/menu");
-}
-
-export async function toggleProductActive(productId: string, active: boolean) {
-  const { supabase, user } = await requireUser();
-  if (!user) return;
-  await supabase.from("traiteur_products").update({ active }).eq("id", productId);
-  revalidatePath("/devenir-traiteur/menu");
 }
 
 export async function deleteProduct(productId: string) {

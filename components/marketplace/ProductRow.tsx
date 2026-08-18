@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import Link from "next/link";
-import { toggleProductActive, deleteProduct } from "@/app/marketplace/actions";
+import { deleteProduct } from "@/app/marketplace/actions";
 import { Card } from "@/components/ui";
 import { CATEGORY_LABEL, type Product } from "@/lib/marketplace-types";
 
@@ -16,7 +16,6 @@ export function ProductRow({ product }: { product: Product }) {
           <div className="truncate text-[13px] font-bold">{product.title}</div>
           <div className="text-[10.5px] text-ink/50">
             {CATEGORY_LABEL[product.category]} · {product.price.toFixed(0)}₪
-            {!product.active && <span className="ml-1.5 font-bold text-coral-deep">· Masqué</span>}
           </div>
         </div>
         <Link
@@ -26,15 +25,7 @@ export function ProductRow({ product }: { product: Product }) {
           Modifier
         </Link>
       </div>
-      <div className="mt-2 flex gap-2 border-t border-line-soft pt-2">
-        <button
-          type="button"
-          disabled={isPending}
-          onClick={() => startTransition(() => toggleProductActive(product.id, !product.active))}
-          className="flex-1 rounded-full bg-line-soft px-3 py-1.5 text-[10.5px] font-bold text-ink disabled:opacity-50"
-        >
-          {product.active ? "Masquer" : "Afficher"}
-        </button>
+      <div className="mt-2 border-t border-line-soft pt-2">
         <button
           type="button"
           disabled={isPending}
@@ -43,7 +34,7 @@ export function ProductRow({ product }: { product: Product }) {
               startTransition(() => deleteProduct(product.id));
             }
           }}
-          className="flex-1 rounded-full bg-coral-wash px-3 py-1.5 text-[10.5px] font-bold text-coral-deep disabled:opacity-50"
+          className="w-full rounded-full bg-coral-wash px-3 py-1.5 text-[10.5px] font-bold text-coral-deep disabled:opacity-50"
         >
           Supprimer
         </button>

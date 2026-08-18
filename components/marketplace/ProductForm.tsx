@@ -90,13 +90,6 @@ export function ProductForm({ product }: { product?: Product }) {
         </div>
       </div>
 
-      {product && (
-        <label className="flex items-center gap-2.5 rounded-field bg-white px-4 py-3.5 shadow-[var(--shadow-card)]">
-          <input type="checkbox" name="active" defaultChecked={product.active} className="size-4" />
-          <span className="text-[12.5px] font-bold">Visible dans le catalogue</span>
-        </label>
-      )}
-
       {state.message && (
         <p role="alert" className="rounded-field bg-coral-wash px-3.5 py-2.5 text-[12px] font-bold text-coral-deep">
           {state.message}

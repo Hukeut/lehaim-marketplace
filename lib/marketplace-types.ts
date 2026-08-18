@@ -17,9 +17,9 @@ export type Allergen =
   | "soja"
   | "arachide"
   | "poisson"
-  | "crustaces"
   | "sesame";
 
+/** Pas de "crustacés" : non casher, donc sans objet sur une marketplace lehaim. */
 export const ALLERGEN_LABEL: Record<Allergen, { emoji: string; label: string }> = {
   gluten: { emoji: "🌾", label: "Gluten" },
   fruits_a_coque: { emoji: "🥜", label: "Fruits à coque" },
@@ -28,7 +28,6 @@ export const ALLERGEN_LABEL: Record<Allergen, { emoji: string; label: string }> 
   soja: { emoji: "🫘", label: "Soja" },
   arachide: { emoji: "🥜", label: "Arachide" },
   poisson: { emoji: "🐟", label: "Poisson" },
-  crustaces: { emoji: "🦐", label: "Crustacés" },
   sesame: { emoji: "🫙", label: "Sésame" },
 };
 

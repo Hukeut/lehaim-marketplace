@@ -187,6 +187,51 @@ export async function getTraiteurOrders(traiteurId: string): Promise<OrderWithCl
   });
 }
 
+/** Les commandes passées par la personne connectée, tous traiteurs confondus. */
+export async function getMyOrders(): Promise<Order[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: orderRows } = await supabase
+    .from("marketplace_orders")
+    .select("*, traiteurs(name)")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+  if (!orderRows?.length) return [];
+
+  const orderIds = orderRows.map((row) => row.id as string);
+  const { data: itemRows } = await supabase
+    .from("marketplace_order_items")
+    .select("*")
+    .in("order_id", orderIds);
+
+  return orderRows.map((row) => ({
+    id: row.id as string,
+    traiteurId: row.traiteur_id as string,
+    traiteurName: ((row.traiteurs as { name?: string } | null)?.name as string) ?? "Traiteur",
+    userId: row.user_id as string,
+    status: row.status as OrderStatus,
+    fulfillment: row.fulfillment as Fulfillment,
+    pickupDate: (row.pickup_date as string) ?? null,
+    pickupSlot: (row.pickup_slot as string) ?? null,
+    totalAmount: Number(row.total_amount ?? 0),
+    notes: (row.notes as string) ?? null,
+    createdAt: row.created_at as string,
+    items: (itemRows ?? [])
+      .filter((item) => item.order_id === row.id)
+      .map((item) => ({
+        id: item.id as string,
+        productId: (item.product_id as string) ?? null,
+        title: item.title as string,
+        price: Number(item.price ?? 0),
+        quantity: Number(item.quantity ?? 1),
+      })),
+  }));
+}
+
 /** Une commande + ses lignes, pour la page de confirmation. */
 export async function getOrder(id: string): Promise<Order | null> {
   const supabase = await createClient();
