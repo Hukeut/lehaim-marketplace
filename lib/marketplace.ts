@@ -7,6 +7,7 @@ import type {
   TraiteurStatus,
   ProductCategory,
   OrderStatus,
+  Fulfillment,
 } from "@/lib/marketplace-types";
 
 /** Types et constantes ré-exportés pour compat : voir lib/marketplace-types.ts (safe côté client). */
