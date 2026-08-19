@@ -5,6 +5,7 @@ import { ClearCart } from "@/components/marketplace/ClearCart";
 import { OrderThread } from "@/components/marketplace/OrderThread";
 import { CancelOrderButton } from "@/components/marketplace/CancelOrderButton";
 import { OrderStatusToast } from "@/components/marketplace/OrderStatusToast";
+import { ConfirmationCelebration } from "@/components/marketplace/ConfirmationCelebration";
 import { AutoRefresh } from "@/components/AutoRefresh";
 import { BrandMark } from "@/components/BrandMark";
 import { Clock, XCircle } from "@/components/icons";
@@ -45,6 +46,7 @@ export default async function CommandeConfirmee({
     <main className="flex min-h-dvh flex-1 flex-col items-center px-7 pt-[64px] text-center sm:min-h-0">
       <ClearCart traiteurId={order.traiteurId} />
       {!isCancelled && <AutoRefresh />}
+      {!isCancelled && <ConfirmationCelebration status={order.status} />}
       <OrderStatusToast
         status={order.status}
         label={ORDER_STATUS_LABEL[order.status]}

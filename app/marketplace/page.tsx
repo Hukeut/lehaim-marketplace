@@ -1,12 +1,14 @@
 import Link from "next/link";
-import { getApprovedTraiteurs } from "@/lib/marketplace";
+import { getApprovedTraiteurs, getTraiteurScore } from "@/lib/marketplace";
 import { BackButton } from "@/components/BackButton";
 import { BrandMark } from "@/components/BrandMark";
+import { ReactivityBadge } from "@/components/marketplace/ReactivityBadge";
 import { Card } from "@/components/ui";
 import { MapPin, Basket } from "@/components/icons";
 
 export default async function Marketplace() {
   const traiteurs = await getApprovedTraiteurs();
+  const scores = await Promise.all(traiteurs.map((t) => getTraiteurScore(t.id)));
 
   return (
     <main className="flex min-h-dvh flex-1 flex-col sm:min-h-0">
@@ -29,14 +31,17 @@ export default async function Marketplace() {
         )}
 
         <ul className="flex flex-col gap-2.5">
-          {traiteurs.map((traiteur) => (
+          {traiteurs.map((traiteur, i) => (
             <Card as="li" key={traiteur.id} className="rounded-field">
               <Link href={`/marketplace/${traiteur.id}`} className="flex items-center gap-3 px-3.5 py-3.5">
                 <span className="flex size-11 shrink-0 items-center justify-center rounded-[12px] bg-coral/12 text-coral-deep">
                   <Basket size={20} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-[13.5px] font-bold">{traiteur.name}</div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="truncate text-[13.5px] font-bold">{traiteur.name}</div>
+                    <ReactivityBadge tier={scores[i].tier} />
+                  </div>
                   {traiteur.address && (
                     <div className="mt-0.5 flex items-center gap-1 truncate text-[11px] text-ink/50">
                       <MapPin size={11} className="shrink-0" />

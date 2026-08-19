@@ -406,22 +406,32 @@ export async function setOrderStatus(
   const { supabase, user } = await requireUser();
   if (!user) return;
 
+  // Une seule lecture pour les deux besoins ci-dessous : qui annule, et si
+  // c'est la première sortie de "nouvelle" (utile aux deux, pas seulement
+  // à l'annulation).
+  const { data: orderRow } = await supabase
+    .from("marketplace_orders")
+    .select("user_id, status, responded_at")
+    .eq("id", orderId)
+    .maybeSingle();
+
   const patch: Record<string, unknown> = { status };
   if (status === "annulee") {
     // On détermine qui annule en comparant à qui a passé la commande, pas
     // en se fiant à un rôle envoyé par l'appelant (client ou traiteur
     // peuvent tous les deux invoquer cette même action).
-    const { data: orderRow } = await supabase
-      .from("marketplace_orders")
-      .select("user_id")
-      .eq("id", orderId)
-      .maybeSingle();
     patch.cancelled_by = orderRow?.user_id === user.id ? "client" : "traiteur";
+  }
+  // Première sortie de "nouvelle" : marque le temps de réponse du traiteur
+  // (accepter, refuser, peu importe), utilisé par le badge de réactivité.
+  if (orderRow?.status === "nouvelle" && status !== "nouvelle" && !orderRow.responded_at) {
+    patch.responded_at = new Date().toISOString();
   }
 
   await supabase.from("marketplace_orders").update(patch).eq("id", orderId);
   revalidatePath("/devenir-traiteur/commandes");
   revalidatePath(`/devenir-traiteur/commandes/${orderId}`);
+  revalidatePath("/devenir-traiteur/score");
   revalidatePath("/marketplace/mes-commandes");
   revalidatePath(`/marketplace/commande/${orderId}`);
 }

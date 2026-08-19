@@ -11,6 +11,8 @@ import type {
   Fulfillment,
   Allergen,
   TraiteurSlot,
+  ReactivityTier,
+  TraiteurScore,
 } from "@/lib/marketplace-types";
 
 /** Types et constantes ré-exportés pour compat : voir lib/marketplace-types.ts (safe côté client). */
@@ -305,6 +307,57 @@ export async function getOrder(id: string): Promise<Order | null> {
       quantity: Number(row.quantity ?? 1),
     })),
   };
+}
+
+/**
+ * Score de réactivité d'un traiteur : temps de réponse moyen (sur les
+ * commandes déjà traitées) et série de commandes honorées d'affilée.
+ * `tier` reste `null` tant qu'il n'y a pas assez d'historique — pas de
+ * badge affiché plutôt qu'un badge trompeur basé sur 1 ou 2 commandes.
+ */
+export async function getTraiteurScore(traiteurId: string): Promise<TraiteurScore> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("marketplace_orders")
+    .select("status, cancelled_by, created_at, responded_at")
+    .eq("traiteur_id", traiteurId)
+    .order("created_at", { ascending: false })
+    .limit(60);
+
+  const rows = data ?? [];
+
+  const responseTimes = rows
+    .filter((row) => row.responded_at)
+    .map(
+      (row) =>
+        (new Date(row.responded_at as string).getTime() -
+          new Date(row.created_at as string).getTime()) /
+        60000,
+    )
+    .slice(0, 30);
+
+  const avgResponseMinutes = responseTimes.length
+    ? responseTimes.reduce((sum, minutes) => sum + minutes, 0) / responseTimes.length
+    : null;
+
+  let tier: ReactivityTier | null = null;
+  if (responseTimes.length >= 3 && avgResponseMinutes !== null) {
+    if (avgResponseMinutes <= 15) tier = "or";
+    else if (avgResponseMinutes <= 45) tier = "argent";
+    else tier = "bronze";
+  }
+
+  // Série la plus récente d'affilée : on s'arrête à la première commande
+  // annulée par le traiteur. Une commande encore "nouvelle" (pas traitée)
+  // ne casse pas la série, elle est simplement ignorée dans le comptage.
+  let streak = 0;
+  for (const row of rows) {
+    if (row.status === "nouvelle") continue;
+    if (row.cancelled_by === "traiteur") break;
+    streak += 1;
+  }
+
+  return { tier, avgResponseMinutes, streak };
 }
 
 export type OrderMessage = {

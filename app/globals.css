@@ -88,6 +88,18 @@
   }
 }
 
+/* Confettis de la page de confirmation de commande (voir ConfirmationCelebration). */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(80vh) rotate(540deg);
+    opacity: 0;
+  }
+}
+
 html {
   background: var(--color-sand);
   -webkit-text-size-adjust: 100%;

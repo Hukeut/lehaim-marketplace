@@ -124,3 +124,23 @@ export const ORDER_STATUS_FLOW: OrderStatus[] = [
   "prete",
   "recuperee",
 ];
+
+/* ------------------------------------------------------------------ */
+/* Badge de réactivité (gamification)                                   */
+/* ------------------------------------------------------------------ */
+
+export type ReactivityTier = "or" | "argent" | "bronze";
+
+export const REACTIVITY_TIER_LABEL: Record<ReactivityTier, string> = {
+  or: "Or",
+  argent: "Argent",
+  bronze: "Bronze",
+};
+
+export type TraiteurScore = {
+  /** Null tant que le traiteur n'a pas assez d'historique pour être noté. */
+  tier: ReactivityTier | null;
+  avgResponseMinutes: number | null;
+  /** Commandes honorées d'affilée (les plus récentes), sans annulation par le traiteur. */
+  streak: number;
+};

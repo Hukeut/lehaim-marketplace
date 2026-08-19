@@ -7,7 +7,7 @@ import { TraiteurOnboardingForm } from "@/components/marketplace/TraiteurOnboard
 import { BackButton } from "@/components/BackButton";
 import { BrandMark } from "@/components/BrandMark";
 import { ButtonLink, Card, StatusPill } from "@/components/ui";
-import { Basket, Calendar, Check, Clock, Dish, Share, Sliders, XCircle } from "@/components/icons";
+import { Basket, Calendar, Check, Clock, Dish, Medal, Share, Sliders, XCircle } from "@/components/icons";
 
 const MONTHS = [
   "janvier", "février", "mars", "avril", "mai", "juin",
@@ -116,6 +116,9 @@ export default async function DevenirTraiteur() {
                 label="Fiche publique"
                 tone="olive"
               />
+            )}
+            {traiteur.status === "approved" && (
+              <GridTile href="/devenir-traiteur/score" icon={<Medal size={18} />} label="Mon score" tone="gold" />
             )}
           </div>
         )}
