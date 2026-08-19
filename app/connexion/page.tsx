@@ -127,19 +127,35 @@ function Connexion() {
   }
 
   return (
-    <main className="flex min-h-dvh flex-1 flex-col px-7 pt-[54px] pb-4 sm:min-h-0">
-      <div className="mb-4">
-        <BackButton fallback="/onboarding" />
-      </div>
+    <main
+      className={`flex min-h-dvh flex-1 flex-col px-7 pb-4 sm:min-h-0 ${
+        isTraiteurFlow ? "bg-teal/8 pt-[64px]" : "pt-[54px]"
+      }`}
+    >
+      {!isTraiteurFlow && (
+        <div className="mb-4">
+          <BackButton fallback="/onboarding" />
+        </div>
+      )}
       <LogoTile size={56} radius={18} />
 
       <h1 className="mt-5 mb-2 font-display text-[23px] font-semibold">
-        {mode === "signin" ? "Bon retour" : "Créer votre compte"}
+        {isTraiteurFlow
+          ? mode === "signin"
+            ? "Espace fournisseur"
+            : "Devenir fournisseur"
+          : mode === "signin"
+            ? "Bon retour"
+            : "Créer votre compte"}
       </h1>
       <p className="mb-5 text-[13.5px] leading-relaxed text-ink/60">
-        {mode === "signin"
-          ? "Connectez-vous pour retrouver votre table et vos proches."
-          : "Quelques secondes, et votre première table est ouverte."}
+        {isTraiteurFlow
+          ? mode === "signin"
+            ? "Connectez-vous pour gérer votre menu et vos commandes sur la marketplace lehaim."
+            : "Créez votre compte pour proposer vos plats sur la marketplace lehaim."
+          : mode === "signin"
+            ? "Connectez-vous pour retrouver votre table et vos proches."
+            : "Quelques secondes, et votre première table est ouverte."}
       </p>
 
       <form onSubmit={submit} className="flex flex-1 flex-col">
