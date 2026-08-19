@@ -1,18 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export function SignOutButton({ className = "" }: { className?: string }) {
-  const router = useRouter();
   const [busy, setBusy] = useState(false);
 
   async function signOut() {
     setBusy(true);
     await createClient().auth.signOut();
-    router.push("/connexion");
-    router.refresh();
+    // Rechargement complet (pas de router.push) : le cache client du
+    // routeur Next.js peut sinon réafficher une page déjà visitée
+    // (profil, accueil...) avec ses données périmées d'avant déconnexion.
+    window.location.href = "/connexion";
   }
 
   return (
