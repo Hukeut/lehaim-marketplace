@@ -34,11 +34,22 @@ export default async function CommandeConfirmee({
   const isWaiting = order.status === "nouvelle";
   const isCancelled = order.status === "annulee";
 
+  const slotText = order.pickupSlot
+    ? ` Retrait ${formatDate(order.pickupDate) ?? ""} · ${order.pickupSlot}.`
+    : "";
+  const alertText = `🔔 Commande chez ${order.traiteurName} : ${ORDER_STATUS_LABEL[order.status]} !${slotText}${
+    order.pickupCode ? ` Code ${order.pickupCode}.` : ""
+  }`;
+
   return (
     <main className="flex min-h-dvh flex-1 flex-col items-center px-7 pt-[64px] text-center sm:min-h-0">
       <ClearCart traiteurId={order.traiteurId} />
       {!isCancelled && <AutoRefresh />}
-      <OrderStatusToast status={order.status} label={ORDER_STATUS_LABEL[order.status]} />
+      <OrderStatusToast
+        status={order.status}
+        label={ORDER_STATUS_LABEL[order.status]}
+        alertText={alertText}
+      />
       <BrandMark className="mb-6" />
 
       {isCancelled ? (

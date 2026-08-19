@@ -15,6 +15,11 @@ export function waLink(phone: string, text?: string) {
   return `https://wa.me/${digits}${query}`;
 }
 
+/** Partage générique (pas de destinataire précis) : ouvre le choix de contact WhatsApp. */
+export function waShareLink(text: string) {
+  return `https://wa.me/?text=${encodeURIComponent(text)}`;
+}
+
 export type MessageKind =
   | "invitation"
   | "rsvp"
