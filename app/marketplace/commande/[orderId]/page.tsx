@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import { getOrderThread, ORDER_STATUS_LABEL } from "@/lib/marketplace";
+import { waLink } from "@/lib/whatsapp";
 import { ClearCart } from "@/components/marketplace/ClearCart";
 import { OrderThread } from "@/components/marketplace/OrderThread";
 import { CancelOrderButton } from "@/components/marketplace/CancelOrderButton";
-import { OrderStatusWatcher } from "@/components/marketplace/OrderStatusWatcher";
+import { AutoRefresh } from "@/components/AutoRefresh";
 import { BrandMark } from "@/components/BrandMark";
 import { Clock, XCircle } from "@/components/icons";
 import { ButtonLink, Card, StatusPill } from "@/components/ui";
@@ -35,7 +36,7 @@ export default async function CommandeConfirmee({
   return (
     <main className="flex min-h-dvh flex-1 flex-col items-center px-7 pt-[64px] text-center sm:min-h-0">
       <ClearCart traiteurId={order.traiteurId} />
-      <OrderStatusWatcher status={order.status} />
+      {!isCancelled && <AutoRefresh />}
       <BrandMark className="mb-6" />
 
       {isCancelled ? (
@@ -116,6 +117,20 @@ export default async function CommandeConfirmee({
       <div className="mb-3 w-full">
         <OrderThread orderId={order.id} messages={messages} />
       </div>
+
+      {!isCancelled && order.traiteurPhone && (
+        <a
+          href={waLink(
+            order.traiteurPhone,
+            `Bonjour, je vous contacte au sujet de ma commande${order.pickupCode ? ` (code ${order.pickupCode})` : ""}.`,
+          )}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mb-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3 text-[12.5px] font-bold text-white"
+        >
+          Contacter le traiteur sur WhatsApp
+        </a>
+      )}
 
       {["nouvelle", "acceptee", "en_preparation"].includes(order.status) && (
         <div className="mb-3 w-full">

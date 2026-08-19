@@ -188,6 +188,7 @@ export async function getTraiteurOrders(traiteurId: string): Promise<OrderWithCl
       id: row.id as string,
       traiteurId: row.traiteur_id as string,
       traiteurName: "",
+      traiteurPhone: null,
       userId: row.user_id as string,
       status: row.status as OrderStatus,
       fulfillment: row.fulfillment as Fulfillment,
@@ -225,7 +226,7 @@ export async function getMyOrders(shabbatId?: string): Promise<Order[]> {
 
   let query = supabase
     .from("marketplace_orders")
-    .select("*, traiteurs(name)")
+    .select("*, traiteurs(name, phone)")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
   if (shabbatId) query = query.eq("shabbat_id", shabbatId);
@@ -243,6 +244,7 @@ export async function getMyOrders(shabbatId?: string): Promise<Order[]> {
     id: row.id as string,
     traiteurId: row.traiteur_id as string,
     traiteurName: ((row.traiteurs as { name?: string } | null)?.name as string) ?? "Traiteur",
+    traiteurPhone: (row.traiteurs as { phone?: string } | null)?.phone ?? null,
     userId: row.user_id as string,
     status: row.status as OrderStatus,
     fulfillment: row.fulfillment as Fulfillment,
@@ -270,7 +272,7 @@ export async function getOrder(id: string): Promise<Order | null> {
   const supabase = await createClient();
   const { data: orderRow } = await supabase
     .from("marketplace_orders")
-    .select("*, traiteurs(name)")
+    .select("*, traiteurs(name, phone)")
     .eq("id", id)
     .maybeSingle();
   if (!orderRow) return null;
@@ -284,6 +286,7 @@ export async function getOrder(id: string): Promise<Order | null> {
     id: orderRow.id as string,
     traiteurId: orderRow.traiteur_id as string,
     traiteurName: ((orderRow.traiteurs as { name?: string } | null)?.name as string) ?? "Traiteur",
+    traiteurPhone: (orderRow.traiteurs as { phone?: string } | null)?.phone ?? null,
     userId: orderRow.user_id as string,
     status: orderRow.status as OrderStatus,
     fulfillment: orderRow.fulfillment as Fulfillment,

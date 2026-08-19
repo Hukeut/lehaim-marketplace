@@ -97,6 +97,8 @@ export type Order = {
   id: string;
   traiteurId: string;
   traiteurName: string;
+  /** Pour le bouton "Contacter sur WhatsApp" côté client, si le traiteur a renseigné un numéro. */
+  traiteurPhone: string | null;
   userId: string;
   status: OrderStatus;
   fulfillment: Fulfillment;

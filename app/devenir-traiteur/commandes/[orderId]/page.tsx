@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getMyTraiteur, getOrderThread, ORDER_STATUS_LABEL } from "@/lib/marketplace";
 import { OrderThread } from "@/components/marketplace/OrderThread";
+import { AutoRefresh } from "@/components/AutoRefresh";
 import { BackButton } from "@/components/BackButton";
 import { BrandMark } from "@/components/BrandMark";
 import { Card, StatusPill } from "@/components/ui";
@@ -34,6 +35,7 @@ export default async function TraiteurCommandeDetail({
 
   return (
     <main className="flex min-h-dvh flex-1 flex-col bg-teal-wash sm:min-h-0">
+      <AutoRefresh />
       <div className="px-5 pt-[54px]">
         <BrandMark className="mb-2.5" />
         <div className="mb-3 flex items-center gap-2.5">

@@ -2,6 +2,19 @@ import type { ShabbatDetail } from "@/lib/data";
 import { formatDate, formatTime } from "@/lib/format";
 import type { Ops } from "@/lib/missions";
 
+/**
+ * Lien wa.me vers un numéro précis (contrairement au partage générique
+ * `wa.me/?text=`). On ne garde que les chiffres : si le traiteur a saisi
+ * son numéro avec l'indicatif (ex. "+972 50 123 4567"), ça fonctionne ;
+ * un numéro purement local sans indicatif peut ne pas router correctement,
+ * ça reste hors de notre contrôle.
+ */
+export function waLink(phone: string, text?: string) {
+  const digits = phone.replace(/[^\d]/g, "");
+  const query = text ? `?text=${encodeURIComponent(text)}` : "";
+  return `https://wa.me/${digits}${query}`;
+}
+
 export type MessageKind =
   | "invitation"
   | "rsvp"
