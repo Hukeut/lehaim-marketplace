@@ -96,14 +96,16 @@ export default function Reserver({
       setLines(built);
       if (traiteur?.name) setTraiteurName(traiteur.name as string);
       setDeliveryAvailable(Boolean(traiteur?.delivery_available));
-      setShabbats(
-        (shabbatRows ?? []).map((s) => ({
-          id: s.id as string,
-          title: s.title as string,
-          startsAt: s.starts_at as string,
-          pickupCode: (s.pickup_code as string) ?? null,
-        })),
-      );
+      const builtShabbats: ShabbatOption[] = (shabbatRows ?? []).map((s) => ({
+        id: s.id as string,
+        title: s.title as string,
+        startsAt: s.starts_at as string,
+        pickupCode: (s.pickup_code as string) ?? null,
+      }));
+      setShabbats(builtShabbats);
+      // Présélectionné plutôt que laissé sur "Aucun" : sans ça, le code de
+      // retrait n'arrive jamais au traiteur si le client oublie ce champ.
+      if (builtShabbats.length) setShabbatId(builtShabbats[0].id);
 
       const builtSlots: Slot[] = (slotRows ?? []).map((s) => ({
         id: s.id as string,
