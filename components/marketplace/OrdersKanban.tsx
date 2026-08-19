@@ -16,6 +16,8 @@ const COLUMN_DOT: Record<OrderStatus, string> = {
 };
 
 // Kanban en RTL (droite → gauche) : l'étape suivante avance donc vers la gauche.
+// "Accepter" saute directement à "En préparation" : pour un petit traiteur,
+// accepter et commencer à préparer, c'est le même geste.
 const NEXT_ACTION_LABEL: Record<OrderStatus, string | null> = {
   nouvelle: "← Accepter",
   acceptee: "← Démarrer la préparation",
@@ -63,8 +65,13 @@ export function OrdersKanban({ orders }: { orders: OrderWithClient[] }) {
       {activeStatuses.map((status) => {
         const index = ORDER_STATUS_FLOW.indexOf(status);
         const columnOrders = orders.filter((o) => o.status === status);
-        const nextStatus = ORDER_STATUS_FLOW[index + 1] ?? null;
-        const prevStatus = index > 0 ? ORDER_STATUS_FLOW[index - 1] : null;
+        // "nouvelle" ⇄ "en_preparation" sont directement reliées : on saute
+        // "acceptee" dans les deux sens (elle reste dans le flux pour les
+        // rares commandes qui y seraient déjà, mais on n'y renvoie plus personne).
+        const nextStatus: OrderStatus | null =
+          status === "nouvelle" ? "en_preparation" : (ORDER_STATUS_FLOW[index + 1] ?? null);
+        const prevStatus: OrderStatus | null =
+          status === "en_preparation" ? "nouvelle" : index > 0 ? ORDER_STATUS_FLOW[index - 1] : null;
         return (
           <div key={status}>
             <div className="mb-2 flex items-center gap-1.5">
