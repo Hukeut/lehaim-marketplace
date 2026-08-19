@@ -3,6 +3,7 @@ import { getMyTraiteur, getTraiteurOrders } from "@/lib/marketplace";
 import { OrdersKanban } from "@/components/marketplace/OrdersKanban";
 import { BackButton } from "@/components/BackButton";
 import { BrandMark } from "@/components/BrandMark";
+import { AutoRefresh } from "@/components/AutoRefresh";
 
 /** Kanban de suivi des commandes, côté traiteur — pensé "office first". */
 export default async function TraiteurCommandes() {
@@ -13,6 +14,7 @@ export default async function TraiteurCommandes() {
 
   return (
     <main className="flex min-h-dvh flex-1 flex-col bg-teal-wash sm:min-h-0">
+      <AutoRefresh />
       <div className="px-5 pt-[54px]">
         <BrandMark className="mb-2.5" />
         <div className="mb-3 flex items-center gap-2.5">
