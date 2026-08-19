@@ -28,11 +28,16 @@ function OrderCard({ order }: { order: Order }) {
           {order.totalAmount.toFixed(0)}₪
         </span>
       </div>
-      <div className="mb-3 text-[11px] text-ink/50">
+      <div className="mb-2 text-[11px] text-ink/50">
         {order.fulfillment === "livraison" ? "Livraison" : "Retrait"}
         {order.pickupDate ? ` · ${formatDate(order.pickupDate)}` : ""}
         {order.pickupSlot ? ` · ${order.pickupSlot}` : ""}
       </div>
+      {order.pickupCode && (
+        <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-teal-wash px-2.5 py-1 text-[10.5px] font-extrabold text-teal-deep">
+          Code · {order.pickupCode}
+        </div>
+      )}
 
       <ul className="mb-3 flex flex-col gap-1">
         {order.items.map((item) => (

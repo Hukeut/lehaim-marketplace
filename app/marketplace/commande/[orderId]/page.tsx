@@ -3,6 +3,7 @@ import { getOrderThread, ORDER_STATUS_LABEL } from "@/lib/marketplace";
 import { ClearCart } from "@/components/marketplace/ClearCart";
 import { OrderThread } from "@/components/marketplace/OrderThread";
 import { CancelOrderButton } from "@/components/marketplace/CancelOrderButton";
+import { OrderStatusWatcher } from "@/components/marketplace/OrderStatusWatcher";
 import { BrandMark } from "@/components/BrandMark";
 import { Clock, XCircle } from "@/components/icons";
 import { ButtonLink, Card, StatusPill } from "@/components/ui";
@@ -34,6 +35,7 @@ export default async function CommandeConfirmee({
   return (
     <main className="flex min-h-dvh flex-1 flex-col items-center px-7 pt-[64px] text-center sm:min-h-0">
       <ClearCart traiteurId={order.traiteurId} />
+      <OrderStatusWatcher status={order.status} />
       <BrandMark className="mb-6" />
 
       {isCancelled ? (
@@ -53,11 +55,22 @@ export default async function CommandeConfirmee({
       <h1 className="mb-1.5 font-display text-[18px] font-semibold">
         {isCancelled ? "Commande annulée" : isWaiting ? "En attente de confirmation" : "Réservation confirmée"}
       </h1>
-      <p className="mb-5 text-[12.5px] text-ink/55">
+      <p className="mb-2 text-[12.5px] text-ink/55">
         {isWaiting
           ? `${order.traiteurName} doit encore confirmer votre commande.`
           : `Commande chez ${order.traiteurName}`}
       </p>
+
+      {order.pickupCode ? (
+        <p className="mb-5 inline-flex items-center gap-1.5 self-center rounded-full bg-teal-wash px-3 py-1.5 text-[11.5px] font-extrabold text-teal-deep">
+          Code à donner au traiteur · {order.pickupCode}
+        </p>
+      ) : (
+        <p className="mb-5 text-[11px] text-ink/40">
+          Aucun Shabbat n&apos;est rattaché à cette commande, donc pas de code — le traiteur verra
+          un identifiant générique.
+        </p>
+      )}
 
       <Card className="mb-3 w-full p-4 text-left">
         <div className="mb-2 flex items-center justify-between">
