@@ -48,9 +48,19 @@ export function OrdersKanban({ orders }: { orders: OrderWithClient[] }) {
     changeStatus(orderId, "annulee");
   }
 
+  // On n'affiche que les colonnes qui contiennent au moins une commande.
+  const activeStatuses = ORDER_STATUS_FLOW.filter((status) =>
+    orders.some((o) => o.status === status),
+  );
+
   return (
-    <div dir="rtl" className="grid grid-cols-2 gap-3 md:grid-cols-5">
-      {ORDER_STATUS_FLOW.map((status, index) => {
+    <div
+      dir="rtl"
+      className="grid gap-3"
+      style={{ gridTemplateColumns: `repeat(${Math.max(activeStatuses.length, 1)}, minmax(0, 1fr))` }}
+    >
+      {activeStatuses.map((status) => {
+        const index = ORDER_STATUS_FLOW.indexOf(status);
         const columnOrders = orders.filter((o) => o.status === status);
         const nextStatus = ORDER_STATUS_FLOW[index + 1] ?? null;
         const prevStatus = index > 0 ? ORDER_STATUS_FLOW[index - 1] : null;
@@ -120,12 +130,6 @@ export function OrdersKanban({ orders }: { orders: OrderWithClient[] }) {
                   </Card>
                 );
               })}
-
-              {!columnOrders.length && (
-                <div className="rounded-field border-[1.5px] border-dashed border-line px-3 py-5 text-center text-[10.5px] text-ink/35">
-                  Rien ici
-                </div>
-              )}
             </div>
           </div>
         );
