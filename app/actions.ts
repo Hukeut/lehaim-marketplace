@@ -26,6 +26,34 @@ function refreshShabbat(id: string) {
   revalidatePath(`/shabbat/${id}`);
 }
 
+/** Code court (4 chiffres) donné aux traiteurs à la place du nom du client. */
+function generatePickupCode() {
+  return String(Math.floor(1000 + Math.random() * 9000));
+}
+
+/**
+ * Insère le Shabbat avec un pickup_code fraîchement tiré ; recommence avec
+ * un nouveau code si l'unicité en base est violée (23505), jusqu'à 6 essais.
+ */
+async function insertShabbatWithCode(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  payload: Record<string, unknown>,
+) {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const { data, error } = await supabase
+      .from("shabbats")
+      .insert({ ...payload, pickup_code: generatePickupCode() })
+      .select("id")
+      .single();
+    if (!error) return { data, error: null as null };
+    if (error.code !== "23505") return { data: null, error };
+  }
+  return {
+    data: null,
+    error: { message: "Impossible de générer un code de retrait unique, réessayez." },
+  };
+}
+
 /* ------------------------------------------------------------------ */
 /* Création                                                             */
 /* ------------------------------------------------------------------ */
@@ -44,22 +72,18 @@ export async function createShabbat(
   const budget = text(formData, "budget");
   const guests = Number(formData.get("guest_target") ?? 8);
 
-  const { data, error } = await supabase
-    .from("shabbats")
-    .insert({
-      host_id: user.id,
-      title: text(formData, "title") ?? "Shabbat chez vous",
-      starts_at: new Date(`${date}T${time}`).toISOString(),
-      address: text(formData, "address"),
-      neighbourhood: text(formData, "neighbourhood"),
-      guest_target: Number.isFinite(guests) ? Math.min(60, Math.max(1, guests)) : 8,
-      budget_planned: budget ? Number(budget.replace(/[^\d.,]/g, "").replace(",", ".")) : null,
-      visibility: formData.get("visibility") === "link" ? "link" : "invite",
-    })
-    .select("id")
-    .single();
+  const { data, error } = await insertShabbatWithCode(supabase, {
+    host_id: user.id,
+    title: text(formData, "title") ?? "Shabbat chez vous",
+    starts_at: new Date(`${date}T${time}`).toISOString(),
+    address: text(formData, "address"),
+    neighbourhood: text(formData, "neighbourhood"),
+    guest_target: Number.isFinite(guests) ? Math.min(60, Math.max(1, guests)) : 8,
+    budget_planned: budget ? Number(budget.replace(/[^\d.,]/g, "").replace(",", ".")) : null,
+    visibility: formData.get("visibility") === "link" ? "link" : "invite",
+  });
 
-  if (error) return { ok: false, message: error.message };
+  if (error || !data) return { ok: false, message: error?.message ?? "Une erreur est survenue." };
 
   revalidatePath("/shabbats");
   redirect(`/creer/${data.id}/modele`);

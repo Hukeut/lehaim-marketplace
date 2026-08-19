@@ -43,8 +43,8 @@ export function OrdersKanban({ orders }: { orders: OrderWithClient[] }) {
     });
   }
 
-  function cancel(orderId: string, title: string) {
-    if (!confirm(`Annuler la commande de ${title} ?`)) return;
+  function cancel(orderId: string, code: string) {
+    if (!confirm(`Annuler la commande ${code} ?`)) return;
     changeStatus(orderId, "annulee");
   }
 
@@ -76,16 +76,37 @@ export function OrdersKanban({ orders }: { orders: OrderWithClient[] }) {
             <div className="flex flex-col gap-2">
               {columnOrders.map((order) => {
                 const busy = isPending && pendingId === order.id;
+                const code = order.pickupCode ?? `#${order.id.slice(0, 4).toUpperCase()}`;
                 return (
                   <Card key={order.id} className="rounded-field p-3">
-                    <div className="mb-1 text-[12.5px] font-bold">{order.clientName}</div>
-                    <ul className="mb-2 text-[11px] leading-snug text-ink/55">
-                      {order.items.map((item) => (
-                        <li key={item.id}>
-                          {item.quantity}× {item.title}
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="mb-2 flex items-center gap-1.5">
+                      <span className="rounded-full bg-ink px-2.5 py-1 text-[12px] font-extrabold tracking-[0.04em] text-white">
+                        {code}
+                      </span>
+                    </div>
+
+                    <details className="group mb-2">
+                      <summary className="flex cursor-pointer list-none items-center justify-between gap-2 rounded-full bg-line-soft px-3 py-1.5 text-[10.5px] font-bold text-ink [&::-webkit-details-marker]:hidden">
+                        <span>
+                          Voir la commande ({order.items.length}{" "}
+                          {order.items.length > 1 ? "plats" : "plat"})
+                        </span>
+                        <span className="text-ink/40 transition-transform group-open:rotate-180">
+                          ⌄
+                        </span>
+                      </summary>
+                      <ul className="mt-2 flex flex-col gap-1 px-1 text-[11px] leading-snug text-ink/60">
+                        {order.items.map((item) => (
+                          <li key={item.id}>
+                            {item.quantity}× {item.title}
+                          </li>
+                        ))}
+                        {order.notes && (
+                          <li className="mt-1 italic text-ink/45">« {order.notes} »</li>
+                        )}
+                      </ul>
+                    </details>
+
                     <div className="mb-2 flex items-center justify-between">
                       <span className="text-[10.5px] text-ink/45">
                         {order.fulfillment === "livraison" ? "Livraison" : "Retrait"} ·{" "}
@@ -122,7 +143,7 @@ export function OrdersKanban({ orders }: { orders: OrderWithClient[] }) {
                     <button
                       type="button"
                       disabled={busy}
-                      onClick={() => cancel(order.id, order.clientName)}
+                      onClick={() => cancel(order.id, code)}
                       className="mt-1.5 w-full rounded-full px-3 py-1.5 text-[10.5px] font-bold text-coral-deep/70 disabled:opacity-50"
                     >
                       Annuler la commande

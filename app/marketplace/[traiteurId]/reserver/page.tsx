@@ -22,6 +22,13 @@ function cartKey(traiteurId: string) {
   return `lehaim-marketplace-cart-${traiteurId}`;
 }
 
+type ShabbatOption = { id: string; title: string; startsAt: string; pickupCode: string | null };
+
+function formatShabbatOption(s: ShabbatOption) {
+  const date = new Date(s.startsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  return `${s.title} · ${date}`;
+}
+
 export default function Reserver({
   params,
 }: {
@@ -37,6 +44,8 @@ export default function Reserver({
   const [date, setDate] = useState(nextFriday());
   const [slot, setSlot] = useState(SLOTS[1]);
   const [loading, setLoading] = useState(true);
+  const [shabbats, setShabbats] = useState<ShabbatOption[]>([]);
+  const [shabbatId, setShabbatId] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -55,9 +64,14 @@ export default function Reserver({
       }
 
       const supabase = createClient();
-      const [{ data: products }, { data: traiteur }] = await Promise.all([
+      const [{ data: products }, { data: traiteur }, { data: shabbatRows }] = await Promise.all([
         supabase.from("traiteur_products").select("id, title, price").in("id", productIds),
         supabase.from("traiteurs").select("name, delivery_available").eq("id", traiteurId).maybeSingle(),
+        // La RLS limite déjà aux Shabbats dont on est membre (hôte ou invité).
+        supabase
+          .from("shabbats")
+          .select("id, title, starts_at, pickup_code")
+          .order("starts_at", { ascending: false }),
       ]);
 
       if (cancelled) return;
@@ -72,6 +86,14 @@ export default function Reserver({
       setLines(built);
       if (traiteur?.name) setTraiteurName(traiteur.name as string);
       setDeliveryAvailable(Boolean(traiteur?.delivery_available));
+      setShabbats(
+        (shabbatRows ?? []).map((s) => ({
+          id: s.id as string,
+          title: s.title as string,
+          startsAt: s.starts_at as string,
+          pickupCode: (s.pickup_code as string) ?? null,
+        })),
+      );
       setLoading(false);
     }
 
@@ -99,6 +121,7 @@ export default function Reserver({
         <input type="hidden" name="pickup_date" value={date} />
         <input type="hidden" name="pickup_slot" value={slot} />
         <input type="hidden" name="cart" value={JSON.stringify(lines)} />
+        <input type="hidden" name="shabbat_id" value={shabbatId} />
 
         <div className="flex-1 overflow-y-auto px-5 pb-4">
           {loading && <p className="text-[12.5px] text-ink/50">Chargement…</p>}
@@ -164,6 +187,27 @@ export default function Reserver({
                   ))}
                 </div>
               </div>
+
+              {shabbats.length > 0 && (
+                <label className="mb-4 block text-[11px] font-bold text-ink/55">
+                  Rattacher à un Shabbat (optionnel)
+                  <select
+                    value={shabbatId}
+                    onChange={(e) => setShabbatId(e.target.value)}
+                    className="mt-1.5 w-full rounded-field bg-white px-4 py-3 text-[12.5px] font-bold shadow-[var(--shadow-card)] outline-none"
+                  >
+                    <option value="">Aucun</option>
+                    {shabbats.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {formatShabbatOption(s)}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="mt-1.5 block text-[10.5px] font-normal text-ink/40">
+                    Le traiteur verra le code de ce Shabbat au lieu de votre nom.
+                  </span>
+                </label>
+              )}
 
               <Card className="rounded-field p-3.5">
                 <div className="mb-2 text-[9.5px] font-extrabold tracking-[0.04em] text-ink/45 uppercase">

@@ -209,6 +209,20 @@ export async function createOrder(
   const pickupDate = text(formData, "pickup_date");
   const pickupSlot = text(formData, "pickup_slot");
   const notes = text(formData, "notes");
+  const shabbatId = text(formData, "shabbat_id");
+
+  // Le code affiché au traiteur (à la place du nom du client) est celui du
+  // Shabbat rattaché. La RLS sur `shabbats` limite la lecture aux membres :
+  // si l'id fourni n'est pas accessible à cet utilisateur, on ignore le lien.
+  let pickupCode: string | null = null;
+  if (shabbatId) {
+    const { data: shabbatRow } = await supabase
+      .from("shabbats")
+      .select("pickup_code")
+      .eq("id", shabbatId)
+      .maybeSingle();
+    pickupCode = (shabbatRow?.pickup_code as string | null) ?? null;
+  }
 
   let cart: CartLine[] = [];
   try {
@@ -236,6 +250,8 @@ export async function createOrder(
       pickup_slot: pickupSlot,
       total_amount: total,
       notes,
+      shabbat_id: shabbatId || null,
+      pickup_code: pickupCode,
     })
     .select("id")
     .single();

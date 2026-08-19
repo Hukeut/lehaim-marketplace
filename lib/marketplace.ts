@@ -173,6 +173,7 @@ export async function getTraiteurOrders(traiteurId: string): Promise<OrderWithCl
       totalAmount: Number(row.total_amount ?? 0),
       notes: (row.notes as string) ?? null,
       createdAt: row.created_at as string,
+      pickupCode: (row.pickup_code as string) ?? null,
       clientName,
       items: (itemRows ?? [])
         .filter((item) => item.order_id === row.id)
@@ -220,6 +221,7 @@ export async function getMyOrders(): Promise<Order[]> {
     totalAmount: Number(row.total_amount ?? 0),
     notes: (row.notes as string) ?? null,
     createdAt: row.created_at as string,
+    pickupCode: (row.pickup_code as string) ?? null,
     items: (itemRows ?? [])
       .filter((item) => item.order_id === row.id)
       .map((item) => ({
@@ -259,6 +261,7 @@ export async function getOrder(id: string): Promise<Order | null> {
     totalAmount: Number(orderRow.total_amount ?? 0),
     notes: (orderRow.notes as string) ?? null,
     createdAt: orderRow.created_at as string,
+    pickupCode: (orderRow.pickup_code as string) ?? null,
     items: (itemRows ?? []).map((row) => ({
       id: row.id as string,
       productId: (row.product_id as string) ?? null,

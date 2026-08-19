@@ -58,6 +58,8 @@ export type ShabbatSummary = {
   visibility: "invite" | "link";
   status: "planning" | "published" | "done";
   shareToken: string;
+  /** Code court donné aux traiteurs à la place du nom, pour les commandes marketplace. */
+  pickupCode: string | null;
   hostId: string;
   isHost: boolean;
   /** Calculé côté serveur pour éviter une lecture d'horloge au rendu. */
@@ -181,6 +183,7 @@ function toSummary(row: Record<string, unknown>, userId: string): ShabbatSummary
     visibility: (row.visibility as ShabbatSummary["visibility"]) ?? "invite",
     status: (row.status as ShabbatSummary["status"]) ?? "planning",
     shareToken: row.share_token as string,
+    pickupCode: (row.pickup_code as string) ?? null,
     hostId: row.host_id as string,
     isHost: row.host_id === userId,
     isPast: new Date(row.starts_at as string).getTime() < Date.now(),

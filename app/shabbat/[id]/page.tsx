@@ -47,6 +47,11 @@ export default async function DashboardShabbat({
             <p className="text-[11.5px] text-ink/50">
               {formatDate(shabbat.startsAt)} · {formatTime(shabbat.startsAt)}
             </p>
+            {shabbat.pickupCode && (
+              <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-teal-wash px-2.5 py-1 text-[10.5px] font-extrabold text-teal-deep">
+                Code retrait traiteur · {shabbat.pickupCode}
+              </p>
+            )}
           </div>
           <Link
             href={`/discussion/${id}`}

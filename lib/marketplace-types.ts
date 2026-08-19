@@ -97,6 +97,8 @@ export type Order = {
   totalAmount: number;
   notes: string | null;
   createdAt: string;
+  /** Code du Shabbat rattaché (voir shabbats.pickup_code), affiché au traiteur à la place du nom. */
+  pickupCode: string | null;
   items: OrderItem[];
 };
 
