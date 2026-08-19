@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getOrderThread, ORDER_STATUS_LABEL } from "@/lib/marketplace";
 import { ClearCart } from "@/components/marketplace/ClearCart";
 import { OrderThread } from "@/components/marketplace/OrderThread";
+import { CancelOrderButton } from "@/components/marketplace/CancelOrderButton";
 import { BrandMark } from "@/components/BrandMark";
 import { Clock, XCircle } from "@/components/icons";
 import { ButtonLink, Card, StatusPill } from "@/components/ui";
@@ -99,9 +100,15 @@ export default async function CommandeConfirmee({
         </div>
       )}
 
-      <div className="mb-6 w-full">
+      <div className="mb-3 w-full">
         <OrderThread orderId={order.id} messages={messages} />
       </div>
+
+      {["nouvelle", "acceptee", "en_preparation"].includes(order.status) && (
+        <div className="mb-3 w-full">
+          <CancelOrderButton orderId={order.id} />
+        </div>
+      )}
 
       <div className="flex w-full flex-col gap-2">
         <ButtonLink href="/marketplace/mes-commandes" size="sm">

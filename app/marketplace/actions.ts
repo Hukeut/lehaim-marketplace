@@ -405,6 +405,23 @@ export async function setOrderStatus(
 ) {
   const { supabase, user } = await requireUser();
   if (!user) return;
-  await supabase.from("marketplace_orders").update({ status }).eq("id", orderId);
+
+  const patch: Record<string, unknown> = { status };
+  if (status === "annulee") {
+    // On détermine qui annule en comparant à qui a passé la commande, pas
+    // en se fiant à un rôle envoyé par l'appelant (client ou traiteur
+    // peuvent tous les deux invoquer cette même action).
+    const { data: orderRow } = await supabase
+      .from("marketplace_orders")
+      .select("user_id")
+      .eq("id", orderId)
+      .maybeSingle();
+    patch.cancelled_by = orderRow?.user_id === user.id ? "client" : "traiteur";
+  }
+
+  await supabase.from("marketplace_orders").update(patch).eq("id", orderId);
   revalidatePath("/devenir-traiteur/commandes");
+  revalidatePath(`/devenir-traiteur/commandes/${orderId}`);
+  revalidatePath("/marketplace/mes-commandes");
+  revalidatePath(`/marketplace/commande/${orderId}`);
 }

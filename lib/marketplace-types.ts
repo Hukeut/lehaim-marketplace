@@ -107,6 +107,8 @@ export type Order = {
   createdAt: string;
   /** Code du Shabbat rattaché (voir shabbats.pickup_code), affiché au traiteur à la place du nom. */
   pickupCode: string | null;
+  /** Qui a annulé, si la commande est annulée. */
+  cancelledBy: "client" | "traiteur" | null;
   items: OrderItem[];
 };
 

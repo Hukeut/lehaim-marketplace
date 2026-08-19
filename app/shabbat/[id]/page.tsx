@@ -15,6 +15,7 @@ const SHORTCUTS = [
   { href: "invites", emoji: "👥", label: "Invités" },
   { href: "depenses", emoji: "🧾", label: "Dépenses" },
   { href: "messages", emoji: "💬", label: "Messages" },
+  { href: "commandes", emoji: "🛍️", label: "Commandes" },
 ];
 
 /** S10 · Dashboard hôte — le centre de contrôle du Chabbat. */

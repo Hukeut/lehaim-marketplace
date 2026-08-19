@@ -66,15 +66,21 @@ function OrderCard({ order }: { order: Order }) {
   );
 }
 
-/** Suivi, côté client, de ses propres commandes marketplace (tous traiteurs confondus). */
-export default async function MesCommandes() {
+/** Les commandes marketplace passées pour ce Shabbat précis (retraits chez un traiteur). */
+export default async function ShabbatCommandes({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/connexion?suite=/marketplace/mes-commandes");
+  if (!user) redirect(`/connexion?suite=/shabbat/${id}/commandes`);
 
-  const orders = await getMyOrders();
+  const orders = await getMyOrders(id);
   const ongoing = orders.filter((o) => o.status !== "annulee");
   const cancelled = orders.filter((o) => o.status === "annulee");
 
@@ -83,16 +89,24 @@ export default async function MesCommandes() {
       <div className="px-5 pt-[54px]">
         <BrandMark className="mb-2.5" />
         <div className="mb-3 flex items-center gap-2.5">
-          <BackButton fallback="/marketplace" />
-          <h1 className="flex-1 font-display text-[18px] font-semibold">Mes commandes</h1>
+          <BackButton fallback={`/shabbat/${id}`} />
+          <h1 className="flex-1 font-display text-[18px] font-semibold">Commandes</h1>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 pb-8">
         {!orders.length && (
-          <p className="rounded-field border-[1.5px] border-dashed border-line bg-white px-3.5 py-8 text-center text-[12.5px] text-ink/45">
-            Aucune commande pour l&apos;instant.
-          </p>
+          <>
+            <p className="mb-4 rounded-field border-[1.5px] border-dashed border-line bg-white px-3.5 py-8 text-center text-[12.5px] text-ink/45">
+              Aucune commande passée pour ce Shabbat pour l&apos;instant.
+            </p>
+            <Link
+              href="/marketplace"
+              className="block rounded-full bg-ink px-4 py-3 text-center text-[12.5px] font-bold text-white"
+            >
+              Commander chez un traiteur
+            </Link>
+          </>
         )}
 
         {ongoing.length > 0 && (

@@ -197,6 +197,7 @@ export async function getTraiteurOrders(traiteurId: string): Promise<OrderWithCl
       notes: (row.notes as string) ?? null,
       createdAt: row.created_at as string,
       pickupCode: (row.pickup_code as string) ?? null,
+      cancelledBy: (row.cancelled_by as "client" | "traiteur") ?? null,
       clientName,
       items: (itemRows ?? [])
         .filter((item) => item.order_id === row.id)
@@ -211,19 +212,25 @@ export async function getTraiteurOrders(traiteurId: string): Promise<OrderWithCl
   });
 }
 
-/** Les commandes passées par la personne connectée, tous traiteurs confondus. */
-export async function getMyOrders(): Promise<Order[]> {
+/**
+ * Les commandes passées par la personne connectée, tous traiteurs confondus.
+ * `shabbatId` filtre sur les commandes rattachées à un Shabbat précis.
+ */
+export async function getMyOrders(shabbatId?: string): Promise<Order[]> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return [];
 
-  const { data: orderRows } = await supabase
+  let query = supabase
     .from("marketplace_orders")
     .select("*, traiteurs(name)")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
+  if (shabbatId) query = query.eq("shabbat_id", shabbatId);
+
+  const { data: orderRows } = await query;
   if (!orderRows?.length) return [];
 
   const orderIds = orderRows.map((row) => row.id as string);
@@ -245,6 +252,7 @@ export async function getMyOrders(): Promise<Order[]> {
     notes: (row.notes as string) ?? null,
     createdAt: row.created_at as string,
     pickupCode: (row.pickup_code as string) ?? null,
+    cancelledBy: (row.cancelled_by as "client" | "traiteur") ?? null,
     items: (itemRows ?? [])
       .filter((item) => item.order_id === row.id)
       .map((item) => ({
@@ -285,6 +293,7 @@ export async function getOrder(id: string): Promise<Order | null> {
     notes: (orderRow.notes as string) ?? null,
     createdAt: orderRow.created_at as string,
     pickupCode: (orderRow.pickup_code as string) ?? null,
+    cancelledBy: (orderRow.cancelled_by as "client" | "traiteur") ?? null,
     items: (itemRows ?? []).map((row) => ({
       id: row.id as string,
       productId: (row.product_id as string) ?? null,
