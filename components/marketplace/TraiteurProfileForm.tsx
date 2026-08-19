@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { updateTraiteurProfile } from "@/app/marketplace/actions";
 import type { ActionState } from "@/app/actions";
-import { Button, Field } from "@/components/ui";
+import { Button, Field, Overline } from "@/components/ui";
 import type { Traiteur } from "@/lib/marketplace-types";
 
 const initial: ActionState = { ok: false, message: null };
@@ -16,6 +16,7 @@ export function TraiteurProfileForm({ traiteur }: { traiteur: Traiteur }) {
 
   return (
     <form action={formAction} className="flex flex-col gap-3">
+      <Overline>Établissement</Overline>
       <Field label="Nom du commerce">
         <input name="name" required defaultValue={traiteur.name} className={inputClass} />
       </Field>
@@ -25,6 +26,10 @@ export function TraiteurProfileForm({ traiteur }: { traiteur: Traiteur }) {
       <Field label="Téléphone">
         <input name="phone" defaultValue={traiteur.phone ?? ""} className={inputClass} />
       </Field>
+
+      <div className="mt-1">
+        <Overline>Documents</Overline>
+      </div>
       <Field label="Numéro de patente / licence commerciale">
         <input name="patente_number" defaultValue={traiteur.patenteNumber ?? ""} className={inputClass} />
       </Field>
@@ -32,6 +37,9 @@ export function TraiteurProfileForm({ traiteur }: { traiteur: Traiteur }) {
         <input name="hechsher_name" defaultValue={traiteur.hechsherName ?? ""} className={inputClass} />
       </Field>
 
+      <div className="mt-1">
+        <Overline>Livraison</Overline>
+      </div>
       <label className="flex items-center gap-2.5 rounded-field bg-white px-4 py-3.5 shadow-[var(--shadow-card)]">
         <input
           type="checkbox"

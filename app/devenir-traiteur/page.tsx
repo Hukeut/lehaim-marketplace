@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
@@ -5,8 +6,18 @@ import { getMyTraiteur } from "@/lib/marketplace";
 import { TraiteurOnboardingForm } from "@/components/marketplace/TraiteurOnboardingForm";
 import { BackButton } from "@/components/BackButton";
 import { BrandMark } from "@/components/BrandMark";
-import { Card, StatusPill } from "@/components/ui";
-import { Check, Clock, XCircle } from "@/components/icons";
+import { ButtonLink, Card, StatusPill } from "@/components/ui";
+import { Basket, Check, Clock, Dish, Share, Sliders, XCircle } from "@/components/icons";
+
+const MONTHS = [
+  "janvier", "février", "mars", "avril", "mai", "juin",
+  "juillet", "août", "septembre", "octobre", "novembre", "décembre",
+];
+
+function formatDate(value: string) {
+  const d = new Date(value);
+  return `${d.getDate()} ${MONTHS[d.getMonth()]}`;
+}
 
 export default async function DevenirTraiteur() {
   const supabase = await createClient();
@@ -44,63 +55,68 @@ export default async function DevenirTraiteur() {
 
         {traiteur && traiteur.status === "pending" && (
           <Card className="mb-3.5 p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <Clock size={18} className="text-gold-deep" />
-              <StatusPill tone="warning">En attente de validation</StatusPill>
+            <h2 className="mb-0.5 font-display text-[15px] font-semibold">{traiteur.name}</h2>
+            <p className="mb-4 text-[10.5px] text-ink/45">Suivi du dossier</p>
+            <div className="flex flex-col">
+              <TimelineStep
+                icon={<Check size={12} strokeWidth={3} />}
+                tone="done"
+                title="Dossier soumis"
+                subtitle={formatDate(traiteur.createdAt)}
+              />
+              <TimelineStep
+                icon={<Clock size={12} />}
+                tone="current"
+                title="Vérification en cours"
+                subtitle="Sous 48h"
+              />
+              <TimelineStep title="Boutique en ligne" tone="upcoming" last />
             </div>
-            <h2 className="mb-1.5 font-display text-[15px] font-semibold">{traiteur.name}</h2>
-            <p className="text-[12.5px] leading-relaxed text-ink/60">
-              Votre dossier a été soumis et est en cours de vérification par l&apos;équipe lehaim
-              (patente, cacherout si renseignée). Vous recevrez une notification dès qu&apos;il
-              sera validé — ou refusé avec le motif, pour pouvoir le corriger. Vous pouvez déjà
-              compléter votre menu et vos informations ci-dessous.
-            </p>
           </Card>
         )}
 
         {traiteur && traiteur.status === "approved" && (
           <Card className="mb-3.5 p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <Check size={18} className="text-olive-deep" />
-              <StatusPill tone="success">Approuvé</StatusPill>
-            </div>
-            <h2 className="mb-1.5 font-display text-[15px] font-semibold">{traiteur.name}</h2>
-            <p className="text-[12.5px] leading-relaxed text-ink/60">
-              Votre établissement est visible sur la marketplace.
-            </p>
+            <h2 className="mb-1 font-display text-[15px] font-semibold">{traiteur.name}</h2>
+            <StatusPill tone="success">Approuvé</StatusPill>
           </Card>
         )}
 
         {traiteur && traiteur.status === "rejected" && (
-          <Card className="mb-3.5 p-4">
-            <div className="mb-2 flex items-center gap-2">
-              <XCircle size={18} className="text-coral-deep" />
-              <StatusPill tone="urgent">Refusé</StatusPill>
+          <Card className="mb-3.5 overflow-hidden p-0">
+            <div className="bg-coral-deep p-4 text-white">
+              <XCircle size={20} className="mb-2" />
+              <div className="font-display text-[16px] font-semibold">Dossier refusé</div>
+              <div className="text-[11px] text-white/70">{traiteur.name}</div>
             </div>
-            <h2 className="mb-1.5 font-display text-[15px] font-semibold">{traiteur.name}</h2>
-            <p className="text-[12.5px] leading-relaxed text-ink/60">
-              {traiteur.rejectionReason ??
-                "Votre dossier n'a pas été validé. Contactez l'équipe lehaim pour en savoir plus."}{" "}
-              Vous pouvez corriger vos informations ci-dessous.
-            </p>
+            <div className="p-4">
+              <p className="mb-3.5 text-[12.5px] leading-relaxed text-ink/60">
+                {traiteur.rejectionReason ??
+                  "Votre dossier n'a pas été validé. Contactez l'équipe lehaim pour en savoir plus."}
+              </p>
+              <ButtonLink href="/devenir-traiteur/profil" size="sm">
+                Corriger mes informations
+              </ButtonLink>
+            </div>
           </Card>
         )}
 
-        {traiteur && (
-          <Card>
-            <DashRow href="/devenir-traiteur/menu" label="Mon menu" />
+        {traiteur && traiteur.status !== "rejected" && (
+          <div className="grid grid-cols-2 gap-2.5">
+            <GridTile href="/devenir-traiteur/menu" icon={<Dish size={18} />} label="Mon menu" tone="coral" />
             {traiteur.status === "approved" && (
-              <DashRow href="/devenir-traiteur/commandes" label="Mes commandes" />
+              <GridTile href="/devenir-traiteur/commandes" icon={<Basket size={18} />} label="Commandes" tone="teal" />
             )}
-            <DashRow
-              href="/devenir-traiteur/profil"
-              label="Mes informations"
-              last={traiteur.status !== "approved"}
-            />
+            <GridTile href="/devenir-traiteur/profil" icon={<Sliders size={18} />} label="Informations" tone="gold" />
             {traiteur.status === "approved" && (
-              <DashRow href={`/marketplace/${traiteur.id}`} label="Voir ma fiche publique" last />
+              <GridTile
+                href={`/marketplace/${traiteur.id}`}
+                icon={<Share size={18} />}
+                label="Fiche publique"
+                tone="olive"
+              />
             )}
-          </Card>
+          </div>
         )}
 
         <p className="mt-4 text-center text-[11px] text-ink/40">
@@ -114,14 +130,69 @@ export default async function DevenirTraiteur() {
   );
 }
 
-function DashRow({ href, label, last = false }: { href: string; label: string; last?: boolean }) {
+const TILE_TONE = {
+  coral: "bg-coral/14 text-coral-deep",
+  teal: "bg-teal/14 text-teal-deep",
+  gold: "bg-gold/22 text-gold-ink",
+  olive: "bg-olive/16 text-olive-deep",
+} as const;
+
+function GridTile({
+  href,
+  icon,
+  label,
+  tone,
+}: {
+  href: string;
+  icon: ReactNode;
+  label: string;
+  tone: keyof typeof TILE_TONE;
+}) {
   return (
     <Link
       href={href}
-      className={`flex items-center justify-between px-3.5 py-3.5 ${last ? "" : "border-b border-line-soft"}`}
+      className="flex flex-col items-center gap-2 rounded-card bg-white p-4 shadow-[var(--shadow-card)]"
     >
-      <span className="text-[12.5px] font-bold">{label}</span>
-      <span className="text-ink/30">›</span>
+      <span className={`flex size-9 items-center justify-center rounded-xl ${TILE_TONE[tone]}`}>
+        {icon}
+      </span>
+      <span className="text-[11.5px] font-bold text-ink">{label}</span>
     </Link>
+  );
+}
+
+const TIMELINE_TONE = {
+  done: { dot: "bg-olive text-white", line: "bg-olive", title: "text-ink", subtitle: "text-ink/45" },
+  current: { dot: "bg-gold text-gold-ink", line: "bg-line", title: "text-gold-ink", subtitle: "text-ink/45" },
+  upcoming: { dot: "bg-line-soft text-ink/30", line: "bg-line", title: "text-ink/35", subtitle: "text-ink/35" },
+} as const;
+
+function TimelineStep({
+  icon,
+  title,
+  subtitle,
+  tone,
+  last = false,
+}: {
+  icon?: ReactNode;
+  title: string;
+  subtitle?: string;
+  tone: keyof typeof TIMELINE_TONE;
+  last?: boolean;
+}) {
+  const t = TIMELINE_TONE[tone];
+  return (
+    <div className="flex gap-3">
+      <div className="flex flex-col items-center">
+        <span className={`flex size-6 shrink-0 items-center justify-center rounded-full ${t.dot}`}>
+          {icon}
+        </span>
+        {!last && <span className={`mt-0.5 w-[2px] flex-1 ${t.line}`} />}
+      </div>
+      <div className={last ? "" : "pb-4"}>
+        <div className={`text-[12.5px] font-bold ${t.title}`}>{title}</div>
+        {subtitle && <div className={`text-[10.5px] ${t.subtitle}`}>{subtitle}</div>}
+      </div>
+    </div>
   );
 }

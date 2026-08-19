@@ -4,9 +4,22 @@ import { getMyTraiteur, getMyTraiteurProducts } from "@/lib/marketplace";
 import { ProductRow } from "@/components/marketplace/ProductRow";
 import { BackButton } from "@/components/BackButton";
 import { BrandMark } from "@/components/BrandMark";
+import { Overline } from "@/components/ui";
 import { Plus } from "@/components/icons";
+import type { ProductCategory } from "@/lib/marketplace-types";
 
-/** Espace fournisseur · Gestion du menu (ajouter, modifier, masquer, supprimer un plat). */
+const ORDER: ProductCategory[] = ["plat", "entree", "salade", "dessert", "boisson", "autre"];
+
+const CATEGORY_LABEL_PLURAL: Record<ProductCategory, string> = {
+  plat: "Plats",
+  entree: "Entrées",
+  salade: "Salades",
+  dessert: "Desserts",
+  boisson: "Boissons",
+  autre: "Autres",
+};
+
+/** Espace fournisseur · Gestion du menu (ajouter, modifier, supprimer un plat). */
 export default async function TraiteurMenu() {
   const traiteur = await getMyTraiteur();
   if (!traiteur) redirect("/devenir-traiteur");
@@ -35,11 +48,20 @@ export default async function TraiteurMenu() {
           <span className="text-[12.5px] font-bold text-ink/50">Ajouter un plat</span>
         </Link>
 
-        <div className="flex flex-col gap-2">
-          {products.map((product) => (
-            <ProductRow key={product.id} product={product} />
-          ))}
-        </div>
+        {ORDER.map((category) => {
+          const items = products.filter((p) => p.category === category);
+          if (!items.length) return null;
+          return (
+            <section key={category} className="mb-4">
+              <Overline>{CATEGORY_LABEL_PLURAL[category]}</Overline>
+              <div className="flex flex-col gap-2">
+                {items.map((product) => (
+                  <ProductRow key={product.id} product={product} />
+                ))}
+              </div>
+            </section>
+          );
+        })}
 
         {!products.length && (
           <p className="rounded-field border-[1.5px] border-dashed border-line bg-white px-3.5 py-6 text-center text-[12.5px] text-ink/45">

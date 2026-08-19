@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
-import { addProduct, updateProduct } from "@/app/marketplace/actions";
+import { useActionState, useTransition } from "react";
+import { addProduct, updateProduct, deleteProduct } from "@/app/marketplace/actions";
 import type { ActionState } from "@/app/actions";
 import { Button, Field } from "@/components/ui";
 import { ALLERGEN_LABEL, type Allergen, type Product } from "@/lib/marketplace-types";
@@ -16,6 +16,14 @@ const inputClass =
 export function ProductForm({ product }: { product?: Product }) {
   const action = product ? updateProduct : addProduct;
   const [state, formAction, pending] = useActionState(action, initial);
+  const [deleting, startDelete] = useTransition();
+
+  function remove() {
+    if (!product) return;
+    if (confirm(`Supprimer « ${product.title} » ?`)) {
+      startDelete(() => deleteProduct(product.id));
+    }
+  }
 
   return (
     <form action={formAction} className="flex flex-col gap-3">
@@ -99,6 +107,17 @@ export function ProductForm({ product }: { product?: Product }) {
       <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Enregistrement…" : product ? "Enregistrer" : "Ajouter au menu"}
       </Button>
+
+      {product && (
+        <button
+          type="button"
+          disabled={deleting}
+          onClick={remove}
+          className="py-1.5 text-center text-[12px] font-bold text-coral-deep disabled:opacity-50"
+        >
+          {deleting ? "Suppression…" : "Supprimer ce plat"}
+        </button>
+      )}
     </form>
   );
 }

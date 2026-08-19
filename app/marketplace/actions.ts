@@ -154,6 +154,7 @@ export async function deleteProduct(productId: string) {
   if (!user) return;
   await supabase.from("traiteur_products").delete().eq("id", productId);
   revalidatePath("/devenir-traiteur/menu");
+  redirect("/devenir-traiteur/menu");
 }
 
 export async function updateTraiteurProfile(
