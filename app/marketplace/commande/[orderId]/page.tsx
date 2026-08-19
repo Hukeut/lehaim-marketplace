@@ -73,6 +73,9 @@ export default async function CommandeConfirmee({
         <ButtonLink href="/marketplace" variant="secondary" size="sm">
           Retour à la marketplace
         </ButtonLink>
+        <ButtonLink href="/accueil" variant="secondary" size="sm">
+          Retour à l&apos;accueil
+        </ButtonLink>
       </div>
     </main>
   );
