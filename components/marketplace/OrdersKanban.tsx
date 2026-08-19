@@ -14,11 +14,12 @@ const COLUMN_DOT: Record<OrderStatus, string> = {
   annulee: "bg-ink/20",
 };
 
+// Kanban en RTL (droite → gauche) : l'étape suivante avance donc vers la gauche.
 const NEXT_ACTION_LABEL: Record<OrderStatus, string | null> = {
-  nouvelle: "Accepter →",
-  acceptee: "Démarrer la préparation →",
-  en_preparation: "Marquer prête →",
-  prete: "Marquer récupérée →",
+  nouvelle: "← Accepter",
+  acceptee: "← Démarrer la préparation",
+  en_preparation: "← Marquer prête",
+  prete: "← Marquer récupérée",
   recuperee: null,
   annulee: null,
 };
@@ -48,7 +49,7 @@ export function OrdersKanban({ orders }: { orders: OrderWithClient[] }) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+    <div dir="rtl" className="grid grid-cols-2 gap-3 md:grid-cols-5">
       {ORDER_STATUS_FLOW.map((status, index) => {
         const columnOrders = orders.filter((o) => o.status === status);
         const nextStatus = ORDER_STATUS_FLOW[index + 1] ?? null;
@@ -94,7 +95,7 @@ export function OrdersKanban({ orders }: { orders: OrderWithClient[] }) {
                           aria-label="Revenir à l'étape précédente"
                           className="rounded-full bg-line-soft px-2.5 py-2 text-[11px] font-bold text-ink disabled:opacity-50"
                         >
-                          ←
+                          →
                         </button>
                       )}
                       {nextStatus && (
