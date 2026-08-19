@@ -129,7 +129,7 @@ function Connexion() {
   return (
     <main
       className={`flex min-h-dvh flex-1 flex-col px-7 pb-4 sm:min-h-0 ${
-        isTraiteurFlow ? "bg-teal/8 pt-[64px]" : "pt-[54px]"
+        isTraiteurFlow ? "bg-teal-wash pt-[64px]" : "pt-[54px]"
       }`}
     >
       {!isTraiteurFlow && (
