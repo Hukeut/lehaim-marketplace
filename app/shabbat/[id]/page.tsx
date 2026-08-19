@@ -7,6 +7,7 @@ import { ButtonLink, Card, ProgressBar, StickyFooter } from "@/components/ui";
 import { formatDate, formatTime, getShabbat, readinessLabel } from "@/lib/data";
 import { FUNDING_LABEL, getOps, untilReady } from "@/lib/missions";
 import { BrandMark } from "@/components/BrandMark";
+import { DeleteShabbatButton } from "@/components/DeleteShabbatButton";
 
 const SHORTCUTS = [
   { href: "besoins", emoji: "📋", label: "Besoins" },
@@ -164,6 +165,12 @@ export default async function DashboardShabbat({
             </Card>
           ))}
         </div>
+
+        {shabbat.isHost && (
+          <div className="mt-5 rounded-card border-[1.5px] border-dashed border-coral/30 bg-white">
+            <DeleteShabbatButton shabbatId={id} title={shabbat.title} />
+          </div>
+        )}
       </div>
 
       <StickyFooter>

@@ -89,6 +89,20 @@ export async function createShabbat(
   redirect(`/creer/${data.id}/modele`);
 }
 
+/**
+ * Supprime définitivement un Shabbat (RLS : seul l'hôte peut le faire).
+ * Invitations, menu, courses, dépenses et messages liés partent en cascade.
+ * Les commandes marketplace déjà passées sont conservées, juste déliées.
+ */
+export async function deleteShabbat(shabbatId: string) {
+  const { supabase, user } = await requireUser();
+  if (!user) return;
+  await supabase.from("shabbats").delete().eq("id", shabbatId);
+  revalidatePath("/shabbats");
+  revalidatePath("/accueil");
+  redirect("/shabbats");
+}
+
 export async function publishShabbat(shabbatId: string) {
   const { supabase, user } = await requireUser();
   if (!user) return;
