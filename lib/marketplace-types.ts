@@ -62,6 +62,8 @@ export type Traiteur = {
   status: TraiteurStatus;
   rejectionReason: string | null;
   createdAt: string;
+  /** Dernier palier de réactivité acquitté par le traiteur (voir "Mon score"). */
+  lastSeenTier: ReactivityTier | null;
 };
 
 export type Product = {
@@ -143,4 +145,15 @@ export type TraiteurScore = {
   avgResponseMinutes: number | null;
   /** Commandes honorées d'affilée (les plus récentes), sans annulation par le traiteur. */
   streak: number;
+};
+
+/* ------------------------------------------------------------------ */
+/* Badges d'ancienneté / volume                                         */
+/* ------------------------------------------------------------------ */
+
+export type MilestoneBadge = {
+  id: string;
+  emoji: string;
+  label: string;
+  achieved: boolean;
 };

@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
-import { getTraiteurWithProducts } from "@/lib/marketplace";
+import { getTraiteurWithProducts, getTraiteurScore, getTraiteurMilestones } from "@/lib/marketplace";
 import { TraiteurCatalog } from "@/components/marketplace/TraiteurCatalog";
+import { ReactivityBadge } from "@/components/marketplace/ReactivityBadge";
+import { MilestoneBadges } from "@/components/marketplace/MilestoneBadges";
 import { BackButton } from "@/components/BackButton";
 import { BrandMark } from "@/components/BrandMark";
 import { MapPin } from "@/components/icons";
@@ -15,6 +17,11 @@ export default async function TraiteurPage({
   if (!result) notFound();
 
   const { traiteur, products } = result;
+  const [score, milestones] = await Promise.all([
+    getTraiteurScore(traiteur.id),
+    getTraiteurMilestones(traiteur.id),
+  ]);
+  const achievedMilestones = milestones.filter((m) => m.achieved);
 
   return (
     <main className="flex min-h-dvh flex-1 flex-col sm:min-h-0">
@@ -25,6 +32,7 @@ export default async function TraiteurPage({
           <h1 className="flex-1 truncate font-display text-[18px] font-semibold">
             {traiteur.name}
           </h1>
+          <ReactivityBadge tier={score.tier} />
         </div>
         {traiteur.address && (
           <p className="mb-1 flex items-center gap-1.5 text-[12px] text-ink/55">
@@ -44,6 +52,11 @@ export default async function TraiteurPage({
             </span>
           )}
         </div>
+        {achievedMilestones.length > 0 && (
+          <div className="mb-2">
+            <MilestoneBadges badges={achievedMilestones} />
+          </div>
+        )}
       </div>
 
       <TraiteurCatalog traiteurId={traiteur.id} traiteurName={traiteur.name} products={products} />

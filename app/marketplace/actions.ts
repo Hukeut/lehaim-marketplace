@@ -229,6 +229,21 @@ export async function updateTraiteurProfile(
   return { ok: true, message: "Informations mises à jour." };
 }
 
+/**
+ * Marque le palier de réactivité courant comme "vu" par le traiteur, pour
+ * ne plus rejouer l'animation "Niveau débloqué" une fois affichée.
+ */
+export async function acknowledgeTier(traiteurId: string, tier: string) {
+  const { supabase, user } = await requireUser();
+  if (!user) return;
+  await supabase
+    .from("traiteurs")
+    .update({ last_seen_tier: tier })
+    .eq("id", traiteurId)
+    .eq("owner_id", user.id);
+  revalidatePath("/devenir-traiteur/score");
+}
+
 /* ------------------------------------------------------------------ */
 /* Réservation (sans paiement)                                         */
 /* ------------------------------------------------------------------ */

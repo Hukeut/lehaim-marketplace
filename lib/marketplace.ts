@@ -13,6 +13,7 @@ import type {
   TraiteurSlot,
   ReactivityTier,
   TraiteurScore,
+  MilestoneBadge,
 } from "@/lib/marketplace-types";
 
 /** Types et constantes ré-exportés pour compat : voir lib/marketplace-types.ts (safe côté client). */
@@ -32,6 +33,7 @@ function traiteurFrom(row: Record<string, unknown>): Traiteur {
     status: row.status as TraiteurStatus,
     rejectionReason: (row.rejection_reason as string) ?? null,
     createdAt: row.created_at as string,
+    lastSeenTier: (row.last_seen_tier as ReactivityTier) ?? null,
   };
 }
 
@@ -358,6 +360,58 @@ export async function getTraiteurScore(traiteurId: string): Promise<TraiteurScor
   }
 
   return { tier, avgResponseMinutes, streak };
+}
+
+const VOLUME_MILESTONES = [
+  { count: 10, id: "volume-10", emoji: "🎖️", label: "10 commandes servies" },
+  { count: 50, id: "volume-50", emoji: "🥈", label: "50 commandes servies" },
+  { count: 100, id: "volume-100", emoji: "🏅", label: "100 commandes servies" },
+  { count: 250, id: "volume-250", emoji: "👑", label: "250 commandes servies" },
+] as const;
+
+const TENURE_MILESTONES = [
+  { months: 1, id: "tenure-1", emoji: "🌱", label: "1 mois sur lehaim" },
+  { months: 3, id: "tenure-3", emoji: "🌿", label: "3 mois sur lehaim" },
+  { months: 6, id: "tenure-6", emoji: "🌳", label: "6 mois sur lehaim" },
+  { months: 12, id: "tenure-12", emoji: "🏆", label: "1 an sur lehaim" },
+] as const;
+
+/**
+ * Badges d'ancienneté et de volume, indépendants du badge de réactivité.
+ * On renvoie aussi les badges non débloqués (achieved: false) : les voir
+ * grisés donne un objectif à atteindre, plutôt que de les cacher.
+ */
+export async function getTraiteurMilestones(traiteurId: string): Promise<MilestoneBadge[]> {
+  const supabase = await createClient();
+
+  const [{ count: ordersServed }, { data: traiteurRow }] = await Promise.all([
+    supabase
+      .from("marketplace_orders")
+      .select("id", { count: "exact", head: true })
+      .eq("traiteur_id", traiteurId)
+      .eq("status", "recuperee"),
+    supabase.from("traiteurs").select("created_at").eq("id", traiteurId).maybeSingle(),
+  ]);
+
+  const monthsSince = traiteurRow?.created_at
+    ? (Date.now() - new Date(traiteurRow.created_at as string).getTime()) / (1000 * 60 * 60 * 24 * 30)
+    : 0;
+
+  const volumeBadges: MilestoneBadge[] = VOLUME_MILESTONES.map((m) => ({
+    id: m.id,
+    emoji: m.emoji,
+    label: m.label,
+    achieved: (ordersServed ?? 0) >= m.count,
+  }));
+
+  const tenureBadges: MilestoneBadge[] = TENURE_MILESTONES.map((m) => ({
+    id: m.id,
+    emoji: m.emoji,
+    label: m.label,
+    achieved: monthsSince >= m.months,
+  }));
+
+  return [...tenureBadges, ...volumeBadges];
 }
 
 export type OrderMessage = {

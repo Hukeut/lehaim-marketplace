@@ -1,10 +1,18 @@
 import { notFound, redirect } from "next/navigation";
-import { getMyTraiteur, getTraiteurScore, REACTIVITY_TIER_LABEL } from "@/lib/marketplace";
+import {
+  getMyTraiteur,
+  getTraiteurScore,
+  getTraiteurMilestones,
+  REACTIVITY_TIER_LABEL,
+} from "@/lib/marketplace";
 import type { ReactivityTier } from "@/lib/marketplace-types";
 import { BackButton } from "@/components/BackButton";
 import { BrandMark } from "@/components/BrandMark";
-import { Card, ProgressBar } from "@/components/ui";
+import { Card, ProgressBar, Overline } from "@/components/ui";
 import { Medal } from "@/components/icons";
+import { Sparkles } from "@/components/marketplace/Sparkles";
+import { MilestoneBadges } from "@/components/marketplace/MilestoneBadges";
+import { TierLevelUp } from "@/components/marketplace/TierLevelUp";
 
 const TIER_ORDER: ReactivityTier[] = ["bronze", "argent", "or"];
 
@@ -39,13 +47,22 @@ export default async function MonScore() {
   if (!traiteur) redirect("/devenir-traiteur");
   if (traiteur.status !== "approved") notFound();
 
-  const score = await getTraiteurScore(traiteur.id);
+  const [score, milestones] = await Promise.all([
+    getTraiteurScore(traiteur.id),
+    getTraiteurMilestones(traiteur.id),
+  ]);
   const visual = score.tier ? TIER_VISUAL[score.tier] : null;
   // Sans palier encore débloqué, on affiche une jauge à peine amorcée plutôt que vide.
   const progress = score.tier ? (TIER_ORDER.indexOf(score.tier) + 1) * (100 / 3) : 8;
+  const leveledUp =
+    score.tier !== null &&
+    (traiteur.lastSeenTier === null || TIER_ORDER.indexOf(score.tier) > TIER_ORDER.indexOf(traiteur.lastSeenTier));
 
   return (
     <main className="flex min-h-dvh flex-1 flex-col bg-teal-wash sm:min-h-0">
+      {score.tier && (
+        <TierLevelUp traiteurId={traiteur.id} tier={score.tier} leveledUp={leveledUp} />
+      )}
       <div className="px-5 pt-[54px]">
         <BrandMark className="mb-2.5" />
         <div className="mb-4 flex items-center gap-2.5">
@@ -55,9 +72,12 @@ export default async function MonScore() {
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 pb-8">
-        <Card className="mb-3.5 flex flex-col items-center p-6 text-center">
+        <Card className="relative mb-3.5 flex flex-col items-center overflow-hidden p-6 text-center">
+          {score.tier === "or" && <Sparkles />}
           <span
-            className={`mb-3 flex size-16 items-center justify-center rounded-full ${visual?.badge ?? "bg-line-soft text-ink/30"}`}
+            className={`relative mb-3 flex size-16 items-center justify-center rounded-full ${visual?.badge ?? "bg-line-soft text-ink/30"} ${
+              score.tier === "or" ? "animate-[glow-pulse_2s_ease-out_infinite]" : ""
+            }`}
           >
             <Medal size={30} />
           </span>
@@ -77,7 +97,7 @@ export default async function MonScore() {
           </p>
         </Card>
 
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="mb-3.5 grid grid-cols-2 gap-2.5">
           <Card className="rounded-field p-4 text-center">
             <div className="font-display text-[18px] font-semibold">
               {formatMinutes(score.avgResponseMinutes)}
@@ -92,8 +112,11 @@ export default async function MonScore() {
           </Card>
         </div>
 
+        <Overline>Badges</Overline>
+        <MilestoneBadges badges={milestones} />
+
         <p className="mt-4 text-center text-[11px] text-ink/40">
-          Le badge est visible par les clients sur la marketplace, à côté de votre nom.
+          Le badge et les succès débloqués sont visibles par les clients sur la marketplace.
         </p>
       </div>
     </main>
