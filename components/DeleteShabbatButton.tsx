@@ -8,7 +8,7 @@ export function DeleteShabbatButton({ shabbatId, title }: { shabbatId: string; t
 
   function remove() {
     const sure = confirm(
-      `Supprimer définitivement « ${title} » ?\n\nInvitations, menu, courses, dépenses et messages liés seront supprimés. Les commandes déjà passées chez un traiteur seront conservées, juste déliées de ce Shabbat.\n\nCette action est irréversible.`,
+      `Supprimer définitivement « ${title} » ?\n\nInvitations, menu, courses, dépenses et messages liés seront supprimés. Vos commandes en cours chez un traiteur pour ce Shabbat seront automatiquement annulées.\n\nCette action est irréversible.`,
     );
     if (!sure) return;
     startTransition(() => deleteShabbat(shabbatId));

@@ -97,9 +97,21 @@ export async function createShabbat(
 export async function deleteShabbat(shabbatId: string) {
   const { supabase, user } = await requireUser();
   if (!user) return;
+
+  // Le traiteur ne doit pas continuer à préparer un Shabbat qui n'existe
+  // plus : on annule proprement ses commandes encore actives avant de
+  // supprimer le Shabbat (sinon elles seraient juste déliées en silence).
+  await supabase
+    .from("marketplace_orders")
+    .update({ status: "annulee", cancelled_by: "client" })
+    .eq("shabbat_id", shabbatId)
+    .neq("status", "annulee");
+
   await supabase.from("shabbats").delete().eq("id", shabbatId);
   revalidatePath("/shabbats");
   revalidatePath("/accueil");
+  revalidatePath("/devenir-traiteur/commandes");
+  revalidatePath("/marketplace/mes-commandes");
   redirect("/shabbats");
 }
 
