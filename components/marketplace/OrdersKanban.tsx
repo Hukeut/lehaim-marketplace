@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { setOrderStatus } from "@/app/marketplace/actions";
 import { Card } from "@/components/ui";
 import { ORDER_STATUS_FLOW, ORDER_STATUS_LABEL, type OrderStatus, type OrderWithClient } from "@/lib/marketplace-types";
@@ -106,6 +107,13 @@ export function OrdersKanban({ orders }: { orders: OrderWithClient[] }) {
                         )}
                       </ul>
                     </details>
+
+                    <Link
+                      href={`/devenir-traiteur/commandes/${order.id}`}
+                      className="mb-2 block rounded-full bg-line-soft px-3 py-1.5 text-center text-[10.5px] font-bold text-ink"
+                    >
+                      Détail & discuter
+                    </Link>
 
                     <div className="mb-2 flex items-center justify-between">
                       <span className="text-[10.5px] text-ink/45">

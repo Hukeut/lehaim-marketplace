@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getMyOrders } from "@/lib/marketplace";
 import { OrderProgress } from "@/components/marketplace/OrderProgress";
@@ -70,6 +71,13 @@ export default async function MesCommandes() {
               </ul>
 
               <OrderProgress status={order.status} />
+
+              <Link
+                href={`/marketplace/commande/${order.id}`}
+                className="mt-3 block rounded-full bg-line-soft px-3 py-2 text-center text-[11px] font-bold text-ink"
+              >
+                Voir le détail et discuter
+              </Link>
             </Card>
           ))}
         </div>

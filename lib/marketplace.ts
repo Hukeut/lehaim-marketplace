@@ -294,3 +294,51 @@ export async function getOrder(id: string): Promise<Order | null> {
     })),
   };
 }
+
+export type OrderMessage = {
+  id: string;
+  body: string;
+  at: string;
+  mine: boolean;
+  /** "Vous", le nom du traiteur (côté client), ou le code de retrait (côté traiteur — jamais le nom réel du client). */
+  authorLabel: string;
+};
+
+/**
+ * Fil de discussion d'une commande, entre le client et le traiteur.
+ * Null si la commande n'existe pas ou si la RLS refuse l'accès (ni client, ni traiteur).
+ */
+export async function getOrderThread(
+  orderId: string,
+): Promise<{ order: Order; messages: OrderMessage[] } | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const order = await getOrder(orderId);
+  if (!order) return null;
+
+  const isClientViewer = order.userId === user.id;
+  const code = order.pickupCode ?? `#${order.id.slice(0, 4).toUpperCase()}`;
+
+  const { data } = await supabase
+    .from("marketplace_order_messages")
+    .select("id, body, created_at, sender_id")
+    .eq("order_id", orderId)
+    .order("created_at", { ascending: true });
+
+  const messages: OrderMessage[] = (data ?? []).map((row) => {
+    const mine = row.sender_id === user.id;
+    return {
+      id: row.id as string,
+      body: row.body as string,
+      at: row.created_at as string,
+      mine,
+      authorLabel: mine ? "Vous" : isClientViewer ? order.traiteurName : code,
+    };
+  });
+
+  return { order, messages };
+}

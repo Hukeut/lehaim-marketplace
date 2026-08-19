@@ -370,6 +370,32 @@ export async function rejectTraiteur(
 }
 
 /* ------------------------------------------------------------------ */
+/* Chat par commande (client ⇄ traiteur)                                */
+/* ------------------------------------------------------------------ */
+
+export async function sendOrderMessage(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase, user } = await requireUser();
+  if (!user) return { ok: false, message: "Connectez-vous d'abord." };
+
+  const orderId = String(formData.get("order_id") ?? "");
+  const body = text(formData, "body");
+  if (!orderId || !body) return { ok: false, message: null };
+
+  const { error } = await supabase
+    .from("marketplace_order_messages")
+    .insert({ order_id: orderId, sender_id: user.id, body });
+
+  if (error) return { ok: false, message: error.message };
+
+  revalidatePath(`/marketplace/commande/${orderId}`);
+  revalidatePath(`/devenir-traiteur/commandes/${orderId}`);
+  return { ok: true, message: null };
+}
+
+/* ------------------------------------------------------------------ */
 /* Suivi commandes côté traiteur                                       */
 /* ------------------------------------------------------------------ */
 
