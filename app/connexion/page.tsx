@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { BackButton } from "@/components/BackButton";
 import { Button, Field, TextInput } from "@/components/ui";
-import { Basket, Check, Google } from "@/components/icons";
+import { Basket, Check, Google, Home } from "@/components/icons";
 import { LogoTile } from "@/components/Wordmark";
 import { createClient } from "@/lib/supabase/client";
 
@@ -24,6 +24,9 @@ function Connexion() {
   const searchParams = useSearchParams();
   const requested = searchParams.get("suite");
   const suite = requested ?? "/accueil";
+  // Arrivé ici via le lien "Fournisseur..." : pas la peine de reproposer le
+  // même bouton, qui mènerait exactement là où on va déjà.
+  const isTraiteurFlow = requested === "/devenir-traiteur";
   // Un compte tout juste créé n'a encore répondu à aucune question.
   const afterSignup = requested ?? "/onboarding/prenom";
 
@@ -234,13 +237,23 @@ function Connexion() {
           Continuer avec Google
         </Button>
 
-        <Link
-          href="/devenir-traiteur"
-          className="mt-2.5 flex items-center justify-center gap-2 rounded-full border-[1.5px] border-line-soft bg-white px-4 py-3 text-[12.5px] font-bold text-ink shadow-[var(--shadow-pill)]"
-        >
-          <Basket size={16} className="text-coral" />
-          Fournisseur, traiteur ou restaurateur ?
-        </Link>
+        {isTraiteurFlow ? (
+          <Link
+            href="/onboarding"
+            className="mt-2.5 flex items-center justify-center gap-2 rounded-full border-[1.5px] border-line-soft bg-white px-4 py-3 text-[12.5px] font-bold text-ink shadow-[var(--shadow-pill)]"
+          >
+            <Home size={16} className="text-teal" />
+            Organisateur
+          </Link>
+        ) : (
+          <Link
+            href="/devenir-traiteur"
+            className="mt-2.5 flex items-center justify-center gap-2 rounded-full border-[1.5px] border-line-soft bg-white px-4 py-3 text-[12.5px] font-bold text-ink shadow-[var(--shadow-pill)]"
+          >
+            <Basket size={16} className="text-coral" />
+            Fournisseur, traiteur ou restaurateur ?
+          </Link>
+        )}
 
         <p className="mt-auto pt-6 text-center text-xs text-ink/50">
           {mode === "signin" ? (
