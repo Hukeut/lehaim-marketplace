@@ -77,6 +77,14 @@ export type Product = {
   allergens: Allergen[];
 };
 
+/** Un créneau de retrait proposé par le traiteur (le client ne choisit que parmi ceux-ci). */
+export type TraiteurSlot = {
+  id: string;
+  traiteurId: string;
+  date: string;
+  label: string;
+};
+
 export type OrderItem = {
   id: string;
   productId: string | null;

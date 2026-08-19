@@ -10,6 +10,7 @@ import type {
   OrderStatus,
   Fulfillment,
   Allergen,
+  TraiteurSlot,
 } from "@/lib/marketplace-types";
 
 /** Types et constantes ré-exportés pour compat : voir lib/marketplace-types.ts (safe côté client). */
@@ -137,6 +138,28 @@ export async function getProductById(id: string): Promise<Product | null> {
   const supabase = await createClient();
   const { data } = await supabase.from("traiteur_products").select("*").eq("id", id).maybeSingle();
   return data ? productFrom(data) : null;
+}
+
+function slotFrom(row: Record<string, unknown>): TraiteurSlot {
+  return {
+    id: row.id as string,
+    traiteurId: row.traiteur_id as string,
+    date: row.slot_date as string,
+    label: row.slot_label as string,
+  };
+}
+
+/** Les créneaux à venir proposés par un traiteur (pour la page de réservation ou sa gestion). */
+export async function getTraiteurSlots(traiteurId: string): Promise<TraiteurSlot[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("traiteur_slots")
+    .select("*")
+    .eq("traiteur_id", traiteurId)
+    .gte("slot_date", new Date().toISOString().slice(0, 10))
+    .order("slot_date", { ascending: true })
+    .order("slot_label", { ascending: true });
+  return (data ?? []).map(slotFrom);
 }
 
 /** Les commandes d'un traiteur (toutes, hors annulées), pour son kanban de suivi. */

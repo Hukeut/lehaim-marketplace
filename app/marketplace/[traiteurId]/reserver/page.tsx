@@ -10,14 +10,6 @@ import { Button, Card, StickyFooter } from "@/components/ui";
 
 const initial: ActionState = { ok: false, message: null };
 
-const SLOTS = ["14h00–14h30", "14h30–15h00", "15h00–15h30", "15h30–16h00"];
-
-function nextFriday() {
-  const d = new Date();
-  d.setDate(d.getDate() + ((5 - d.getDay() + 7) % 7 || 7));
-  return d.toISOString().slice(0, 10);
-}
-
 function cartKey(traiteurId: string) {
   return `lehaim-marketplace-cart-${traiteurId}`;
 }
@@ -27,6 +19,13 @@ type ShabbatOption = { id: string; title: string; startsAt: string; pickupCode: 
 function formatShabbatOption(s: ShabbatOption) {
   const date = new Date(s.startsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
   return `${s.title} · ${date}`;
+}
+
+type Slot = { id: string; date: string; label: string };
+
+function formatSlotDate(value: string) {
+  const d = new Date(`${value}T00:00:00`);
+  return d.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" });
 }
 
 export default function Reserver({
@@ -41,8 +40,9 @@ export default function Reserver({
   const [traiteurName, setTraiteurName] = useState("Traiteur");
   const [deliveryAvailable, setDeliveryAvailable] = useState(false);
   const [fulfillment, setFulfillment] = useState<"retrait" | "livraison">("retrait");
-  const [date, setDate] = useState(nextFriday());
-  const [slot, setSlot] = useState(SLOTS[1]);
+  const [slots, setSlots] = useState<Slot[]>([]);
+  const [date, setDate] = useState("");
+  const [slot, setSlot] = useState("");
   const [loading, setLoading] = useState(true);
   const [shabbats, setShabbats] = useState<ShabbatOption[]>([]);
   const [shabbatId, setShabbatId] = useState("");
@@ -64,15 +64,25 @@ export default function Reserver({
       }
 
       const supabase = createClient();
-      const [{ data: products }, { data: traiteur }, { data: shabbatRows }] = await Promise.all([
-        supabase.from("traiteur_products").select("id, title, price").in("id", productIds),
-        supabase.from("traiteurs").select("name, delivery_available").eq("id", traiteurId).maybeSingle(),
-        // La RLS limite déjà aux Shabbats dont on est membre (hôte ou invité).
-        supabase
-          .from("shabbats")
-          .select("id, title, starts_at, pickup_code")
-          .order("starts_at", { ascending: false }),
-      ]);
+      const today = new Date().toISOString().slice(0, 10);
+      const [{ data: products }, { data: traiteur }, { data: shabbatRows }, { data: slotRows }] =
+        await Promise.all([
+          supabase.from("traiteur_products").select("id, title, price").in("id", productIds),
+          supabase.from("traiteurs").select("name, delivery_available").eq("id", traiteurId).maybeSingle(),
+          // La RLS limite déjà aux Shabbats dont on est membre (hôte ou invité).
+          supabase
+            .from("shabbats")
+            .select("id, title, starts_at, pickup_code")
+            .order("starts_at", { ascending: false }),
+          // Le traiteur propose ses créneaux : le client ne choisit que parmi ceux-ci.
+          supabase
+            .from("traiteur_slots")
+            .select("id, slot_date, slot_label")
+            .eq("traiteur_id", traiteurId)
+            .gte("slot_date", today)
+            .order("slot_date", { ascending: true })
+            .order("slot_label", { ascending: true }),
+        ]);
 
       if (cancelled) return;
 
@@ -94,6 +104,17 @@ export default function Reserver({
           pickupCode: (s.pickup_code as string) ?? null,
         })),
       );
+
+      const builtSlots: Slot[] = (slotRows ?? []).map((s) => ({
+        id: s.id as string,
+        date: s.slot_date as string,
+        label: s.slot_label as string,
+      }));
+      setSlots(builtSlots);
+      if (builtSlots.length) {
+        setDate(builtSlots[0].date);
+        setSlot(builtSlots[0].label);
+      }
       setLoading(false);
     }
 
@@ -160,33 +181,60 @@ export default function Reserver({
                 </button>
               </div>
 
-              <label className="mb-3 block text-[11px] font-bold text-ink/55">
-                Date
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="mt-1.5 w-full rounded-field bg-white px-4 py-3 text-[12.5px] font-bold shadow-[var(--shadow-card)] outline-none"
-                />
-              </label>
+              {!slots.length ? (
+                <p className="mb-4 rounded-field border-[1.5px] border-dashed border-line bg-white px-3.5 py-5 text-center text-[12px] leading-relaxed text-ink/50">
+                  {traiteurName} n&apos;a pas encore proposé de créneau de retrait. Revenez un peu
+                  plus tard.
+                </p>
+              ) : (
+                <>
+                  <div className="mb-3">
+                    <div className="mb-1.5 text-[11px] font-bold text-ink/55">Date</div>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {Array.from(new Set(slots.map((s) => s.date))).map((d) => (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => {
+                            setDate(d);
+                            const first = slots.find((s) => s.date === d);
+                            if (first) setSlot(first.label);
+                          }}
+                          className={`shrink-0 rounded-full px-3.5 py-2 text-[11.5px] font-bold capitalize ${
+                            date === d
+                              ? "bg-ink text-white"
+                              : "bg-white text-ink shadow-[var(--shadow-pill)]"
+                          }`}
+                        >
+                          {formatSlotDate(d)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-              <div className="mb-4">
-                <div className="mb-1.5 text-[11px] font-bold text-ink/55">Créneau</div>
-                <div className="grid grid-cols-2 gap-2">
-                  {SLOTS.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => setSlot(s)}
-                      className={`rounded-[8px] py-2.5 text-[11.5px] font-bold ${
-                        slot === s ? "bg-teal text-white" : "bg-white text-ink shadow-[var(--shadow-pill)]"
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
+                  <div className="mb-4">
+                    <div className="mb-1.5 text-[11px] font-bold text-ink/55">Créneau</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {slots
+                        .filter((s) => s.date === date)
+                        .map((s) => (
+                          <button
+                            key={s.id}
+                            type="button"
+                            onClick={() => setSlot(s.label)}
+                            className={`rounded-[8px] py-2.5 text-[11.5px] font-bold ${
+                              slot === s.label
+                                ? "bg-teal text-white"
+                                : "bg-white text-ink shadow-[var(--shadow-pill)]"
+                            }`}
+                          >
+                            {s.label}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                </>
+              )}
 
               {shabbats.length > 0 && (
                 <label className="mb-4 block text-[11px] font-bold text-ink/55">
@@ -248,7 +296,7 @@ export default function Reserver({
         </div>
 
         <StickyFooter className="px-5">
-          <Button type="submit" size="lg" disabled={pending || !lines.length}>
+          <Button type="submit" size="lg" disabled={pending || !lines.length || !date || !slot}>
             {pending ? "Confirmation…" : "Confirmer la réservation"}
           </Button>
         </StickyFooter>

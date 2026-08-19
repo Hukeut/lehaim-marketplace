@@ -157,6 +157,44 @@ export async function deleteProduct(productId: string) {
   redirect("/devenir-traiteur/menu");
 }
 
+/* ------------------------------------------------------------------ */
+/* Créneaux de retrait proposés par le traiteur                        */
+/* ------------------------------------------------------------------ */
+
+export async function addSlot(_previous: ActionState, formData: FormData): Promise<ActionState> {
+  const { supabase, user } = await requireUser();
+  if (!user) return { ok: false, message: "Connectez-vous d'abord." };
+
+  const traiteur = await getMyTraiteur();
+  if (!traiteur) return { ok: false, message: "Créez d'abord votre profil traiteur." };
+
+  const date = text(formData, "slot_date");
+  const label = text(formData, "slot_label");
+  if (!date) return { ok: false, message: "Choisissez une date." };
+  if (!label) return { ok: false, message: "Indiquez un horaire (ex. 14h00–14h30)." };
+
+  const { error } = await supabase.from("traiteur_slots").insert({
+    traiteur_id: traiteur.id,
+    slot_date: date,
+    slot_label: label,
+  });
+
+  if (error) {
+    if (error.code === "23505") return { ok: false, message: "Ce créneau existe déjà." };
+    return { ok: false, message: error.message };
+  }
+
+  revalidatePath("/devenir-traiteur/creneaux");
+  return { ok: true, message: "Créneau ajouté." };
+}
+
+export async function deleteSlot(slotId: string) {
+  const { supabase, user } = await requireUser();
+  if (!user) return;
+  await supabase.from("traiteur_slots").delete().eq("id", slotId);
+  revalidatePath("/devenir-traiteur/creneaux");
+}
+
 export async function updateTraiteurProfile(
   _previous: ActionState,
   formData: FormData,

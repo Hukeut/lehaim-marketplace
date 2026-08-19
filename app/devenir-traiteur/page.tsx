@@ -7,7 +7,7 @@ import { TraiteurOnboardingForm } from "@/components/marketplace/TraiteurOnboard
 import { BackButton } from "@/components/BackButton";
 import { BrandMark } from "@/components/BrandMark";
 import { ButtonLink, Card, StatusPill } from "@/components/ui";
-import { Basket, Check, Clock, Dish, Share, Sliders, XCircle } from "@/components/icons";
+import { Basket, Calendar, Check, Clock, Dish, Share, Sliders, XCircle } from "@/components/icons";
 
 const MONTHS = [
   "janvier", "février", "mars", "avril", "mai", "juin",
@@ -107,6 +107,7 @@ export default async function DevenirTraiteur() {
             {traiteur.status === "approved" && (
               <GridTile href="/devenir-traiteur/commandes" icon={<Basket size={18} />} label="Commandes" tone="teal" />
             )}
+            <GridTile href="/devenir-traiteur/creneaux" icon={<Calendar size={18} />} label="Mes créneaux" tone="violet" />
             <GridTile href="/devenir-traiteur/profil" icon={<Sliders size={18} />} label="Informations" tone="gold" />
             {traiteur.status === "approved" && (
               <GridTile
@@ -135,6 +136,7 @@ const TILE_TONE = {
   teal: "bg-teal/14 text-teal-deep",
   gold: "bg-gold/22 text-gold-ink",
   olive: "bg-olive/16 text-olive-deep",
+  violet: "bg-violet/14 text-violet-deep",
 } as const;
 
 function GridTile({
