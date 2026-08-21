@@ -4,6 +4,12 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getMyTraiteur } from "@/lib/marketplace";
+import {
+  handleOrderTerminal,
+  handleReviewSubmitted,
+  handleMessageResponded,
+  recomputeSubjectState,
+} from "@/lib/gamification";
 import type { ActionState } from "@/app/actions";
 
 async function requireUser() {
@@ -407,7 +413,102 @@ export async function sendOrderMessage(
 
   revalidatePath(`/marketplace/commande/${orderId}`);
   revalidatePath(`/devenir-traiteur/commandes/${orderId}`);
+
+  // Gamification : simple signal de communication, pas d'XP (le chat est
+  // trop facile à faire tourner en boucle pour y attacher une récompense).
+  const { data: orderRow } = await supabase
+    .from("marketplace_orders")
+    .select("traiteur_id, user_id, traiteurs(owner_id)")
+    .eq("id", orderId)
+    .maybeSingle();
+  if (orderRow) {
+    const traiteurOwnerId = (orderRow.traiteurs as { owner_id?: string } | null)?.owner_id;
+    const isOrganizer = orderRow.user_id === user.id;
+    const isTraiteur = traiteurOwnerId === user.id;
+    if (isOrganizer || isTraiteur) {
+      try {
+        await handleMessageResponded({
+          orderId,
+          senderSubjectType: isOrganizer ? "organizer" : "traiteur",
+          senderSubjectId: isOrganizer ? user.id : (orderRow.traiteur_id as string),
+        });
+      } catch {
+        // La discussion ne doit jamais échouer à cause de la gamification.
+      }
+    }
+  }
+
   return { ok: true, message: null };
+}
+
+/* ------------------------------------------------------------------ */
+/* Avis client (prérequis gamification — voir docs/gamification-architecture-proposal.md) */
+/* ------------------------------------------------------------------ */
+
+export async function submitReview(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase, user } = await requireUser();
+  if (!user) return { ok: false, message: "Connectez-vous d'abord." };
+
+  const orderId = String(formData.get("order_id") ?? "");
+  const rating = Number(formData.get("rating") ?? "0");
+  const comment = text(formData, "comment");
+  if (!orderId || !Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return { ok: false, message: "Choisissez une note entre 1 et 5." };
+  }
+
+  const { data: orderRow } = await supabase
+    .from("marketplace_orders")
+    .select("traiteur_id, user_id, status")
+    .eq("id", orderId)
+    .maybeSingle();
+  if (!orderRow || orderRow.user_id !== user.id || orderRow.status !== "recuperee") {
+    return { ok: false, message: "Cette commande ne peut pas encore être notée." };
+  }
+
+  const { error } = await supabase.from("marketplace_reviews").insert({
+    order_id: orderId,
+    traiteur_id: orderRow.traiteur_id,
+    author_id: user.id,
+    rating,
+    comment,
+  });
+  if (error) {
+    if (error.code === "23505") return { ok: false, message: "Vous avez déjà noté cette commande." };
+    return { ok: false, message: error.message };
+  }
+
+  try {
+    await handleReviewSubmitted({
+      orderId,
+      traiteurId: orderRow.traiteur_id as string,
+      organizerId: user.id,
+      rating,
+    });
+  } catch {
+    // L'avis est déjà enregistré ; rattrapable via le recalcul manuel admin.
+  }
+
+  revalidatePath(`/marketplace/commande/${orderId}`);
+  revalidatePath(`/marketplace/${orderRow.traiteur_id}`);
+  return { ok: true, message: "Merci pour votre avis !" };
+}
+
+/* ------------------------------------------------------------------ */
+/* Admin — recalcul manuel de gamification (§16/§19 du cahier des charges) */
+/* ------------------------------------------------------------------ */
+
+export async function recomputeGamificationSubject(
+  subjectType: "traiteur" | "organizer",
+  subjectId: string,
+) {
+  const { isAdmin } = await requireAdmin();
+  if (!isAdmin) return;
+  await recomputeSubjectState(subjectType, subjectId);
+  revalidatePath("/devenir-traiteur/score");
+  revalidatePath(`/admin/traiteurs/${subjectId}`);
 }
 
 /* ------------------------------------------------------------------ */
@@ -421,26 +522,32 @@ export async function setOrderStatus(
   const { supabase, user } = await requireUser();
   if (!user) return;
 
-  // Une seule lecture pour les deux besoins ci-dessous : qui annule, et si
-  // c'est la première sortie de "nouvelle" (utile aux deux, pas seulement
-  // à l'annulation).
+  // Une seule lecture pour tous les besoins ci-dessous : qui annule, si
+  // c'est la première sortie de "nouvelle", et les données nécessaires à
+  // la gamification si la commande atteint un état terminal.
   const { data: orderRow } = await supabase
     .from("marketplace_orders")
-    .select("user_id, status, responded_at")
+    .select("user_id, traiteur_id, status, responded_at, created_at, total_amount")
     .eq("id", orderId)
     .maybeSingle();
 
   const patch: Record<string, unknown> = { status };
+  let cancelledBy: "client" | "traiteur" | null = null;
   if (status === "annulee") {
     // On détermine qui annule en comparant à qui a passé la commande, pas
     // en se fiant à un rôle envoyé par l'appelant (client ou traiteur
     // peuvent tous les deux invoquer cette même action).
-    patch.cancelled_by = orderRow?.user_id === user.id ? "client" : "traiteur";
+    cancelledBy = orderRow?.user_id === user.id ? "client" : "traiteur";
+    patch.cancelled_by = cancelledBy;
   }
   // Première sortie de "nouvelle" : marque le temps de réponse du traiteur
-  // (accepter, refuser, peu importe), utilisé par le badge de réactivité.
-  if (orderRow?.status === "nouvelle" && status !== "nouvelle" && !orderRow.responded_at) {
-    patch.responded_at = new Date().toISOString();
+  // (accepter, refuser, peu importe), utilisé par la métrique de réactivité.
+  const respondedAt =
+    orderRow?.status === "nouvelle" && status !== "nouvelle" && !orderRow.responded_at
+      ? new Date().toISOString()
+      : ((orderRow?.responded_at as string | null) ?? null);
+  if (respondedAt && !orderRow?.responded_at) {
+    patch.responded_at = respondedAt;
   }
 
   await supabase.from("marketplace_orders").update(patch).eq("id", orderId);
@@ -449,4 +556,24 @@ export async function setOrderStatus(
   revalidatePath("/devenir-traiteur/score");
   revalidatePath("/marketplace/mes-commandes");
   revalidatePath(`/marketplace/commande/${orderId}`);
+
+  // Gamification : uniquement sur les transitions terminales (une commande
+  // "en_preparation" ou "prete" ne produit ni événement ni XP).
+  if (orderRow && (status === "recuperee" || status === "annulee")) {
+    try {
+      await handleOrderTerminal({
+        id: orderId,
+        traiteurId: orderRow.traiteur_id as string,
+        userId: orderRow.user_id as string,
+        status,
+        cancelledBy,
+        createdAt: orderRow.created_at as string,
+        respondedAt,
+        totalAmount: Number(orderRow.total_amount ?? 0),
+      });
+    } catch {
+      // Le statut de la commande est déjà mis à jour ; un échec ici est
+      // rattrapable via le recalcul manuel admin, pas bloquant pour l'UX.
+    }
+  }
 }

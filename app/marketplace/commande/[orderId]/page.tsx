@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
-import { getOrderThread, ORDER_STATUS_LABEL } from "@/lib/marketplace";
+import { getOrderThread, getMyReviewForOrder, ORDER_STATUS_LABEL } from "@/lib/marketplace";
 import { waLink } from "@/lib/whatsapp";
 import { ClearCart } from "@/components/marketplace/ClearCart";
 import { OrderThread } from "@/components/marketplace/OrderThread";
 import { CancelOrderButton } from "@/components/marketplace/CancelOrderButton";
 import { OrderStatusToast } from "@/components/marketplace/OrderStatusToast";
 import { ConfirmationCelebration } from "@/components/marketplace/ConfirmationCelebration";
+import { ReviewForm } from "@/components/marketplace/ReviewForm";
 import { AutoRefresh } from "@/components/AutoRefresh";
 import { BrandMark } from "@/components/BrandMark";
 import { Clock, XCircle } from "@/components/icons";
@@ -34,6 +35,8 @@ export default async function CommandeConfirmee({
 
   const isWaiting = order.status === "nouvelle";
   const isCancelled = order.status === "annulee";
+  const isCompleted = order.status === "recuperee";
+  const myReview = isCompleted ? await getMyReviewForOrder(order.id) : null;
 
   const slotText = order.pickupSlot
     ? ` Retrait ${formatDate(order.pickupDate) ?? ""} · ${order.pickupSlot}.`
@@ -119,6 +122,15 @@ export default async function CommandeConfirmee({
             votre commande.
           </p>
         </div>
+      )}
+
+      {isCompleted && !myReview && <ReviewForm orderId={order.id} />}
+      {isCompleted && myReview && (
+        <Card className="mb-3 w-full p-4 text-center">
+          <p className="text-[12.5px] font-bold text-ink/60">
+            Vous avez noté cette commande {myReview.rating}/5 — merci !
+          </p>
+        </Card>
       )}
 
       {!isCancelled && (

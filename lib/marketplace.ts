@@ -414,6 +414,26 @@ export async function getTraiteurMilestones(traiteurId: string): Promise<Milesto
   return [...tenureBadges, ...volumeBadges];
 }
 
+/** L'avis déjà laissé par la personne connectée sur une commande, s'il existe. */
+export async function getMyReviewForOrder(
+  orderId: string,
+): Promise<{ rating: number; comment: string | null } | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data } = await supabase
+    .from("marketplace_reviews")
+    .select("rating, comment")
+    .eq("order_id", orderId)
+    .eq("author_id", user.id)
+    .maybeSingle();
+  if (!data) return null;
+  return { rating: Number(data.rating), comment: (data.comment as string) ?? null };
+}
+
 export type OrderMessage = {
   id: string;
   body: string;

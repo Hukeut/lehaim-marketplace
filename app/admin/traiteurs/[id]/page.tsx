@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getTraiteurWithProducts, isMarketplaceAdmin } from "@/lib/marketplace";
 import { CATEGORY_LABEL } from "@/lib/marketplace-types";
 import { TraiteurAdminActions } from "@/components/marketplace/TraiteurAdminActions";
+import { RecomputeGamificationButton } from "@/components/marketplace/RecomputeGamificationButton";
 import { BackButton } from "@/components/BackButton";
 import { BrandMark } from "@/components/BrandMark";
 import { Card, StatusPill } from "@/components/ui";
@@ -117,6 +118,12 @@ export default async function AdminTraiteurDetail({
         )}
 
         <TraiteurAdminActions traiteurId={traiteur.id} />
+
+        {traiteur.status === "approved" && (
+          <div className="mt-3">
+            <RecomputeGamificationButton subjectType="traiteur" subjectId={traiteur.id} />
+          </div>
+        )}
       </div>
     </main>
   );

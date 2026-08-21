@@ -1,67 +1,83 @@
 import { notFound, redirect } from "next/navigation";
-import {
-  getMyTraiteur,
-  getTraiteurScore,
-  getTraiteurMilestones,
-  REACTIVITY_TIER_LABEL,
-} from "@/lib/marketplace";
-import type { ReactivityTier } from "@/lib/marketplace-types";
+import { getMyTraiteur, getTraiteurMilestones } from "@/lib/marketplace";
+import { recomputeSubjectState, getLedgerHistory } from "@/lib/gamification";
 import { BackButton } from "@/components/BackButton";
 import { BrandMark } from "@/components/BrandMark";
 import { Card, ProgressBar, Overline } from "@/components/ui";
 import { Medal } from "@/components/icons";
-import { Sparkles } from "@/components/marketplace/Sparkles";
 import { MilestoneBadges } from "@/components/marketplace/MilestoneBadges";
-import { TierLevelUp } from "@/components/marketplace/TierLevelUp";
+import { LevelUpBanner } from "@/components/marketplace/LevelUpBanner";
 
-const TIER_ORDER: ReactivityTier[] = ["bronze", "argent", "or"];
-
-function formatMinutes(value: number | null) {
-  if (value === null) return "—";
-  if (value < 60) return `${Math.round(value)} min`;
-  const h = Math.floor(value / 60);
-  const m = Math.round(value % 60);
-  return `${h}h${m.toString().padStart(2, "0")}`;
-}
-
-const TIER_VISUAL: Record<ReactivityTier, { badge: string; bar: "gold" | "teal" | "coral"; caption: string }> = {
-  or: {
-    badge: "bg-gold text-gold-ink",
-    bar: "gold",
-    caption: "Vous êtes au meilleur palier — continuez à répondre vite pour le garder.",
-  },
-  argent: {
-    badge: "bg-ink/10 text-ink/55",
-    bar: "teal",
-    caption: "Répondez en moyenne sous 15 min pour passer au palier Or.",
-  },
-  bronze: {
-    badge: "bg-coral/16 text-coral-deep",
-    bar: "coral",
-    caption: "Répondez en moyenne sous 45 min pour passer au palier Argent.",
-  },
+const METRIC_LABEL: Record<string, string> = {
+  reliability: "Fiabilité",
+  responsiveness: "Réactivité",
+  quality: "Qualité",
+  activity: "Activité",
+  regularity: "Régularité",
 };
 
+const LEVEL_BADGE_TONE: Record<string, string> = {
+  debutant: "bg-line-soft text-ink/40",
+  confirme: "bg-teal/16 text-teal-deep",
+  expert: "bg-coral/16 text-coral-deep",
+  elite: "bg-gold text-gold-ink",
+};
+
+function clampProgress(value: number) {
+  if (!Number.isFinite(value)) return 100;
+  return Math.min(100, Math.max(0, value));
+}
+
+/**
+ * Tableau de bord de progression du traiteur, branché sur le moteur de
+ * gamification (lib/gamification.ts) plutôt que sur l'ancien système à
+ * règles figées (badge de réactivité Or/Argent/Bronze) livré plus tôt
+ * dans la session — voir docs/gamification-architecture-proposal.md.
+ * Les badges d'ancienneté/volume (MilestoneBadges), eux, restent valables
+ * tels quels : ils ne dépendent pas de l'ancien système de paliers.
+ *
+ * Le recalcul se fait à chaque visite de cette page (en plus du recalcul
+ * événementiel déjà déclenché par les actions concernées) : peu coûteux
+ * à cette échelle, et ça garde l'affichage toujours à jour même si un
+ * recalcul précédent avait échoué silencieusement.
+ */
 export default async function MonScore() {
   const traiteur = await getMyTraiteur();
   if (!traiteur) redirect("/devenir-traiteur");
   if (traiteur.status !== "approved") notFound();
 
-  const [score, milestones] = await Promise.all([
-    getTraiteurScore(traiteur.id),
+  const [state, history, milestones] = await Promise.all([
+    recomputeSubjectState("traiteur", traiteur.id),
+    getLedgerHistory("traiteur", traiteur.id, 10),
     getTraiteurMilestones(traiteur.id),
   ]);
-  const visual = score.tier ? TIER_VISUAL[score.tier] : null;
-  // Sans palier encore débloqué, on affiche une jauge à peine amorcée plutôt que vide.
-  const progress = score.tier ? (TIER_ORDER.indexOf(score.tier) + 1) * (100 / 3) : 8;
+
+  // `lastSeenTier` est la colonne ajoutée pour l'ancien système de badges,
+  // réutilisée ici pour stocker la dernière `level_key` vue (mêmes policy
+  // RLS et action `acknowledgeTier`, pas de nouvelle migration nécessaire).
   const leveledUp =
-    score.tier !== null &&
-    (traiteur.lastSeenTier === null || TIER_ORDER.indexOf(score.tier) > TIER_ORDER.indexOf(traiteur.lastSeenTier));
+    state.level !== null &&
+    traiteur.lastSeenTier !== state.level.levelKey &&
+    !(traiteur.lastSeenTier === null && state.level.sortOrder === 0);
+
+  const progressToNext =
+    state.nextLevel && state.nextLevel.minXp > (state.level?.minXp ?? 0)
+      ? clampProgress(
+          ((state.currentXp - (state.level?.minXp ?? 0)) /
+            (state.nextLevel.minXp - (state.level?.minXp ?? 0))) *
+            100,
+        )
+      : 100;
 
   return (
     <main className="flex min-h-dvh flex-1 flex-col bg-teal-wash sm:min-h-0">
-      {score.tier && (
-        <TierLevelUp traiteurId={traiteur.id} tier={score.tier} leveledUp={leveledUp} />
+      {state.level && (
+        <LevelUpBanner
+          traiteurId={traiteur.id}
+          levelKey={state.level.levelKey}
+          levelName={state.level.name}
+          leveledUp={leveledUp}
+        />
       )}
       <div className="px-5 pt-[54px]">
         <BrandMark className="mb-2.5" />
@@ -73,51 +89,75 @@ export default async function MonScore() {
 
       <div className="flex-1 overflow-y-auto px-5 pb-8">
         <Card className="relative mb-3.5 flex flex-col items-center overflow-hidden p-6 text-center">
-          {score.tier === "or" && <Sparkles />}
           <span
-            className={`relative mb-3 flex size-16 items-center justify-center rounded-full ${visual?.badge ?? "bg-line-soft text-ink/30"} ${
-              score.tier === "or" ? "animate-[glow-pulse_2s_ease-out_infinite]" : ""
+            className={`relative mb-3 flex size-16 items-center justify-center rounded-full ${
+              LEVEL_BADGE_TONE[state.level?.levelKey ?? "debutant"]
             }`}
           >
             <Medal size={30} />
           </span>
           <div className="font-display text-[16px] font-semibold">
-            {score.tier ? `Palier ${REACTIVITY_TIER_LABEL[score.tier]}` : "Pas encore de palier"}
+            {state.level?.name ?? "Débutant"}
           </div>
           <p className="mt-1 text-[11.5px] text-ink/50">
-            Temps de réponse moyen · {formatMinutes(score.avgResponseMinutes)}
+            {state.currentXp} XP
+            {state.nextLevel
+              ? ` · encore ${Math.max(0, state.nextLevel.minXp - state.currentXp)} XP pour ${state.nextLevel.name}`
+              : " · palier maximum atteint"}
           </p>
 
           <div className="mt-4 w-full">
-            <ProgressBar value={progress} tone={visual?.bar ?? "coral"} height={7} />
+            <ProgressBar value={progressToNext} tone="gold" height={7} />
           </div>
           <p className="mt-2 text-[11px] font-bold text-ink/55">
-            {visual?.caption ??
-              "Traitez quelques commandes pour débloquer votre badge de réactivité."}
+            Votre palier peut aussi redescendre si vos indicateurs baissent — c&apos;est votre
+            performance récente qui compte, pas ce que vous avez fait il y a longtemps.
           </p>
         </Card>
 
+        <Overline>Mes indicateurs</Overline>
         <div className="mb-3.5 grid grid-cols-2 gap-2.5">
-          <Card className="rounded-field p-4 text-center">
-            <div className="font-display text-[18px] font-semibold">
-              {formatMinutes(score.avgResponseMinutes)}
-            </div>
-            <div className="mt-0.5 text-[10.5px] font-bold text-ink/50">Temps de réponse moyen</div>
-          </Card>
-          <Card className="rounded-field p-4 text-center">
-            <div className="font-display text-[18px] font-semibold">🔥 {score.streak}</div>
-            <div className="mt-0.5 text-[10.5px] font-bold text-ink/50">
-              Commandes honorées d&apos;affilée
-            </div>
-          </Card>
+          {Object.entries(state.metrics).map(([key, value]) => (
+            <Card key={key} className="rounded-field p-4 text-center">
+              <div className="font-display text-[18px] font-semibold">{value}</div>
+              <div className="mt-0.5 text-[10.5px] font-bold text-ink/50">
+                {METRIC_LABEL[key] ?? key}
+              </div>
+            </Card>
+          ))}
         </div>
 
         <Overline>Badges</Overline>
         <MilestoneBadges badges={milestones} />
 
-        <p className="mt-4 text-center text-[11px] text-ink/40">
-          Le badge et les succès débloqués sont visibles par les clients sur la marketplace.
-        </p>
+        <div className="mt-4">
+          <Overline>Derniers mouvements</Overline>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          {!history.length && (
+            <p className="rounded-field border-[1.5px] border-dashed border-line bg-white px-3.5 py-4 text-center text-[11.5px] text-ink/40">
+              Pas encore de mouvement — ça se remplit avec vos premières commandes traitées.
+            </p>
+          )}
+          {history.map((entry) => (
+            <div
+              key={entry.id}
+              className={`flex items-center justify-between rounded-field bg-white px-3.5 py-2.5 shadow-[var(--shadow-card)] ${
+                entry.voided ? "opacity-40 line-through" : ""
+              }`}
+            >
+              <span className="text-[11.5px] font-bold text-ink/70">{entry.reason}</span>
+              <span
+                className={`text-[12px] font-extrabold ${
+                  entry.deltaXp >= 0 ? "text-olive-deep" : "text-coral-deep"
+                }`}
+              >
+                {entry.deltaXp >= 0 ? "+" : ""}
+                {entry.deltaXp} XP
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </main>
   );
