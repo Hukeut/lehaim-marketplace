@@ -1,5 +1,5 @@
 import { Medal } from "@/components/icons";
-import { REACTIVITY_TIER_LABEL, type ReactivityTier } from "@/lib/marketplace-types";
+import { REACTIVITY_TIER_LABEL, type ReactivityTier } from "@/lib/gamification";
 
 const TIER_STYLE: Record<ReactivityTier, string> = {
   or: "bg-gold/24 text-gold-ink",
@@ -9,10 +9,9 @@ const TIER_STYLE: Record<ReactivityTier, string> = {
 
 /**
  * Badge de réactivité d'un traiteur. N'affiche rien si le traiteur n'a pas
- * encore assez d'historique pour être noté (voir getTraiteurScore) — pas de
- * badge plutôt qu'un badge trompeur. Le palier Or a un léger reflet animé,
- * façon objet légendaire de jeu vidéo — réservé au meilleur palier pour ne
- * pas diluer l'effet.
+ * encore assez d'historique pour être noté (voir traiteurScore) — pas de
+ * badge plutôt qu'un badge trompeur. Porté depuis lehaim-marketplace
+ * (components/marketplace/ReactivityBadge.tsx) sans changement.
  */
 export function ReactivityBadge({
   tier,

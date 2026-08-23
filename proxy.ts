@@ -1,8 +1,25 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-/** Écrans accessibles sans être connecté. */
-const PUBLIC_PATHS = ["/", "/onboarding", "/connexion", "/auth", "/legacy", "/ecrans"];
+/**
+ * Écrans accessibles sans être connecté.
+ *
+ * `/marketplace` et `/partenaire` s'y ajoutent avec la fusion marketplace :
+ * la vitrine (fiches traiteur, carte) se regarde sans compte — c'est ce que
+ * la RLS autorise déjà pour un traiteur approuvé — et la candidature
+ * commerçant doit être lisible avant de se connecter. Le panier et les
+ * commandes, eux, restent derrière la connexion.
+ */
+const PUBLIC_PATHS = [
+  "/",
+  "/onboarding",
+  "/connexion",
+  "/auth",
+  "/legacy",
+  "/ecrans",
+  "/marketplace",
+  "/partenaire",
+];
 
 /**
  * Tant que cet interrupteur est éteint, l'app reste entièrement navigable sans

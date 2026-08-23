@@ -200,6 +200,13 @@ export const Heart = (p: IconProps) => (
   </Stroke>
 );
 
+/** Le cœur plein, pour un commerce déjà mis en favori. */
+export const HeartSolid = (p: IconProps) => (
+  <Solid {...p}>
+    <path d="M12 20s-7-4.4-9.5-9A5 5 0 0112 6a5 5 0 019.5 5c-2.5 4.6-9.5 9-9.5 9z" />
+  </Solid>
+);
+
 export const ArrowRight = (p: IconProps) => (
   <Stroke strokeWidth={2.3} {...p}>
     <path d="M5 12h14M13 6l6 6-6 6" />

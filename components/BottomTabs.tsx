@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calendar, Chat, Home, Plus, ProfileSquare } from "./icons";
+import { Basket, Calendar, Chat, Home, Plus, ProfileSquare } from "./icons";
 
 const tabs = [
   { href: "/accueil", label: "Accueil", Icon: Home },
   { href: "/shabbats", label: "Shabbats", Icon: Calendar },
+  { href: "/marketplace", label: "Marketplace", Icon: Basket },
   { href: "/messages", label: "Messages", Icon: Chat, badge: true },
   { href: "/profil", label: "Profil", Icon: ProfileSquare },
 ] as const;
