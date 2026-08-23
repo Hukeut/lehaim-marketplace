@@ -4,24 +4,37 @@ import { useState, useActionState } from "react";
 import { registerTraiteur } from "@/app/marketplace/actions";
 import type { ActionState } from "@/app/actions";
 import { Button, Field, Overline } from "@/components/ui";
-import { ALLERGEN_LABEL, type Allergen } from "@/lib/marketplace-types";
 
 const initial: ActionState = { ok: false, message: null };
 
-const ALLERGEN_OPTIONS = Object.keys(ALLERGEN_LABEL) as Allergen[];
+const ALLERGEN_OPTIONS: [string, string][] = [
+  ["gluten", "🌾 Gluten"],
+  ["fruits_a_coque", "🥜 Fruits à coque"],
+  ["oeufs", "🥚 Œufs"],
+  ["lactose", "🥛 Lactose"],
+  ["soja", "🫘 Soja"],
+  ["arachide", "🥜 Arachide"],
+  ["poisson", "🐟 Poisson"],
+  ["sesame", "🫙 Sésame"],
+];
 
 const STEPS = ["Informations de base", "Documents & livraison", "Votre premier produit"];
 
 const inputClass =
   "w-full rounded-field bg-white px-4 py-3.5 text-[13px] font-bold shadow-[var(--shadow-card)] outline-none focus:ring-2 focus:ring-teal/40";
 
+/**
+ * Porté depuis lehaim-marketplace (TraiteurOnboardingForm) : trois étapes,
+ * une seule soumission — un traiteur sans catalogue n'aurait rien à montrer
+ * une fois approuvé, donc son premier produit fait partie du dossier.
+ */
 export function TraiteurOnboardingForm() {
   const [state, formAction, pending] = useActionState(registerTraiteur, initial);
   const [step, setStep] = useState(0);
 
-  // Contrôlé : les trois étapes restent montées dans le DOM (juste masquées en
-  // CSS) pour que la FormData contienne bien tous les champs à la soumission
-  // finale, quelle que soit l'étape affichée.
+  // Contrôlé : les trois étapes restent montées dans le DOM (juste masquées
+  // en CSS) pour que la FormData contienne bien tous les champs à l'envoi
+  // final, quelle que soit l'étape affichée.
   const [name, setName] = useState("");
   const [productTitle, setProductTitle] = useState("");
   const [productPrice, setProductPrice] = useState("");
@@ -52,7 +65,6 @@ export function TraiteurOnboardingForm() {
         <div className="font-display text-[16px] font-semibold text-ink">{STEPS[step]}</div>
       </div>
 
-      {/* Étape 1 · Informations de base */}
       <section className={step === 0 ? "flex flex-col gap-3" : "hidden"}>
         <Field label="Nom du commerce">
           <input
@@ -64,21 +76,20 @@ export function TraiteurOnboardingForm() {
           />
         </Field>
         <Field label="Adresse">
-          <input name="address" placeholder="12 rue Dizengoff, Tel Aviv" className={inputClass} />
+          <input name="address" placeholder="12 rue de la Paix, Paris" className={inputClass} />
         </Field>
         <Field label="Téléphone">
-          <input name="phone" placeholder="050-000-0000" className={inputClass} />
+          <input name="phone" placeholder="06 00 00 00 00" className={inputClass} />
         </Field>
       </section>
 
-      {/* Étape 2 · Documents justificatifs + livraison */}
       <section className={step === 1 ? "flex flex-col gap-3" : "hidden"}>
         <Overline>Documents justificatifs</Overline>
         <Field label="Numéro de patente / licence commerciale">
           <input name="patente_number" placeholder="Numéro d'entreprise" className={inputClass} />
         </Field>
         <Field label="Certificat de cacherout (si applicable)">
-          <input name="hechsher_name" placeholder="Ex : Rabbanout Tel Aviv" className={inputClass} />
+          <input name="hechsher_name" placeholder="Ex : Beth Din de Paris" className={inputClass} />
         </Field>
         <p className="text-[11px] leading-relaxed text-ink/45">
           L&apos;équipe lehaim vérifie ces informations avant la mise en ligne de votre profil.
@@ -92,11 +103,10 @@ export function TraiteurOnboardingForm() {
           <span className="text-[12.5px] font-bold">Je propose la livraison</span>
         </label>
         <Field label="Zone de livraison (optionnel)">
-          <input name="delivery_zone" placeholder="Tel Aviv et alentours" className={inputClass} />
+          <input name="delivery_zone" placeholder="Paris et proche banlieue" className={inputClass} />
         </Field>
       </section>
 
-      {/* Étape 3 · Premier produit */}
       <section className={step === 2 ? "flex flex-col gap-3" : "hidden"}>
         <Field label="Nom du plat">
           <input
@@ -108,16 +118,16 @@ export function TraiteurOnboardingForm() {
           />
         </Field>
         <Field label="Description (optionnel)">
-          <input name="product_description" placeholder="Poulet rôti, pommes de terre..." className={inputClass} />
+          <input name="product_description" placeholder="Poulet rôti, pommes de terre…" className={inputClass} />
         </Field>
         <div className="flex gap-2.5">
-          <Field label="Prix (₪)" className="flex-1">
+          <Field label="Prix (€)" className="flex-1">
             <input
               name="product_price"
               value={productPrice}
               onChange={(e) => setProductPrice(e.target.value)}
               inputMode="decimal"
-              placeholder="120"
+              placeholder="45"
               className={inputClass}
             />
           </Field>
@@ -139,13 +149,13 @@ export function TraiteurOnboardingForm() {
         <div>
           <div className="mb-1.5 text-[11px] font-bold text-ink/55">Allergènes potentiels (optionnel)</div>
           <div className="flex flex-wrap gap-2">
-            {ALLERGEN_OPTIONS.map((code) => (
+            {ALLERGEN_OPTIONS.map(([code, label]) => (
               <label
                 key={code}
                 className="flex items-center gap-1.5 rounded-full border-[1.5px] border-line-soft bg-white px-3 py-2 text-[11.5px] font-bold shadow-[var(--shadow-pill)] has-[:checked]:border-coral has-[:checked]:bg-coral-wash"
               >
                 <input type="checkbox" name="product_allergens" value={code} className="size-3.5" />
-                {ALLERGEN_LABEL[code].emoji} {ALLERGEN_LABEL[code].label}
+                {label}
               </label>
             ))}
           </div>
@@ -170,11 +180,7 @@ export function TraiteurOnboardingForm() {
               Continuer
             </Button>
           ) : (
-            <Button
-              type="submit"
-              size="lg"
-              disabled={pending || !productTitle.trim() || !productPrice.trim()}
-            >
+            <Button type="submit" size="lg" disabled={pending || !productTitle.trim() || !productPrice.trim()}>
               {pending ? "Envoi…" : "Soumettre pour validation"}
             </Button>
           )}

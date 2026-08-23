@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import type { Update } from "@/lib/supabase/rows";
+import { userMessage } from "@/lib/db";
 
 export type SaveState = { ok: boolean; message: string | null };
 
@@ -23,7 +25,7 @@ export async function saveProfile(
     return trimmed.length ? trimmed : null;
   };
 
-  const payload: Record<string, string | null> = {
+  const payload: Update<"profiles"> = {
     first_name: text("first_name"),
     last_name: text("last_name"),
     phone: text("phone"),
@@ -38,7 +40,7 @@ export async function saveProfile(
     ({ error } = await supabase.from("profiles").update(payload).eq("id", user.id));
   }
 
-  if (error) return { ok: false, message: error.message };
+  if (error) return { ok: false, message: await userMessage("saveProfile", error) };
 
   revalidatePath("/profil");
   revalidatePath("/accueil");

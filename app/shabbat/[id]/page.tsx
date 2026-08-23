@@ -1,31 +1,37 @@
+import { getTranslations } from "next-intl/server";
+import { requireManager } from "@/lib/access";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BackButton } from "@/components/BackButton";
-import { Chat } from "@/components/icons";
+import { DeleteShabbat } from "@/components/DeleteShabbat";
+import { LehaimIcon, type LehaimIconName } from "@/components/LehaimIcon";
 import { AlertNote, Countdown } from "@/components/missions";
 import { ButtonLink, Card, ProgressBar, StickyFooter } from "@/components/ui";
 import { formatDate, formatTime, getShabbat, readinessLabel } from "@/lib/data";
-import { FUNDING_LABEL, getOps, untilReady } from "@/lib/missions";
+import { getOps, untilReady } from "@/lib/missions";
 import { BrandMark } from "@/components/BrandMark";
-import { DeleteShabbatButton } from "@/components/DeleteShabbatButton";
 
 const SHORTCUTS = [
-  { href: "besoins", emoji: "📋", label: "Besoins" },
-  { href: "missions", emoji: "🎯", label: "Missions" },
-  { href: "materiel", emoji: "🪑", label: "Matériel" },
-  { href: "invites", emoji: "👥", label: "Invités" },
-  { href: "depenses", emoji: "🧾", label: "Dépenses" },
-  { href: "messages", emoji: "💬", label: "Messages" },
-  { href: "commandes", emoji: "🛍️", label: "Commandes" },
-];
+  { href: "besoins", icon: "board", labelKey: "besoins" },
+  { href: "missions", icon: "contributions", labelKey: "missions" },
+  { href: "couchage", icon: "bed", labelKey: "couchage" },
+  { href: "materiel", icon: "chair", labelKey: "materiel" },
+  { href: "invites", icon: "guests", labelKey: "invites" },
+  { href: "depenses", icon: "receipt", labelKey: "depenses" },
+  { href: "messages", icon: "whatsapp", labelKey: "messages" },
+  { href: "co-organisation", icon: "handshake", labelKey: "coorganisation" },
+] satisfies { href: string; icon: LehaimIconName; labelKey: string }[];
 
-/** S10 · Dashboard hôte — le centre de contrôle du Chabbat. */
+/** S10 · Dashboard hôte — le centre de contrôle du Shabbat. */
 export default async function DashboardShabbat({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  await requireManager(id);
+  const t = await getTranslations("shabbat.dashboard");
+  const tf = await getTranslations("expenses.fundingMode");
   const [shabbat, ops] = await Promise.all([getShabbat(id), getOps(id)]);
   if (!shabbat || !ops) notFound();
 
@@ -43,33 +49,27 @@ export default async function DashboardShabbat({
           <BrandMark />
         </div>
 
-        <header className="mb-3.5 flex items-center justify-between gap-3">
+        <header className="mb-3.5">
           <div className="min-w-0">
-            <h1 className="truncate font-display text-[19px] font-semibold">{shabbat.title}</h1>
-            <p className="text-[11.5px] text-ink/50">
+            <h1 className="truncate font-display text-[21px] font-semibold">{shabbat.title}</h1>
+            <p className="text-[13px] text-ink/65">
               {formatDate(shabbat.startsAt)} · {formatTime(shabbat.startsAt)}
             </p>
-            {shabbat.pickupCode && (
-              <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-teal-wash px-2.5 py-1 text-[10.5px] font-extrabold text-teal-deep">
-                Code retrait traiteur · {shabbat.pickupCode}
-              </p>
-            )}
+            <Link
+              href={`/shabbat/${id}/modifier`}
+              className="mt-1 inline-block text-[13px] font-bold text-teal"
+            >
+              {t("editDetails")}
+            </Link>
           </div>
-          <Link
-            href={`/discussion/${id}`}
-            aria-label="Discussion"
-            className="flex size-[38px] shrink-0 items-center justify-center rounded-full bg-white text-ink shadow-[var(--shadow-float)]"
-          >
-            <Chat size={16} />
-          </Link>
         </header>
 
         {/* Compte à rebours et progression */}
         <section className="mb-3.5 rounded-panel bg-ink p-4 text-white">
           <div className="mb-3 flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <div className="mb-1 text-[10.5px] font-extrabold tracking-[0.04em] text-gold uppercase">
-                {ops.readyBy ? "Tout doit être prêt" : "Prochain rendez-vous"}
+              <div className="mb-1 text-[12px] font-extrabold tracking-[0.04em] text-gold uppercase">
+                {ops.readyBy ? t("readyByLabel") : t("nextAppointment")}
               </div>
               <div className="font-display text-[15px] font-semibold">
                 {ops.readyBy
@@ -80,19 +80,23 @@ export default async function DashboardShabbat({
             {remaining && !remaining.past && <Countdown parts={remaining} />}
           </div>
           <ProgressBar value={ops.readiness} track="bg-white/15" height={10} />
-          <div className="mt-1.5 text-[11px] text-white/70">
-            {ops.readiness}% prêt · {readinessLabel(ops.readiness)} ·{" "}
-            {ops.counts.missionsCovered}/{ops.counts.missionsTotal} missions
+          <div className="mt-1.5 text-[12.5px] text-white/70">
+            {t("readinessSummary", {
+              pct: ops.readiness,
+              label: readinessLabel(ops.readiness),
+              covered: ops.counts.missionsCovered,
+              total: ops.counts.missionsTotal,
+            })}
           </div>
         </section>
 
         <div className="mb-3.5 grid grid-cols-2 gap-2.5">
           <Tile
-            label="Convives"
+            label={t("guestsTile")}
             value={`${shabbat.counts.confirmed}/${shabbat.invitations.length || shabbat.guestTarget}`}
           />
           <Tile
-            label="Missions"
+            label={t("missionsTile")}
             value={`${ops.counts.missionsCovered}/${ops.counts.missionsTotal}`}
           />
         </div>
@@ -100,15 +104,15 @@ export default async function DashboardShabbat({
         {ops.fundingMode !== "free" && (
           <Card className="mb-2.5">
             <Link href={`/shabbat/${id}/depenses`} className="flex items-center gap-3 p-3.5">
-              <span className="flex size-[38px] shrink-0 items-center justify-center rounded-xl bg-gold/28 text-[17px]">
+              <span className="flex size-[38px] shrink-0 items-center justify-center rounded-xl bg-gold/28 text-[19px]">
                 🧾
               </span>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-[12.5px] font-bold">
-                  {FUNDING_LABEL[ops.fundingMode]}
+                <div className="truncate text-[14px] font-bold">
+                  {tf(`${ops.fundingMode}.label`)}
                 </div>
-                <div className="text-[10.5px] text-ink/50">
-                  {shabbat.counts.spent.toFixed(0)} € engagés
+                <div className="text-[12px] text-ink/65">
+                  {t("spentSoFar", { amount: shabbat.counts.spent.toFixed(0) })}
                 </div>
               </div>
               <span className="text-ink/30">›</span>
@@ -116,66 +120,51 @@ export default async function DashboardShabbat({
           </Card>
         )}
 
-        <Card className="mb-2.5">
-          <Link href="/marketplace" className="flex items-center gap-3 p-3.5">
-            <span className="flex size-[38px] shrink-0 items-center justify-center rounded-xl bg-coral/16 text-[17px]">
-              🧺
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-[12.5px] font-bold">Commander chez un traiteur</div>
-              <div className="text-[10.5px] text-ink/50">
-                Plats prêts à récupérer, réglés sur place
-              </div>
-            </div>
-            <span className="text-ink/30">›</span>
-          </Link>
-        </Card>
-
         {orphan > 0 && (
           <div className="mb-3.5">
             <AlertNote
-              title={`${orphan} mission${orphan > 1 ? "s" : ""} sans volontaire`}
-              text={`${freeSlots} place${freeSlots > 1 ? "s" : ""} encore à pourvoir`}
+              title={t("orphanMissions", { count: orphan })}
+              text={t("freeSlotsToFill", { count: freeSlots })}
             />
           </div>
         )}
 
         {ops.swaps.length > 0 && (
           <Card className="mb-3.5 p-3.5">
-            <div className="text-[12px] font-bold">
-              {ops.swaps.length} échange{ops.swaps.length > 1 ? "s" : ""} en attente
+            <div className="text-[13.5px] font-bold">
+              {t("pendingSwaps", { count: ops.swaps.length })}
             </div>
-            <div className="mt-0.5 text-[10.5px] text-ink/55">
-              {ops.swaps.map((s) => `${s.fromName} → ${s.toName ?? "le groupe"}`).join(" · ")}
+            <div className="mt-0.5 text-[12px] text-ink/55">
+              {ops.swaps.map((s) => `${s.fromName} → ${s.toName ?? t("theGroup")}`).join(" · ")}
             </div>
           </Card>
         )}
 
-        <h2 className="mb-2 font-display text-[13.5px] font-semibold">Raccourcis</h2>
+        <h2 className="mb-2 font-display text-[15px] font-semibold">{t("shortcutsTitle")}</h2>
         <div className="grid grid-cols-3 gap-2">
-          {SHORTCUTS.map((shortcut) => (
-            <Card key={shortcut.href} className="rounded-field">
+          {SHORTCUTS.filter(
+            (shortcut) =>
+              (shortcut.href !== "materiel" || ops.equipment.length > 0) &&
+              (shortcut.href !== "couchage" ||
+                ops.moments.some((moment) => moment.kind === "sleepover")),
+          ).map((shortcut) => (
+            <Card key={shortcut.href} className="rounded-card">
               <Link
                 href={`/shabbat/${id}/${shortcut.href}`}
-                className="flex flex-col items-center gap-1 px-2 py-3 text-center"
+                className="flex flex-col items-center gap-0.5 px-1.5 pt-2.5 pb-3 text-center active:bg-line-soft/50"
               >
-                <span className="text-base">{shortcut.emoji}</span>
-                <span className="text-[11px] font-bold">{shortcut.label}</span>
+                <LehaimIcon name={shortcut.icon} size={54} />
+                <span className="text-[12.5px] font-bold">{t(`shortcuts.${shortcut.labelKey}`)}</span>
               </Link>
             </Card>
           ))}
         </div>
-
-        {shabbat.isHost && (
-          <div className="mt-5 rounded-card border-[1.5px] border-dashed border-coral/30 bg-white">
-            <DeleteShabbatButton shabbatId={id} title={shabbat.title} />
-          </div>
-        )}
+        {shabbat.isHost && <DeleteShabbat shabbatId={id} title={shabbat.title} />}
       </div>
 
       <StickyFooter>
         <ButtonLink href={`/shabbat/${id}/ready`}>
-          {ops.lockedAt ? "Voir le plan verrouillé" : "Passer en Shabbat Ready"}
+          {ops.lockedAt ? t("viewLockedPlan") : t("goShabbatReady")}
         </ButtonLink>
       </StickyFooter>
     </main>
@@ -185,8 +174,8 @@ export default async function DashboardShabbat({
 function Tile({ label, value }: { label: string; value: string }) {
   return (
     <Card className="p-3.5">
-      <div className="mb-1.5 text-[10.5px] font-extrabold text-ink/50 uppercase">{label}</div>
-      <div className="font-display text-[19px] font-semibold">{value}</div>
+      <div className="mb-1.5 text-[12px] font-extrabold text-ink/65 uppercase">{label}</div>
+      <div className="font-display text-[21px] font-semibold">{value}</div>
     </Card>
   );
 }

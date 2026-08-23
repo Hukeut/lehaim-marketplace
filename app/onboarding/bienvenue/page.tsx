@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { ButtonLink, GlowCircle, Screen } from "@/components/ui";
 import { getOnboardingState } from "@/lib/onboarding-state";
 
@@ -7,12 +8,14 @@ export default async function BienvenuePage() {
   const state = await getOnboardingState();
   if (!state) redirect("/connexion?mode=signup&suite=/onboarding/prenom");
 
+  const t = await getTranslations("onboarding.welcome");
+
   return (
     <Screen>
       <div className="relative flex flex-1 flex-col overflow-hidden bg-ink sm:rounded-[36px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/illustrations/celebration-confirmation.jpg"
+          src="/illustrations/celebration-confirmation.webp"
           alt=""
           className="absolute inset-0 size-full object-cover opacity-55"
         />
@@ -43,23 +46,23 @@ export default async function BienvenuePage() {
               height="11"
               fill="#FFD166"
               aria-hidden="true"
-              className="absolute -top-1 left-0.5"
+              className="absolute -top-1 start-0.5"
             >
               <path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.1 6.1-.6z" />
             </svg>
           </div>
 
           <h1 className="font-display text-2xl font-semibold">
-            Bienvenue{state.firstName ? ` ${state.firstName}` : ""} !
+            {t("title", { name: state.firstName ?? "" })}
           </h1>
-          <p className="max-w-[260px] text-[13.5px] leading-relaxed text-white/75">
-            Tu es prêt à organiser ton prochain Chabbat.
+          <p className="max-w-[260px] text-[15px] leading-relaxed text-white/75">
+            {t("subtitle")}
           </p>
         </div>
 
         <div className="relative px-[30px] pb-[34px]">
           <ButtonLink href="/accueil" size="lg" className="shadow-[var(--shadow-coral-lg)]">
-            Commencer
+            {t("cta")}
           </ButtonLink>
         </div>
       </div>

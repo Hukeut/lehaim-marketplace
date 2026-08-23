@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, type ReactNode } from "react";
 
 /* ------------------------------------------------------------------ */
@@ -28,10 +29,10 @@ export function SegmentedTabs({
             role="tab"
             aria-selected={i === active}
             onClick={() => setActive(i)}
-            className={`flex-1 rounded-full py-2.5 text-[11.5px] font-bold transition-colors ${
+            className={`flex-1 rounded-full py-2.5 text-[13px] font-bold transition-colors ${
               i === active
-                ? "bg-ink text-white shadow-[0_2px_6px_rgba(13,43,62,0.25)]"
-                : "text-ink/50"
+                ? "bg-ink text-white shadow-[0_2px_6px_rgba(15,39,77,0.25)]"
+                : "text-ink/65"
             }`}
           >
             {tab}
@@ -70,7 +71,7 @@ export function ChoicePills({
             setActive(i);
             onChange?.(i);
           }}
-          className={`flex-1 rounded-full py-2.5 text-[12.5px] font-bold transition-colors ${
+          className={`flex-1 rounded-full py-2.5 text-[14px] font-bold transition-colors ${
             i === active
               ? "bg-ink text-white"
               : "border-[1.5px] border-line-soft bg-white text-ink shadow-[var(--shadow-pill)]"
@@ -98,11 +99,12 @@ export function Stepper({
   max?: number;
   suffix?: string;
 }) {
+  const t = useTranslations("common");
   const [value, setValue] = useState(defaultValue);
   return (
     <div className="flex items-center justify-between rounded-field bg-white px-4 py-2.5 shadow-[var(--shadow-card)]">
       <button
-        aria-label="Retirer"
+        aria-label={t("stepper.decrease")}
         onClick={() => setValue((v) => Math.max(min, v - 1))}
         disabled={value <= min}
         className="flex size-[30px] items-center justify-center rounded-full bg-line-soft text-base font-bold text-ink disabled:opacity-40"
@@ -114,7 +116,7 @@ export function Stepper({
         {suffix ? ` ${suffix}` : ""}
       </span>
       <button
-        aria-label="Ajouter"
+        aria-label={t("stepper.increase")}
         onClick={() => setValue((v) => Math.min(max, v + 1))}
         disabled={value >= max}
         className="flex size-[30px] items-center justify-center rounded-full bg-teal text-base font-bold text-white disabled:opacity-40"
@@ -142,14 +144,14 @@ export function Toggle({
       role="switch"
       aria-checked={on}
       onClick={() => setOn((v) => !v)}
-      className="flex w-full items-center justify-between px-3.5 py-3.5 text-left"
+      className="flex w-full items-center justify-between px-3.5 py-3.5 text-start"
     >
-      <span className="text-[12.5px] font-bold">{label}</span>
+      <span className="text-[14px] font-bold">{label}</span>
       <span
         className={`relative h-6 w-10 rounded-full transition-colors ${on ? "bg-teal" : "bg-line"}`}
       >
         <span
-          className={`absolute top-[2.5px] size-[19px] rounded-full bg-white transition-all ${on ? "left-[18.5px]" : "left-[2.5px]"}`}
+          className={`absolute top-[2.5px] size-[19px] rounded-full bg-white transition-all ${on ? "start-[18.5px]" : "start-[2.5px]"}`}
         />
       </span>
     </button>
@@ -170,7 +172,7 @@ export function EditableRow({
   multiline?: boolean;
 }) {
   const shared =
-    "w-full rounded-field bg-white px-4 py-3.5 text-[13px] font-bold shadow-[var(--shadow-card)] outline-none focus:ring-2 focus:ring-teal/40";
+    "w-full rounded-field bg-white px-4 py-3.5 text-[14.5px] font-bold shadow-[var(--shadow-card)] outline-none focus:ring-2 focus:ring-teal/40";
   return multiline ? (
     <textarea
       rows={3}

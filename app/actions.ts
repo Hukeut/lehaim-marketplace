@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import type { Update } from "@/lib/supabase/rows";
+import { run, userMessage } from "@/lib/db";
 
 export type ActionState = { ok: boolean; message: string | null };
 
@@ -26,34 +28,6 @@ function refreshShabbat(id: string) {
   revalidatePath(`/shabbat/${id}`);
 }
 
-/** Code court (4 chiffres) donné aux traiteurs à la place du nom du client. */
-function generatePickupCode() {
-  return String(Math.floor(1000 + Math.random() * 9000));
-}
-
-/**
- * Insère le Shabbat avec un pickup_code fraîchement tiré ; recommence avec
- * un nouveau code si l'unicité en base est violée (23505), jusqu'à 6 essais.
- */
-async function insertShabbatWithCode(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  payload: Record<string, unknown>,
-) {
-  for (let attempt = 0; attempt < 6; attempt++) {
-    const { data, error } = await supabase
-      .from("shabbats")
-      .insert({ ...payload, pickup_code: generatePickupCode() })
-      .select("id")
-      .single();
-    if (!error) return { data, error: null as null };
-    if (error.code !== "23505") return { data: null, error };
-  }
-  return {
-    data: null,
-    error: { message: "Impossible de générer un code de retrait unique, réessayez." },
-  };
-}
-
 /* ------------------------------------------------------------------ */
 /* Création                                                             */
 /* ------------------------------------------------------------------ */
@@ -72,122 +46,79 @@ export async function createShabbat(
   const budget = text(formData, "budget");
   const guests = Number(formData.get("guest_target") ?? 8);
 
-  const { data, error } = await insertShabbatWithCode(supabase, {
-    host_id: user.id,
-    title: text(formData, "title") ?? "Shabbat chez vous",
-    starts_at: new Date(`${date}T${time}`).toISOString(),
-    address: text(formData, "address"),
-    neighbourhood: text(formData, "neighbourhood"),
-    guest_target: Number.isFinite(guests) ? Math.min(60, Math.max(1, guests)) : 8,
-    budget_planned: budget ? Number(budget.replace(/[^\d.,]/g, "").replace(",", ".")) : null,
-    visibility: formData.get("visibility") === "link" ? "link" : "invite",
-  });
+  const { data, error } = await supabase
+    .from("shabbats")
+    .insert({
+      host_id: user.id,
+      title: text(formData, "title") ?? "Shabbat chez vous",
+      starts_at: new Date(`${date}T${time}`).toISOString(),
+      address: text(formData, "address"),
+      neighbourhood: text(formData, "neighbourhood"),
+      guest_target: Number.isFinite(guests) ? Math.min(60, Math.max(1, guests)) : 8,
+      budget_planned: budget ? Number(budget.replace(/[^\d.,]/g, "").replace(",", ".")) : null,
+      visibility: formData.get("visibility") === "link" ? "link" : "invite",
+    })
+    .select("id")
+    .single();
 
-  if (error || !data) return { ok: false, message: error?.message ?? "Une erreur est survenue." };
+  if (error) return { ok: false, message: await userMessage("createShabbat", error) };
+
+  // Le jour choisi dit déjà quel moment existe : un vendredi, c'est le
+  // dîner ; un samedi, le déjeuner. On propose l'autre dès la création
+  // plutôt que de le faire cocher à l'étape suivante.
+  const weekday = new Date(`${date}T${time}`).getDay();
+  const alsoOther = formData.get("also_other_day") === "1";
+
+  const friday = { kind: "friday_dinner", label: "Vendredi soir", detail: "Dîner", position: 0 };
+  const saturday = { kind: "saturday_lunch", label: "Samedi midi", detail: "Déjeuner", position: 1 };
+  // L'heure saisie à l'écran précédent est celle de ce repas-là : on la
+  // reporte sur lui. L'étape suivante ne demandait sinon qu'une seconde fois
+  // ce qu'on venait de renseigner — et l'invitation, qui affiche l'heure de
+  // chaque repas, n'en montrait aucune pour le principal.
+  const primary = weekday === 6 ? saturday : friday;
+  const other = weekday === 6 ? friday : saturday;
+  const moments = alsoOther
+    ? [{ ...primary, meet_at: time }, { ...other, meet_at: null }]
+    : [{ ...primary, meet_at: time }];
+
+  await run(
+    "createShabbat/moments",
+    supabase
+      .from("moments")
+      .insert(moments.map((moment) => ({ ...moment, shabbat_id: data.id })))
+  );
+
+  // Cinq apports qu'aucun Shabbat n'omet : on les pose d'emblée, le reste
+  // se pioche au catalogue.
+  await run(
+    "createShabbat/missions",
+    supabase.from("missions").insert(
+      [
+        { title: "Entrées", emoji: "🥗", category: "food" },
+        { title: "Plat principal", emoji: "🍲", category: "food" },
+        { title: "Hallot", emoji: "🥖", category: "food" },
+        { title: "Vin", emoji: "🍷", category: "drinks" },
+        { title: "Boissons softs", emoji: "🧃", category: "drinks" },
+      ].map((mission, position) => ({
+        ...mission,
+        shabbat_id: data.id,
+        slots: 1,
+        priority: "standard",
+        position,
+      })),
+    )
+  );
 
   revalidatePath("/shabbats");
-  redirect(`/creer/${data.id}/modele`);
-}
-
-/**
- * Supprime définitivement un Shabbat (RLS : seul l'hôte peut le faire).
- * Invitations, menu, courses, dépenses et messages liés partent en cascade.
- * Les commandes marketplace déjà passées sont conservées, juste déliées.
- */
-export async function deleteShabbat(shabbatId: string) {
-  const { supabase, user } = await requireUser();
-  if (!user) return;
-
-  // Le traiteur ne doit pas continuer à préparer un Shabbat qui n'existe
-  // plus : on annule proprement ses commandes encore actives avant de
-  // supprimer le Shabbat (sinon elles seraient juste déliées en silence).
-  await supabase
-    .from("marketplace_orders")
-    .update({ status: "annulee", cancelled_by: "client" })
-    .eq("shabbat_id", shabbatId)
-    .neq("status", "annulee");
-
-  await supabase.from("shabbats").delete().eq("id", shabbatId);
-  revalidatePath("/shabbats");
-  revalidatePath("/accueil");
-  revalidatePath("/devenir-traiteur/commandes");
-  revalidatePath("/marketplace/mes-commandes");
-  redirect("/shabbats");
+  redirect(`/creer/${data.id}/moments`);
 }
 
 export async function publishShabbat(shabbatId: string) {
   const { supabase, user } = await requireUser();
   if (!user) return;
-  await supabase.from("shabbats").update({ status: "published" }).eq("id", shabbatId);
+  await run("publishShabbat/shabbats", supabase.from("shabbats").update({ status: "published" }).eq("id", shabbatId));
   refreshShabbat(shabbatId);
   redirect(`/creer/${shabbatId}/publie`);
-}
-
-/* ------------------------------------------------------------------ */
-/* Menu                                                                 */
-/* ------------------------------------------------------------------ */
-
-export async function addDish(
-  _previous: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const { supabase, user } = await requireUser();
-  if (!user) return { ok: false, message: "Connectez-vous d'abord." };
-
-  const shabbatId = String(formData.get("shabbat_id") ?? "");
-  const name = text(formData, "name");
-  if (!shabbatId || !name) return { ok: false, message: "Donnez un nom au plat." };
-
-  const course = String(formData.get("course") ?? "plat");
-  const { error } = await supabase.from("dishes").insert({
-    shabbat_id: shabbatId,
-    name,
-    course: ["entree", "plat", "dessert"].includes(course) ? course : "plat",
-  });
-
-  if (error) return { ok: false, message: error.message };
-  refreshShabbat(shabbatId);
-  revalidatePath(`/creer/${shabbatId}/menu`);
-  return { ok: true, message: null };
-}
-
-export async function removeDish(shabbatId: string, dishId: string) {
-  const { supabase, user } = await requireUser();
-  if (!user) return;
-  await supabase.from("dishes").delete().eq("id", dishId);
-  refreshShabbat(shabbatId);
-  revalidatePath(`/creer/${shabbatId}/menu`);
-}
-
-export async function cycleDishStatus(
-  shabbatId: string,
-  dishId: string,
-  current: "todo" | "cooking" | "done",
-) {
-  const { supabase, user } = await requireUser();
-  if (!user) return;
-  const next = current === "todo" ? "cooking" : current === "cooking" ? "done" : "todo";
-  await supabase.from("dishes").update({ status: next }).eq("id", dishId);
-  refreshShabbat(shabbatId);
-}
-
-/** L'invité prend un plat en charge, ou le libère s'il l'avait déjà. */
-export async function toggleDishAssignee(shabbatId: string, dishId: string) {
-  const { supabase, user } = await requireUser();
-  if (!user) return;
-
-  const { data } = await supabase
-    .from("dishes")
-    .select("assignee_id")
-    .eq("id", dishId)
-    .maybeSingle();
-
-  await supabase
-    .from("dishes")
-    .update({ assignee_id: data?.assignee_id === user.id ? null : user.id })
-    .eq("id", dishId);
-
-  refreshShabbat(shabbatId);
 }
 
 /* ------------------------------------------------------------------ */
@@ -211,7 +142,7 @@ export async function addGuest(
     guest_phone: text(formData, "guest_phone"),
   });
 
-  if (error) return { ok: false, message: error.message };
+  if (error) return { ok: false, message: await userMessage("addGuest", error) };
   refreshShabbat(shabbatId);
   revalidatePath(`/shabbat/${shabbatId}/invites`);
   return { ok: true, message: `${name} a été ajouté·e.` };
@@ -220,7 +151,7 @@ export async function addGuest(
 export async function removeGuest(shabbatId: string, invitationId: string) {
   const { supabase, user } = await requireUser();
   if (!user) return;
-  await supabase.from("invitations").delete().eq("id", invitationId);
+  await run("removeGuest/invitations", supabase.from("invitations").delete().eq("id", invitationId));
   refreshShabbat(shabbatId);
   revalidatePath(`/shabbat/${shabbatId}/invites`);
 }
@@ -232,7 +163,7 @@ export async function setGuestStatus(
 ) {
   const { supabase, user } = await requireUser();
   if (!user) return;
-  await supabase.from("invitations").update({ status }).eq("id", invitationId);
+  await run("setGuestStatus/invitations", supabase.from("invitations").update({ status }).eq("id", invitationId));
   refreshShabbat(shabbatId);
   revalidatePath(`/shabbat/${shabbatId}/invites`);
   revalidatePath(`/invitation/${shabbatId}`);
@@ -256,7 +187,7 @@ export async function setGuestRole(
     })
     .eq("id", invitationId);
 
-  if (error) return { ok: false, message: error.message };
+  if (error) return { ok: false, message: await userMessage("setGuestRole", error) };
   refreshShabbat(shabbatId);
   revalidatePath(`/shabbat/${shabbatId}/invites`);
   return { ok: true, message: "Rôle enregistré." };
@@ -265,46 +196,6 @@ export async function setGuestRole(
 /* ------------------------------------------------------------------ */
 /* Courses et dépenses                                                  */
 /* ------------------------------------------------------------------ */
-
-export async function addShoppingItem(
-  _previous: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const { supabase, user } = await requireUser();
-  if (!user) return { ok: false, message: "Connectez-vous d'abord." };
-
-  const shabbatId = String(formData.get("shabbat_id") ?? "");
-  const name = text(formData, "name");
-  if (!shabbatId || !name) return { ok: false, message: "Indiquez un article." };
-
-  const { error } = await supabase.from("shopping_items").insert({
-    shabbat_id: shabbatId,
-    name,
-    quantity: text(formData, "quantity"),
-  });
-
-  if (error) return { ok: false, message: error.message };
-  refreshShabbat(shabbatId);
-  return { ok: true, message: null };
-}
-
-export async function toggleShoppingItem(
-  shabbatId: string,
-  itemId: string,
-  done: boolean,
-) {
-  const { supabase, user } = await requireUser();
-  if (!user) return;
-  await supabase.from("shopping_items").update({ done: !done }).eq("id", itemId);
-  refreshShabbat(shabbatId);
-}
-
-export async function removeShoppingItem(shabbatId: string, itemId: string) {
-  const { supabase, user } = await requireUser();
-  if (!user) return;
-  await supabase.from("shopping_items").delete().eq("id", itemId);
-  refreshShabbat(shabbatId);
-}
 
 export async function addExpense(
   _previous: ActionState,
@@ -326,33 +217,8 @@ export async function addExpense(
     paid_by: user.id,
   });
 
-  if (error) return { ok: false, message: error.message };
+  if (error) return { ok: false, message: await userMessage("addExpense", error) };
   refreshShabbat(shabbatId);
-  return { ok: true, message: null };
-}
-
-/* ------------------------------------------------------------------ */
-/* Messages                                                             */
-/* ------------------------------------------------------------------ */
-
-export async function sendMessage(
-  _previous: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  const { supabase, user } = await requireUser();
-  if (!user) return { ok: false, message: "Connectez-vous d'abord." };
-
-  const shabbatId = String(formData.get("shabbat_id") ?? "");
-  const body = text(formData, "body");
-  if (!shabbatId || !body) return { ok: false, message: null };
-
-  const { error } = await supabase
-    .from("messages")
-    .insert({ shabbat_id: shabbatId, sender_id: user.id, body });
-
-  if (error) return { ok: false, message: error.message };
-  revalidatePath(`/discussion/${shabbatId}`);
-  revalidatePath("/messages");
   return { ok: true, message: null };
 }
 
@@ -367,12 +233,77 @@ export async function respondToInvitation(
   const { supabase, user } = await requireUser();
   if (!user) return;
 
-  await supabase
-    .from("invitations")
-    .update({ status })
-    .eq("shabbat_id", shabbatId)
-    .eq("guest_id", user.id);
+  await run(
+    "respondToInvitation/invitations",
+    supabase
+      .from("invitations")
+      .update({ status })
+      .eq("shabbat_id", shabbatId)
+      .eq("guest_id", user.id)
+  );
 
   revalidatePath(`/invitation/${shabbatId}`);
   refreshShabbat(shabbatId);
+}
+
+/* ------------------------------------------------------------------ */
+/* Langue et réglages du Shabbat                                        */
+/* ------------------------------------------------------------------ */
+
+/** Change la langue de l'interface, depuis le profil. */
+export async function switchLanguage(locale: string) {
+  const { isLocale, LOCALE_COOKIE } = await import("@/lib/i18n/locale");
+  if (!isLocale(locale)) return;
+
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  cookieStore.set(LOCALE_COOKIE, locale, {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+    sameSite: "lax",
+  });
+
+  // Le profil garde la préférence : elle suit la personne d'un appareil à
+  // l'autre, là où le cookie ne suit que le navigateur.
+  const { supabase, user } = await requireUser();
+  // C'est cette écriture qui échouait en silence tant que la colonne `locale`
+  // n'existait pas (0018) : la langue ne survivait que par le cookie, donc
+  // jamais d'un appareil à l'autre. Elle est désormais surveillée.
+  if (user) {
+    await run(
+      "switchLanguage/profiles",
+      supabase.from("profiles").update({ locale }).eq("id", user.id),
+    );
+  }
+
+  revalidatePath("/", "layout");
+}
+
+/**
+ * Adresse, date et titre restent modifiables après la création : on crée
+ * souvent un Shabbat avant de savoir où il aura lieu.
+ */
+export async function updateShabbat(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase, user } = await requireUser();
+  if (!user) return { ok: false, message: "Connectez-vous d'abord." };
+
+  const shabbatId = String(formData.get("shabbat_id") ?? "");
+  const date = text(formData, "date");
+  const time = text(formData, "time") ?? "19:30";
+
+  const patch: Update<"shabbats"> = {
+    title: text(formData, "title") ?? "Shabbat",
+    address: text(formData, "address"),
+    neighbourhood: text(formData, "neighbourhood"),
+  };
+  if (date) patch.starts_at = new Date(`${date}T${time}`).toISOString();
+
+  const { error } = await supabase.from("shabbats").update(patch).eq("id", shabbatId);
+  if (error) return { ok: false, message: await userMessage("updateShabbat", error) };
+
+  refreshShabbat(shabbatId);
+  redirect(`/shabbat/${shabbatId}`);
 }

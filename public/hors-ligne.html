@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Lehaim — hors ligne</title>
+    <!--
+      Page servie par le service worker quand le réseau manque.
+
+      Fichier statique et autonome, pour la même raison que global-error.tsx :
+      elle doit s'afficher quand rien d'autre ne fonctionne. Pas de Next, pas
+      de Tailwind, pas de polices distantes — juste les valeurs de la charte
+      recopiées à la main.
+    -->
+    <style>
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: #fff9f0;
+        color: #0f274d;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        text-align: center;
+      }
+      .boite { max-width: 320px; }
+      h1 { margin: 14px 0 0; font-size: 17px; font-weight: 600; line-height: 1.35; }
+      p { margin: 10px 0 0; font-size: 14px; line-height: 1.6; color: rgba(15, 39, 77, 0.65); }
+      .marque { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+      button {
+        margin-top: 22px;
+        width: 100%;
+        padding: 13px 20px;
+        border: 0;
+        border-radius: 999px;
+        background: #0f274d;
+        color: #fff9f0;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="boite">
+      <div class="marque">Lehaim</div>
+      <h1>Pas de connexion</h1>
+      <p>
+        Cet écran demande le réseau. Les pages déjà consultées restent
+        accessibles&nbsp;; le reste attendra que ça revienne.
+      </p>
+      <button onclick="location.reload()">Réessayer</button>
+    </div>
+  </body>
+</html>

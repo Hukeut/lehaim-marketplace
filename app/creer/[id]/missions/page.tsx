@@ -1,14 +1,17 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BackButton } from "@/components/BackButton";
 import { Plus } from "@/components/icons";
-import { EmojiTile } from "@/components/missions";
+import { MissionPresetList } from "@/components/MissionPresetList";
+import { MissionSlots } from "@/components/MissionSlots";
+import { CategoryChip, EmojiTile } from "@/components/missions";
 import { RecommendationPanel } from "@/components/RecommendationPanel";
 import { StepDots } from "@/components/StepDots";
 import { ButtonLink, Card, Overline, StickyFooter } from "@/components/ui";
 import { getShabbat } from "@/lib/data";
-import { CATEGORY_LABEL, getOps, type Category } from "@/lib/missions";
 import { recommendQuantities } from "@/lib/recommendations";
+import { getOps, type Category } from "@/lib/missions";
 import { BrandMark } from "@/components/BrandMark";
 
 const ORDER: Category[] = ["food", "drinks", "equipment", "hosting", "other"];
@@ -16,10 +19,17 @@ const ORDER: Category[] = ["food", "drinks", "equipment", "hosting", "other"];
 /** S04 · Personnaliser les missions — étape 3/5 */
 export default async function PersonnaliserMissions({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ cat?: string }>;
 }) {
   const { id } = await params;
+  const { cat } = await searchParams;
+  const active = ORDER.includes(cat as Category) ? (cat as Category) : null;
+  const t = await getTranslations("shabbat.create.missionsStep");
+  const tCategory = await getTranslations("missions.category");
+  const tc = await getTranslations("common");
   const [shabbat, ops] = await Promise.all([getShabbat(id), getOps(id)]);
   if (!shabbat || !ops) notFound();
 
@@ -29,14 +39,26 @@ export default async function PersonnaliserMissions({
         <BrandMark className="mb-2.5" />
         <div className="mb-3 flex items-center gap-2.5">
           <BackButton fallback={`/creer/${id}/moments`} />
-          <h1 className="flex-1 font-display text-[18px] font-semibold">
-            Personnalisez les missions
-          </h1>
+          <h1 className="flex-1 font-display text-[18px] leading-tight font-semibold">{t("title")}</h1>
           <Link href={`/shabbat/${id}`} className="text-xs font-bold text-teal">
-            Aperçu
+            {t("preview")}
           </Link>
         </div>
-        <StepDots current={3} />
+        <StepDots current={3} total={5} />
+        <div className="-mx-5 mb-1 flex gap-1.5 overflow-x-auto px-5 pb-1">
+          <FilterChip href={`/creer/${id}/missions`} active={!active}>
+            {tc("all")}
+          </FilterChip>
+          {ORDER.map((category) => (
+            <FilterChip
+              key={category}
+              href={`/creer/${id}/missions?cat=${category}`}
+              active={active === category}
+            >
+              {tCategory(category)}
+            </FilterChip>
+          ))}
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 pb-4">
@@ -45,50 +67,33 @@ export default async function PersonnaliserMissions({
           items={recommendQuantities(shabbat.guestTarget)}
         />
 
-        <Card className="mb-4">
-          <Link href="/marketplace" className="flex items-center gap-3 p-3.5">
-            <span className="flex size-[38px] shrink-0 items-center justify-center rounded-xl bg-coral/16 text-[17px]">
-              🧺
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-[12.5px] font-bold">Commander chez un traiteur</div>
-              <div className="text-[10.5px] text-ink/50">
-                Pas envie de cuisiner ? Réservez des plats prêts
-              </div>
-            </div>
-            <span className="text-ink/30">›</span>
-          </Link>
-        </Card>
-
-        {ORDER.map((category) => {
+        {(active ? [active] : ORDER).map((category) => {
           const missions = ops.missions.filter((m) => m.category === category);
           if (!missions.length) return null;
           return (
             <section key={category} className="mb-4">
-              <Overline>{CATEGORY_LABEL[category]}</Overline>
+              <Overline>{tCategory(category)}</Overline>
               <ul className="flex flex-col gap-2">
                 {missions.map((mission) => (
-                  <Card as="li" key={mission.id} className="rounded-field">
+                  <Card as="li" key={mission.id} className="flex items-center gap-2 rounded-field px-3 py-2.5">
                     <Link
-                      href={`/shabbat/${id}/mission/${mission.id}/modifier`}
-                      className="flex items-center gap-3 px-3.5 py-3"
+                      href={`/shabbat/${id}/mission/${mission.id}/modifier?retour=creation`}
+                      className="flex min-w-0 flex-1 items-center gap-2.5"
                     >
-                      <EmojiTile emoji={mission.emoji} category={mission.category} />
-                      <div className="min-w-0 flex-1">
-                        <div className="truncate text-[13px] font-bold">{mission.title}</div>
-                        <div className="truncate text-[10.5px] text-ink/50">
-                          {mission.slots} place{mission.slots > 1 ? "s" : ""}
-                          {mission.quantity ? ` · ${mission.quantity}` : ""}
-                        </div>
-                      </div>
-                      {mission.priority === "essential" ? (
-                        <span className="shrink-0 rounded-full bg-coral/14 px-2.5 py-1.5 text-[9.5px] font-extrabold whitespace-nowrap text-coral-deep">
-                          Prioritaire
+                      <EmojiTile emoji={mission.emoji} category={mission.category} title={mission.title} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[14.5px] font-bold">{mission.title}</span>
+                        <span className="block truncate text-[12px] text-ink/65">
+                          {mission.quantity ?? tCategory(mission.category)}
                         </span>
-                      ) : (
-                        <span className="text-ink/30">›</span>
-                      )}
+                      </span>
                     </Link>
+                    <MissionSlots
+                      shabbatId={id}
+                      missionId={mission.id}
+                      slots={mission.slots}
+                      taken={mission.claimers.length}
+                    />
                   </Card>
                 ))}
               </ul>
@@ -97,23 +102,52 @@ export default async function PersonnaliserMissions({
         })}
 
         {!ops.missions.length && (
-          <p className="mb-4 rounded-field border-[1.5px] border-dashed border-line bg-white px-3.5 py-4 text-center text-[12.5px] text-ink/45">
-            Aucune mission pour l&apos;instant.
+          <p className="mb-4 rounded-field border-[1.5px] border-dashed border-line bg-white px-3.5 py-4 text-center text-[14px] text-ink/45">
+            {t("noMissionsYet")}
           </p>
         )}
 
+        <MissionPresetList
+          shabbatId={id}
+          existingTitles={ops.missions.map((m) => m.title)}
+          onlyCategory={active}
+        />
+
         <Link
-          href={`/shabbat/${id}/mission/nouvelle/modifier`}
+          href={`/shabbat/${id}/mission/nouvelle/modifier?retour=creation`}
           className="flex items-center gap-2.5 rounded-field border-[1.5px] border-dashed border-ink/20 px-3.5 py-3"
         >
           <Plus size={16} strokeWidth={2.2} className="text-ink/40" />
-          <span className="text-[12.5px] font-bold text-ink/50">Ajouter une mission</span>
+          <span className="text-[14px] font-bold text-ink/65">{t("addMission")}</span>
         </Link>
       </div>
 
-      <StickyFooter className="px-5">
-        <ButtonLink href={`/creer/${id}/financement`}>Continuer</ButtonLink>
+      <StickyFooter className="px-5 py-2.5">
+        <ButtonLink href={`/creer/${id}/financement`} size="sm">
+          {tc("continue")}
+        </ButtonLink>
       </StickyFooter>
     </main>
+  );
+}
+
+function FilterChip({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`shrink-0 rounded-full px-3.5 py-2 text-[14px] font-bold whitespace-nowrap ${
+        active ? "bg-ink text-white" : "border-[1.5px] border-line bg-white text-ink/60"
+      }`}
+    >
+      {children}
+    </Link>
   );
 }

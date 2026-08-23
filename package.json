@@ -3,15 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/build-updates.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/build-updates.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "updates": "node scripts/build-updates.mjs",
+    "types": "npx --yes supabase@latest gen types typescript --linked --schema public > lib/supabase/database.types.ts",
+    "test:rls": "node scripts/test-rls.mjs",
+    "i18n:check": "node scripts/i18n-check.mjs && node scripts/i18n-scan.mjs",
+    "i18n:missing": "node scripts/i18n-missing.mjs",
+    "i18n:scan": "node scripts/i18n-scan.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.2",
     "next": "^16.3.0",
+    "next-intl": "^4.13.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "server-only": "^0.0.1"

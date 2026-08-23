@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { addSuggestion, chooseSuggestion, toggleVote } from "@/app/mission-actions";
 import { Card } from "@/components/ui";
 import type { ActionState } from "@/app/actions";
@@ -21,6 +22,7 @@ export function SuggestionList({
   /** Le responsable de la mission ou l'hôte peut trancher. */
   canChoose: boolean;
 }) {
+  const t = useTranslations("missions.suggestions");
   const [, formAction, pending] = useActionState(addSuggestion, initial);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -40,15 +42,15 @@ export function SuggestionList({
             ref={inputRef}
             name="body"
             required
-            placeholder="Proposer une idée…"
-            className="min-w-0 flex-1 rounded-field border-[1.5px] border-line-soft bg-white px-3.5 py-3 text-[12.5px] shadow-[0_2px_8px_rgba(13,43,62,0.06)] outline-none focus:ring-2 focus:ring-teal/40"
+            placeholder={t("placeholder")}
+            className="min-w-0 flex-1 rounded-field border-[1.5px] border-line-soft bg-white px-3.5 py-3 text-[14px] shadow-[0_2px_8px_rgba(15,39,77,0.06)] outline-none focus:ring-2 focus:ring-teal/40"
           />
           <button
             type="submit"
             disabled={pending}
-            className="shrink-0 rounded-field bg-teal px-4 text-[12.5px] font-bold text-white disabled:opacity-50"
+            className="shrink-0 rounded-field bg-teal px-4 text-[14px] font-bold text-white disabled:opacity-50"
           >
-            Proposer
+            {t("propose")}
           </button>
         </div>
       </form>
@@ -63,13 +65,15 @@ export function SuggestionList({
             >
               <div className="flex items-center gap-3 p-3">
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-[13px] font-bold">{suggestion.body}</div>
-                  <div className="text-[10.5px] text-ink/50">Proposé par {suggestion.author}</div>
+                  <div className="truncate text-[14.5px] font-bold">{suggestion.body}</div>
+                  <div className="text-[12px] text-ink/65">
+                    {t("proposedBy", { name: suggestion.author })}
+                  </div>
                 </div>
 
                 {suggestion.chosen ? (
-                  <span className="shrink-0 rounded-full bg-olive/14 px-2.5 py-1.5 text-[10px] font-extrabold whitespace-nowrap text-olive-deep">
-                    Choisi
+                  <span className="shrink-0 rounded-full bg-olive/14 px-2.5 py-1.5 text-[11.5px] font-extrabold whitespace-nowrap text-olive-deep">
+                    {t("chosen")}
                   </span>
                 ) : (
                   <div className="flex shrink-0 items-center gap-2">
@@ -79,9 +83,9 @@ export function SuggestionList({
                       >
                         <button
                           type="submit"
-                          className="text-[11px] font-bold text-teal"
+                          className="text-[12.5px] font-bold text-teal"
                         >
-                          Choisir
+                          {t("choose")}
                         </button>
                       </form>
                     )}
@@ -96,8 +100,8 @@ export function SuggestionList({
                     >
                       <button
                         type="submit"
-                        aria-label={suggestion.votedByMe ? "Retirer mon vote" : "Voter"}
-                        className={`flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[11px] font-bold ${
+                        aria-label={suggestion.votedByMe ? t("removeVoteAria") : t("voteAria")}
+                        className={`flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[12.5px] font-bold ${
                           suggestion.votedByMe
                             ? "bg-teal text-white"
                             : "bg-teal/12 text-teal-deep"
@@ -113,8 +117,8 @@ export function SuggestionList({
           ))}
         </ul>
       ) : (
-        <p className="rounded-field border-[1.5px] border-dashed border-line bg-white px-3.5 py-3 text-[12.5px] text-ink/40">
-          Aucune idée proposée pour l&apos;instant.
+        <p className="rounded-field border-[1.5px] border-dashed border-line bg-white px-3.5 py-3 text-[14px] text-ink/40">
+          {t("noIdeasYet")}
         </p>
       )}
     </>

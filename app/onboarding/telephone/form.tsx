@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Screen } from "@/components/ui";
 import { StepBody, StepFooter, StepHero } from "@/components/onboarding";
 import { COUNTRIES, countryByCode, formatNationalNumber } from "@/lib/onboarding";
@@ -13,6 +14,7 @@ export function PhoneForm({
   initialCode: string;
   initialDigits: string;
 }) {
+  const t = useTranslations("onboarding.phone");
   const [state, action, pending] = useActionState(savePhone, { error: null });
   const [code, setCode] = useState(initialCode);
   const [digits, setDigits] = useState(initialDigits);
@@ -32,7 +34,7 @@ export function PhoneForm({
         <input type="hidden" name="digits" value={digits} />
 
         <StepHero
-          image="/illustrations/hote-invite-connexion.jpg"
+          image="/illustrations/hote-invite-connexion.webp"
           height={190}
           step={2}
           back="/onboarding/prenom"
@@ -40,8 +42,8 @@ export function PhoneForm({
 
         <StepBody
           padX={26}
-          title="Ton numéro, pour te retrouver"
-          subtitle="Jamais partagé, jamais spammé. Pas de code à saisir."
+          title={t("title")}
+          subtitle={t("subtitle")}
         >
           <div className="flex gap-2">
             <button
@@ -54,23 +56,24 @@ export function PhoneForm({
                 {country.flag}
               </span>
               <span className="font-display text-[15px] font-semibold">{country.dial}</span>
-              <span className="text-[10px] text-ink/40" aria-hidden="true">
+              <span className="text-[11.5px] text-ink/40" aria-hidden="true">
                 ▾
               </span>
             </button>
 
             <input
               inputMode="tel"
+              dir="ltr"
               autoComplete="tel-national"
-              aria-label="Numéro de téléphone"
+              aria-label={t("numberAriaLabel")}
               aria-invalid={showError}
-              placeholder="6 12 34 56 78"
+              placeholder={t("placeholder")}
               value={formatNationalNumber(digits)}
               onBlur={() => setTouched(true)}
               onChange={(event) =>
                 setDigits(event.target.value.replace(/\D/g, "").slice(0, country.digits))
               }
-              className={`min-w-0 flex-1 rounded-card border-2 px-[18px] py-4 font-display text-[17px] font-semibold shadow-[var(--shadow-float)] outline-none placeholder:font-normal placeholder:text-ink/30 ${
+              className={`min-w-0 flex-1 rounded-card border-2 px-[18px] py-4 font-display text-[19px] font-semibold shadow-[var(--shadow-float)] outline-none placeholder:font-normal placeholder:text-ink/30 ${
                 showError
                   ? "border-coral-deep bg-coral/8 text-coral-deep"
                   : "border-teal bg-white"
@@ -79,14 +82,14 @@ export function PhoneForm({
           </div>
 
           {showError && (
-            <p role="alert" className="mt-2 text-[12px] font-bold text-coral-deep">
-              {state.error ?? "Il manque quelques chiffres"}
+            <p role="alert" className="mt-2 text-[13.5px] font-bold text-coral-deep">
+              {state.error ?? t("incompleteError")}
             </p>
           )}
         </StepBody>
 
         <StepFooter
-          label="C'est parti"
+          label={t("cta")}
           padX={26}
           disabled={!complete}
           pending={pending}
@@ -122,11 +125,12 @@ function CountrySheet({
   onSelect: (code: string) => void;
   onClose: () => void;
 }) {
+  const t = useTranslations("onboarding.phone");
   return (
     <div className="absolute inset-0 z-30 flex flex-col justify-end">
       <button
         type="button"
-        aria-label="Fermer"
+        aria-label={t("closeAriaLabel")}
         onClick={onClose}
         className="absolute inset-0 bg-ink/45"
       />
@@ -134,12 +138,12 @@ function CountrySheet({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Choisir un indicatif"
+        aria-label={t("countryPickerTitle")}
         className="relative max-h-[70%] animate-[var(--animate-rise)] rounded-t-sheet bg-cream pb-[22px]"
       >
         <div className="mx-auto mt-3 mb-3.5 h-[5px] w-10 rounded-full bg-line" />
         <div className="px-[22px] pb-3 font-display text-base font-semibold">
-          Choisir un indicatif
+          {t("countryPickerTitle")}
         </div>
 
         <div className="max-h-[280px] overflow-y-auto px-3.5 pb-1">
@@ -150,16 +154,16 @@ function CountrySheet({
                 key={country.code}
                 type="button"
                 onClick={() => onSelect(country.code)}
-                className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-3 text-left ${
+                className={`flex w-full items-center gap-2.5 rounded-xl px-2.5 py-3 text-start ${
                   active ? "bg-teal/10" : ""
                 }`}
               >
-                <span className="text-[17px]" aria-hidden="true">
+                <span className="text-[19px]" aria-hidden="true">
                   {country.flag}
                 </span>
-                <span className="flex-1 text-[13.5px] font-bold">{country.name}</span>
+                <span className="flex-1 text-[15px] font-bold">{t(country.nameKey)}</span>
                 <span
-                  className={`text-[13px] font-bold ${active ? "text-teal" : "text-ink/50"}`}
+                  className={`text-[14.5px] font-bold ${active ? "text-teal" : "text-ink/65"}`}
                 >
                   {country.dial}
                 </span>

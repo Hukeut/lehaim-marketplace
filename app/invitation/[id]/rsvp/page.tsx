@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+import { LehaimIcon, type LehaimIconName } from "@/components/LehaimIcon";
 import { notFound, redirect } from "next/navigation";
 import { setMomentRsvp } from "@/app/mission-actions";
 import { BackButton } from "@/components/BackButton";
@@ -16,6 +18,7 @@ export default async function RsvpParMoment({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const t = await getTranslations("invitation.rsvp");
   const [shabbat, ops, mine] = await Promise.all([
     getShabbat(id),
     getOps(id),
@@ -39,8 +42,8 @@ export default async function RsvpParMoment({
         <div className="mb-3">
           <BackButton fallback={`/invitation/${id}`} />
         </div>
-        <h1 className="mb-0.5 font-display text-xl font-semibold">Vous venez ?</h1>
-        <p className="mb-4 text-[12.5px] text-ink/55">Sélectionnez ce qui vous concerne.</p>
+        <h1 className="mb-0.5 font-display text-xl font-semibold">{t("title")}</h1>
+        <p className="mb-4 text-[14px] text-ink/55">{t("subtitle")}</p>
       </div>
 
       <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto px-5.5 pb-4">
@@ -55,19 +58,19 @@ export default async function RsvpParMoment({
                     type="submit"
                     role="switch"
                     aria-checked={on}
-                    className="flex w-full items-center gap-3 p-3.5 text-left"
+                    className="flex w-full items-center gap-3 p-3.5 text-start"
                   >
                     <span
-                      className={`flex size-[38px] shrink-0 items-center justify-center rounded-xl text-[17px] ${TONE[meta?.tone ?? "gold"]}`}
+                      className={`flex size-[38px] shrink-0 items-center justify-center overflow-hidden rounded-xl ${TONE[meta?.tone ?? "gold"]}`}
                     >
-                      {meta?.emoji ?? "🕯️"}
+                      <LehaimIcon name={(meta?.icon ?? "candles") as LehaimIconName} size={38} />
                     </span>
                     <span className="flex-1">
-                      <span className="block text-[13.5px] font-bold">{moment.label}</span>
-                      <span className="block text-[10.5px] text-ink/50">
+                      <span className="block text-[15px] font-bold">{moment.label}</span>
+                      <span className="block text-[12px] text-ink/65">
                         {moment.detail}
                         {moment.attending > 0
-                          ? ` · ${moment.attending} inscrit${moment.attending > 1 ? "s" : ""}`
+                          ? ` · ${t("registeredCount", { count: moment.attending })}`
                           : ""}
                       </span>
                     </span>
@@ -75,7 +78,7 @@ export default async function RsvpParMoment({
                       className={`relative h-[26px] w-11 shrink-0 rounded-full transition-colors ${on ? "bg-teal" : "bg-line"}`}
                     >
                       <span
-                        className={`absolute top-[3px] size-5 rounded-full bg-white shadow-sm transition-all ${on ? "left-[21px]" : "left-[3px]"}`}
+                        className={`absolute top-[3px] size-5 rounded-full bg-white shadow-sm transition-all ${on ? "start-[21px]" : "start-[3px]"}`}
                       />
                     </span>
                   </button>
@@ -84,14 +87,14 @@ export default async function RsvpParMoment({
             );
           })
         ) : (
-          <p className="rounded-field border-[1.5px] border-dashed border-line bg-white px-3.5 py-4 text-center text-[12.5px] text-ink/45">
-            L&apos;hôte n&apos;a pas encore précisé les moments.
+          <p className="rounded-field border-[1.5px] border-dashed border-line bg-white px-3.5 py-4 text-center text-[14px] text-ink/45">
+            {t("noMomentsYet")}
           </p>
         )}
       </div>
 
       <StickyFooter className="px-5.5">
-        <ButtonLink href={`/shabbat/${id}/missions`}>Confirmer et choisir une mission</ButtonLink>
+        <ButtonLink href={`/shabbat/${id}/missions`}>{t("confirmAndChooseMission")}</ButtonLink>
       </StickyFooter>
     </main>
   );

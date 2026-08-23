@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { currentUser } from "@/lib/supabase/user";
 import { STEP_ORDER, type OnboardingQuestion, type OnboardingStep } from "@/lib/onboarding";
 
 export type OnboardingState = {
@@ -27,9 +28,7 @@ const COLUMNS =
  */
 export async function getOnboardingState(): Promise<OnboardingState | null> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await currentUser();
 
   if (!user) return null;
 
@@ -73,8 +72,17 @@ export async function getOnboardingState(): Promise<OnboardingState | null> {
   };
 }
 
-/** Première question sans réponse. */
+/**
+ * Première question sans réponse.
+ *
+ * Un prénom déjà enregistré vaut parcours terminé : les trois autres
+ * questions sont du confort, et les reposer à chaque reconnexion donnait
+ * l'impression de repartir de zéro. Elles restent accessibles depuis le
+ * profil pour qui veut les compléter.
+ */
 function deriveStep(row: Record<string, string | null>): OnboardingStep {
+  if (trimmed(row.first_name)) return "done";
+
   const answered: Record<OnboardingQuestion, boolean> = {
     prenom: Boolean(trimmed(row.first_name)),
     telephone: Boolean(trimmed(row.phone)),

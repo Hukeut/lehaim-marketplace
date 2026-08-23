@@ -1,0 +1,1361 @@
+{
+  "common": {
+    "appName": "Lehaim",
+    "back": "Atrás",
+    "brandHome": "Lehaim · volver al inicio",
+    "nav": {
+      "home": "Inicio",
+      "shabbats": "Shabats",
+      "profile": "Perfil",
+      "main": "Navegación principal",
+      "todo": "Tareas",
+      "marketplace": "Marketplace"
+    },
+    "createShabbat": "Crear un Shabat",
+    "login": "Iniciar sesión",
+    "signedOut": {
+      "title": "Inicie sesión",
+      "text": "En cuanto abra su cuenta, encontrará aquí {what}."
+    },
+    "stepper": {
+      "decrease": "Quitar",
+      "increase": "Añadir"
+    },
+    "guestFallback": "Invitado",
+    "missionFallback": "Misión",
+    "you": "Usted",
+    "memberSince": "Miembro desde {month} de {year}",
+    "months": {
+      "0": "enero",
+      "1": "febrero",
+      "2": "marzo",
+      "3": "abril",
+      "4": "mayo",
+      "5": "junio",
+      "6": "julio",
+      "7": "agosto",
+      "8": "septiembre",
+      "9": "octubre",
+      "10": "noviembre",
+      "11": "diciembre"
+    },
+    "settings": "Ajustes",
+    "status": {
+      "urgent": "Urgente",
+      "confirmed": "Confirmado",
+      "declined": "Rechazado",
+      "pending": "Por responder",
+      "ended": "Finalizado",
+      "recommended": "Recomendado"
+    },
+    "emptyState": {
+      "noShabbat": {
+        "title": "Ningún Shabat previsto",
+        "text": "Abra su mesa a sus seres queridos: elija una fecha, nosotros nos ocupamos del resto."
+      }
+    },
+    "continue": "Continuar",
+    "createThisShabbat": "Crear este Shabat",
+    "host": "Anfitrión",
+    "loadingShabbat": "Cargando su Shabat…",
+    "enter": "Entrar",
+    "meta": {
+      "description": "Organicen su Shabat, juntos.",
+      "ogDescription": "El Shabat entre amigos, sin el estrés.",
+      "ogImageAlt": "Una familia reunida en la mesa para el Shabat"
+    },
+    "copyLink": {
+      "copied": "Copiado",
+      "copyLink": "Copiar el enlace"
+    },
+    "shareOnWhatsapp": "Compartir en WhatsApp",
+    "signingOut": "Cerrando sesión…",
+    "signOut": "Cerrar sesión",
+    "stepOfTotal": "Paso {current} de {total}",
+    "joinShabbat": "Unirse a un Shabat",
+    "all": "Todo",
+    "organise": "Organizar",
+    "joinShort": "Unirme",
+    "backHome": "Volver al inicio",
+    "backToShabbat": "Volver al Shabat",
+    "remove": {
+      "label": "Eliminar {name}",
+      "confirm": "¿Eliminar «{name}»?",
+      "keep": "Conservar",
+      "action": "Eliminar",
+      "removing": "Eliminando…",
+      "claimed": "{count, plural, one {{names} lo había cogido — perderá su papel.} other {{names} lo habían cogido — perderán sus papeles.}}"
+    }
+  },
+  "errors": {
+    "page": {
+      "title": "Esta pantalla no se ha podido mostrar",
+      "text": "El fallo es nuestro, no suyo. Ha quedado registrado y vamos a revisarlo.",
+      "retry": "Volver a intentar",
+      "home": "Volver al inicio"
+    },
+    "notFound": {
+      "title": "Esta página no existe",
+      "text": "Puede que el enlace haya caducado o que la dirección esté incompleta. Pida a su anfitrión que se lo reenvíe.",
+      "home": "Volver al inicio"
+    },
+    "db": {
+      "full": "Ya está completo: alguien acaba de ocupar la última plaza.",
+      "denied": "No tiene permisos para hacer esto.",
+      "duplicate": "Esto ya estaba guardado.",
+      "generic": "No se ha podido guardar. Inténtelo de nuevo en un momento."
+    }
+  },
+  "onboarding": {
+    "intro": {
+      "title": "El Shabat con amigos, sin el estrés",
+      "subtitle": "WhatsApp sigue siendo la conversación. Lehaim se ocupa del resto.",
+      "cta": "Vamos allá",
+      "loginPrompt": "¿Ya tienes una cuenta?",
+      "loginCta": "Iniciar sesión"
+    },
+    "resume": {
+      "greeting": "Retomamos donde lo dejaste, {name}",
+      "questionsLeft": "{count, plural, one {Solo una pregunta más y tu cuenta estará lista.} other {Solo # preguntas más y tu cuenta estará lista.}}",
+      "cta": "Continuar"
+    },
+    "firstName": {
+      "title": "¿Cómo te llamamos?",
+      "subtitle": "Nos gusta conocer a la gente que invitamos.",
+      "placeholder": "Hugo",
+      "greeting": "Encantados, {name} 👋",
+      "cta": "Continuar"
+    },
+    "phone": {
+      "title": "Tu número, para encontrarte",
+      "subtitle": "Nunca compartido, nunca spam. Sin código que introducir.",
+      "numberAriaLabel": "Número de teléfono",
+      "placeholder": "6 12 34 56 78",
+      "incompleteError": "Faltan algunas cifras",
+      "cta": "Vamos allá",
+      "countryPickerTitle": "Elegir un prefijo",
+      "closeAriaLabel": "Cerrar",
+      "countryNames": {
+        "fr": "Francia",
+        "il": "Israel",
+        "gb": "Reino Unido",
+        "us": "Estados Unidos"
+      }
+    },
+    "welcome": {
+      "title": "¡Bienvenido/a, {name}!",
+      "subtitle": "Ya estás listo/a para organizar tu próximo Shabat.",
+      "cta": "Empezar"
+    },
+    "frequencyStep": {
+      "title": "Un Shabat con amigos, en tu casa es más bien…",
+      "cta": "Perfecto"
+    },
+    "frequency": {
+      "weekly": {
+        "label": "Todas las semanas",
+        "reaction": "¡Todo un habitual! Te vamos a hacer ganar muchísimo tiempo."
+      },
+      "biweekly": {
+        "label": "Dos veces al mes",
+        "reaction": "El ritmo perfecto: lo bastante seguido para que sea sencillo."
+      },
+      "sometimes": {
+        "label": "De vez en cuando",
+        "reaction": "Perfecto. Te avisaremos sin agobiarte nunca."
+      },
+      "discovering": {
+        "label": "Todavía estoy descubriéndolo",
+        "reaction": "¡Bienvenido/a! Te acompañamos paso a paso en tu primer Shabat."
+      }
+    },
+    "roleStep": {
+      "title": "¿Sueles organizar en tu casa, o eres más de ir de invitado?",
+      "cta": "Último paso"
+    },
+    "hostingStyle": {
+      "host": {
+        "label": "Organizo en mi casa",
+        "hint": "Normalmente soy quien organiza",
+        "reaction": "Los anfitriones como tú van a ganar muchísimo tiempo."
+      },
+      "guest": {
+        "label": "Soy invitado/a",
+        "hint": "Participo en casa de otros",
+        "reaction": "Siempre te encontraremos un sitio en la mesa."
+      },
+      "both": {
+        "label": "Las dos cosas, depende",
+        "hint": "Según la semana",
+        "reaction": "El equilibrio perfecto. La app se adapta a las dos cosas."
+      }
+    },
+    "stepHero": {
+      "closeAriaLabel": "Cerrar"
+    },
+    "language": {
+      "title": "¿En qué idioma?",
+      "subtitle": "Puedes cambiarlo cuando quieras en los ajustes.",
+      "cta": "Continuar",
+      "required": "Elige un idioma para continuar.",
+      "fr": {
+        "label": "Français",
+        "reaction": "On continue en français."
+      },
+      "en": {
+        "label": "English",
+        "reaction": "We'll continue in English."
+      },
+      "he": {
+        "label": "עברית",
+        "reaction": "נמשיך בעברית."
+      },
+      "es": {
+        "label": "Español",
+        "reaction": "Seguimos en español."
+      },
+      "ru": {
+        "label": "Русский",
+        "reaction": "Продолжим по-русски."
+      }
+    }
+  },
+  "survey": {
+    "intro": {
+      "title": "Cuanto mejor te conozcamos, mejores serán nuestras sugerencias",
+      "subtitle": "4 preguntas cortas, 30 segundos. Puedes parar cuando quieras.",
+      "cta": "Vamos allá",
+      "later": "Más tarde"
+    },
+    "outro": {
+      "title": "Gracias, {name}, ahora te toca a ti agasajar",
+      "subtitle": "Tus próximas sugerencias de misiones ya serán más acertadas.",
+      "cta": "Volver a la app"
+    },
+    "dishStep": {
+      "title": "Si te piden traer un plato…",
+      "cta": "Continuar"
+    },
+    "dish": {
+      "wine": {
+        "label": "Llego con vino",
+        "hint": "Siempre, sin pensarlo",
+        "reaction": "Pronto serás el especialista en buenas botellas."
+      },
+      "dessert": {
+        "label": "Cocino un postre",
+        "hint": "Me encanta",
+        "reaction": "Te reservaremos los postres, nadie se quejará."
+      },
+      "cooked": {
+        "label": "Ensalada o plato, depende",
+        "hint": "Según la inspiración",
+        "reaction": "Versátil: te propondremos lo que falte ese día."
+      },
+      "bought": {
+        "label": "Prefiero comprarlo ya hecho",
+        "hint": "Sin vergüenza alguna",
+        "reaction": "Sin problema. Te pasaremos las mejores direcciones."
+      }
+    },
+    "dietStep": {
+      "title": "¿Alguna restricción que debamos conocer?",
+      "subtitle": "Elige todo lo que se aplique, o nada en absoluto.",
+      "cta": "Continuar",
+      "reaction": "Anotado, lo tendremos en cuenta."
+    },
+    "diet": {
+      "casher": {
+        "label": "Kosher"
+      },
+      "vegetarien": {
+        "label": "Vegetariano"
+      },
+      "sans-gluten": {
+        "label": "Sin gluten"
+      },
+      "sans-lactose": {
+        "label": "Sin lactosa"
+      }
+    },
+    "synagogueStep": {
+      "title": "El sábado por la mañana, ¿adónde vas?",
+      "cta": "Continuar"
+    },
+    "synagogue": {
+      "always": {
+        "label": "A la sinagoga, siempre",
+        "reaction": "Te propondremos las salidas en grupo del sábado por la mañana."
+      },
+      "sometimes": {
+        "label": "A veces",
+        "reaction": "Te avisaremos de los oficios cuando encaje bien."
+      },
+      "rarely": {
+        "label": "Raramente",
+        "reaction": "Anotado. Nos centraremos más en la mesa."
+      },
+      "never": {
+        "label": "Nunca",
+        "reaction": "Anotado, no te hablaremos de ello."
+      }
+    },
+    "contentStep": {
+      "title": "Para inspirarte, ¿qué prefieres?",
+      "cta": "Último paso"
+    },
+    "contentPref": {
+      "recipes": {
+        "label": "Ideas de recetas",
+        "reaction": "Te pasaremos ideas, nunca spam."
+      },
+      "places": {
+        "label": "Buenas direcciones",
+        "reaction": "Catering, bodegas, pastelerías: abrimos la libreta."
+      },
+      "both": {
+        "label": "Las dos cosas",
+        "reaction": "Lo mejor de ambas, sin saturarte nunca."
+      }
+    },
+    "banner": {
+      "titlePostponed": "Tu perfil te espera",
+      "titleDefault": "Completa tu perfil",
+      "subtitle": "4 preguntas, 30 segundos, para sugerencias más acertadas."
+    }
+  },
+  "shabbat": {
+    "home": {
+      "greetingGeneric": "Hola",
+      "greeting": "Hola, {firstName}",
+      "signedOutNext": "su próximo Shabat",
+      "signedOutThis": "este Shabat",
+      "todoTitle": "Por hacer",
+      "quickOverview": "Vistazo rápido",
+      "budget": "Presupuesto",
+      "guests": "Invitados",
+      "dishes": "Platos",
+      "manage": "Gestionar",
+      "invite": "Invitar",
+      "confirmedCount": "{confirmed}/{invited} {confirmed, plural, one {invitado confirmado} other {invitados confirmados}}",
+      "assignRoles": "{count, plural, one {Asignar # rol} other {Asignar # roles}}",
+      "pendingResponses": "{count, plural, one {# respuesta pendiente} other {# respuestas pendientes}}",
+      "contributions": "Aportaciones"
+    },
+    "list": {
+      "title": "Mis Shabats",
+      "signedOutWhat": "sus Shabats",
+      "tabs": {
+        "hosting": "Organizo",
+        "joining": "Participo"
+      },
+      "plannedSeats": "{count, plural, one {# plaza prevista} other {# plazas previstas}}",
+      "noInvitation": {
+        "title": "Ninguna invitación",
+        "text": "Cuando un allegado le abra su mesa, aparecerá aquí."
+      }
+    },
+    "create": {
+      "title": "Nuevo Shabat",
+      "titleLabel": "Título",
+      "titleDefault": "Shabat en su casa",
+      "dateLabel": "Fecha",
+      "timeLabel": "Hora",
+      "addressLabel": "Dirección",
+      "addressPlaceholder": "Calle Mayor 12, Madrid",
+      "neighbourhoodLabel": "Barrio",
+      "neighbourhoodPlaceholder": "Malasaña",
+      "guestCountLabel": "Número de invitados",
+      "removeGuestAria": "Quitar un invitado",
+      "addGuestAria": "Añadir un invitado",
+      "visibilityLabel": "Visibilidad",
+      "visibilityInvite": "Solo por invitación",
+      "visibilityLink": "Enlace para compartir",
+      "creating": "Creando…",
+      "loginToCreate": "Inicie sesión para crear",
+      "financement": {
+        "title": "¿Cómo financian este Shabat?",
+        "subtitle": "Podrá cambiar esta elección más tarde."
+      },
+      "missionsStep": {
+        "title": "Lo que necesita el Shabat",
+        "preview": "Vista previa",
+        "slots": "{count, plural, one {# plaza} other {# plazas}}",
+        "priority": "Prioritaria",
+        "noMissionsYet": "Aún no hay misiones.",
+        "addMission": "Añadir una misión",
+        "catalog": {
+          "title": "Misiones habituales",
+          "subtitle": "Añade lo que necesitas con un toque.",
+          "already": "Ya está",
+          "slots": "{count, plural, one {# plaza} other {# plazas}}",
+          "addHint": "Añadir"
+        },
+        "addSlot": "Una persona más",
+        "removeSlot": "Una persona menos",
+        "people": "pers."
+      },
+      "modele": {
+        "title": "Elija su modelo",
+        "subtitle": "Podrá personalizarlo todo en el siguiente paso.",
+        "missionsCount": "{count, plural, one {# misión} other {# misiones}}",
+        "momentsCount": "{count, plural, one {# momento} other {# momentos}}"
+      },
+      "moments": {
+        "title": "¿Qué ofrece?",
+        "subtitle": "Active lo que corresponda a este Shabat.",
+        "detail": {
+          "meetAt": "Hora de encuentro",
+          "arrivalAt": "Hora de llegada",
+          "capacity": "Plazas disponibles",
+          "policy": "Para quién",
+          "policies": {
+            "mixed": "Mixto",
+            "girls": "Chicas",
+            "boys": "Chicos"
+          },
+          "setTime": "Añadir la hora",
+          "otherTime": "Otra hora",
+          "places": "{count, plural, one {# plaza} other {# plazas}}",
+          "manageRooms": "Gestionar habitaciones",
+          "synagoguePlaceholder": "Dirección de la sinagoga"
+        },
+        "chosen": "La otra comida",
+        "extras": "Añadir si hace falta"
+      },
+      "publie": {
+        "title": "Su mesa está abierta",
+        "subtitle": "Sus seres queridos ya pueden unirse el {date}. Será el primero en enterarse de cada respuesta.",
+        "inviteFirstGuests": "Invitar a mis primeros invitados",
+        "viewMyShabbat": "Ver mi Shabat",
+        "backToHome": "Volver al inicio"
+      },
+      "rebours": {
+        "title": "¿Una fecha límite para estar listos?",
+        "subtitle": "La cuenta atrás motiva al grupo y activa los recordatorios.",
+        "enableCountdown": "Activar la cuenta atrás",
+        "readyByLabel": "Todo debe estar listo…",
+        "infoNote": "La cuenta atrás controla la barra de progreso, los recordatorios automáticos y los mensajes de WhatsApp sugeridos.",
+        "options": {
+          "eveningBefore": "La víspera, 18:00",
+          "sameDayNoon": "El mismo día, 12:00",
+          "sameDayAfternoon": "El mismo día, 16:00"
+        },
+        "exact": {
+          "label": "Otra fecha y hora",
+          "hint": "Para un plazo que no encaja con los atajos.",
+          "save": "Guardar",
+          "saved": "Guardado"
+        }
+      },
+      "visibilityInviteHint": "Por invitación: añades a la gente una a una, nadie más puede entrar.",
+      "visibilityLinkHint": "Enlace para compartir: quien tenga el enlace o el código puede unirse. Práctico para un grupo de WhatsApp.",
+      "alsoFriday": "Añadir también el viernes por la noche",
+      "alsoSaturday": "Añadir también el sábado al mediodía",
+      "alsoHint": "Te ahorra el paso siguiente."
+    },
+    "dashboard": {
+      "discussionAria": "Conversación",
+      "readyByLabel": "Todo debe estar listo",
+      "nextAppointment": "Próxima cita",
+      "readinessSummary": "{pct}% listo · {label} · {covered}/{total} {total, plural, one {misión} other {misiones}}",
+      "guestsTile": "Invitados",
+      "missionsTile": "Aportaciones",
+      "spentSoFar": "{amount} € gastados",
+      "orphanMissions": "{count, plural, one {# misión sin voluntario} other {# misiones sin voluntario}}",
+      "freeSlotsToFill": "{count, plural, one {# plaza aún por cubrir} other {# plazas aún por cubrir}}",
+      "pendingSwaps": "{count, plural, one {# intercambio pendiente} other {# intercambios pendientes}}",
+      "theGroup": "el grupo",
+      "shortcutsTitle": "Accesos directos",
+      "shortcuts": {
+        "besoins": "Necesidades",
+        "missions": "Aportaciones",
+        "materiel": "Material",
+        "invites": "Invitados",
+        "depenses": "Gastos",
+        "messages": "Mensajes",
+        "coorganisation": "Coorganización",
+        "couchage": "Dónde dormir"
+      },
+      "viewLockedPlan": "Ver el plan bloqueado",
+      "goShabbatReady": "Pasar a Shabbat Ready",
+      "editDetails": "Editar la información"
+    },
+    "recap": {
+      "title": "¡Qué Shabat!",
+      "subtitle": "Gracias a usted, el {date} seguirá siendo un buen recuerdo",
+      "guestsPresent": "Invitados presentes",
+      "finalBudget": "Presupuesto final",
+      "rolesFilled": "Roles cubiertos",
+      "thankYouMessage": "Gracias a todos por este Shabat, fue perfecto 🙏",
+      "thankGuests": "Agradecer a mis invitados",
+      "backToMyShabbats": "Volver a mis Shabats",
+      "contributionsCovered": "Aportaciones cubiertas"
+    },
+    "ready": {
+      "countdownLabel": "Cuenta atrás",
+      "allReady": "Todo está listo.",
+      "almostThere": "Casi está.",
+      "missionsAccomplished": "{count, plural, one {# misión cumplida} other {# misiones cumplidas}}",
+      "guestsConfirmed": "{count, plural, one {# invitado confirmado} other {# invitados confirmados}}",
+      "allCandlesLeft": "Solo queda encender las velas.",
+      "slotsRemaining": "{count, plural, one {Queda # plaza por cubrir.} other {Quedan # plazas por cubrir.}}",
+      "sendFinalRecap": "Enviar el resumen final",
+      "unlockPlan": "Desbloquear el plan",
+      "lockButton": "Shabbat Ready",
+      "backHome": "Volver al inicio"
+    },
+    "whatsapp": {
+      "previewLabel": "Vista previa · {label}",
+      "copied": "Copiado",
+      "copyText": "Copiar el texto",
+      "done": "Terminar",
+      "edit": "Editar",
+      "shareOnWhatsapp": "Compartir en WhatsApp",
+      "readyMadeTitle": "Mensajes listos para usar"
+    },
+    "cohost": {
+      "hostTitle": "Coorganización",
+      "cohostTitle": "Coorganizas este Shabat",
+      "hostSubtitle": "Delega parte de la organización.",
+      "cohostSubtitle": "{host} sigue siendo el anfitrión principal",
+      "mainHost": "Anfitrión principal",
+      "youBadge": "Tú · coorganizador",
+      "noCohostYet": "Nadie coorganiza este Shabat todavía.",
+      "notACohost": "No eres coorganizador de este Shabat.",
+      "delegatedTo": "Delegado a {name}",
+      "youCanManage": "Puedes gestionar",
+      "hostOnlyNote": "Solo {host} puede editar los datos del evento o cambiar el modo de financiación.",
+      "scopes": {
+        "missions": "Aportaciones y necesidades",
+        "guests": "Participantes",
+        "messages": "Mensajes de WhatsApp",
+        "expenses": "Gastos"
+      },
+      "linkTitle": "Nombrar coorganizador",
+      "linkHint": "Este enlace da derechos de gestión: envíalo a una persona concreta, no al grupo.",
+      "copy": "Copiar",
+      "copied": "¡Copiado!",
+      "sendOnWhatsapp": "Enviar por WhatsApp",
+      "shareMessage": "¿Me ayudas a organizar «{title}»?",
+      "invitedBy": "{host} te propone coorganizar",
+      "subtitle": "Llevaréis este Shabat entre dos.",
+      "accept": "Aceptar",
+      "signInFirst": "Inicia sesión para aceptar",
+      "linkNoLongerValid": "Este enlace ya no es válido.",
+      "can": {
+        "missions": "Gestionar las misiones",
+        "guests": "Gestionar los invitados",
+        "messages": "Escribir al grupo"
+      }
+    },
+    "danger": {
+      "title": "Eliminar este Shabat",
+      "text": "Las misiones, los invitados y el chat se irán con él.",
+      "confirmText": "«{title}» se eliminará definitivamente.",
+      "delete": "Eliminar",
+      "confirm": "Sí, eliminar",
+      "cancel": "Cancelar"
+    },
+    "join": {
+      "title": "Unirse a un Shabat",
+      "subtitle": "Con el enlace recibido o el código que te dio el anfitrión.",
+      "fieldLabel": "Enlace o código",
+      "fieldHint": "Pega el enlace de WhatsApp o escribe los seis caracteres del código.",
+      "placeholder": "Ej. KRAM47",
+      "joinButton": "Unirme",
+      "joining": "Te añadimos…",
+      "notFound": "Ningún Shabat coincide. Revisa el código o el enlace.",
+      "codeLength": "El código tiene seis caracteres.",
+      "whereTitle": "¿Dónde está el código?",
+      "whereText": "El anfitrión lo ve en la pantalla de invitados de su Shabat, junto al enlace para compartir.",
+      "signedOut": "unirte a un Shabat"
+    },
+    "rooms": {
+      "title": "Dónde dormir",
+      "subtitleHost": "Describe tus habitaciones: cada quien elegirá dónde duerme.",
+      "subtitleGuest": "Elige dónde duermes entre las plazas libres.",
+      "occupancy": "{taken} de {total} plazas",
+      "policies": {
+        "mixed": "Mixto",
+        "girls": "Chicas",
+        "boys": "Chicos"
+      },
+      "takeRoom": "Duermo aquí",
+      "leaveRoom": "Dejo esta plaza",
+      "full": "Completo",
+      "remove": "Quitar",
+      "addRoom": "Añadir",
+      "newRoomPlaceholder": "Nombre de la habitación",
+      "emptyHost": "Aún no hay habitaciones. Añade una para repartir las camas.",
+      "emptyGuest": "El anfitrión aún no ha descrito las habitaciones."
+    },
+    "guestHome": {
+      "hostedBy": "Organizado por {host}",
+      "writeToGroup": "Escribir al grupo",
+      "chooseContribution": "Elige tu aportación",
+      "editContributions": "Cambiar mis aportaciones",
+      "myContributionsCount": "{count, plural, =0 {nada elegido} one {# aportación} other {# aportaciones}}",
+      "completeTable": "Completa la mesa",
+      "stillOpen": "{count, plural, one {# aportación busca a alguien} other {# aportaciones buscan a alguien}}",
+      "pickRoom": "Elige tu habitación",
+      "pickRoomHint": "Mixto, chicas o chicos",
+      "myContributions": "Tus aportaciones",
+      "stillToFill": "Por cubrir"
+    },
+    "edit": {
+      "title": "Ajustes del Shabat",
+      "subtitle": "La dirección, la fecha y el título siguen editables hasta que ocurra.",
+      "save": "Guardar"
+    }
+  },
+  "profile": {
+    "previewNoAccount": {
+      "title": "Vista previa sin cuenta",
+      "text": "Está viendo la maqueta con datos de demostración.",
+      "loginSuffix": "para ver su perfil real."
+    },
+    "stats": {
+      "hosted": "Organizados",
+      "joined": "Participados",
+      "contacts": "Contactos"
+    },
+    "myCircle": "Mis allegados",
+    "editProfile": "Editar perfil",
+    "notifications": "Notificaciones",
+    "history": "Historial",
+    "edit": {
+      "firstNameLabel": "Nombre",
+      "lastNameLabel": "Apellido",
+      "aboutLabel": "Sobre mí",
+      "aboutPlaceholder": "Cuente un poco sobre usted a sus allegados…",
+      "phoneLabel": "Número de teléfono",
+      "emailLabel": "Correo electrónico",
+      "emailNote": "Esta dirección sirve para iniciar sesión; no se puede modificar aquí.",
+      "saving": "Guardando…",
+      "save": "Guardar",
+      "loginToEdit": "Inicie sesión para modificar"
+    },
+    "messages": "Mensajes",
+    "deleteAccount": {
+      "action": "Eliminar mi cuenta",
+      "warning": "Tu cuenta, los Shabat que organizas y todo lo relacionado se borrarán definitivamente. Tus participaciones con otros permanecen, sin tu nombre.",
+      "confirm": "Eliminar definitivamente",
+      "cancel": "Cancelar"
+    },
+    "language": "Idioma"
+  },
+  "auth": {
+    "signInTitle": "Bienvenido/a de nuevo",
+    "signUpTitle": "Cree su cuenta",
+    "signInSubtitle": "Inicie sesión para encontrar su mesa y a sus seres queridos.",
+    "signUpSubtitle": "Unos segundos, y su primera mesa está abierta.",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "usted@ejemplo.com",
+    "passwordLabel": "Contraseña",
+    "passwordTooShort": "{count, plural, one {Falta # carácter.} other {Faltan # caracteres.}}",
+    "confirmPasswordLabel": "Confirmar contraseña",
+    "passwordMismatch": "Las dos entradas no coinciden.",
+    "passwordMatch": "Las contraseñas coinciden.",
+    "creating": "Creando…",
+    "signingIn": "Conectando…",
+    "createAccount": "Crear mi cuenta",
+    "login": "Iniciar sesión",
+    "or": "o",
+    "continueWithGoogle": "Continuar con Google",
+    "noAccountYet": "¿Aún no tiene cuenta?",
+    "createOne": "Crear una",
+    "alreadyHaveAccount": "¿Ya tiene una cuenta?",
+    "errors": {
+      "invalidCredentials": "Correo o contraseña incorrectos.",
+      "userExists": "Ya existe una cuenta con esta dirección. Inicie sesión en su lugar.",
+      "weakPassword": "Contraseña demasiado corta: {count} caracteres como mínimo.",
+      "invalidEmail": "Esta dirección de correo no parece válida. Compruebe la ortografía del dominio.",
+      "rateLimit": "Demasiados intentos por ahora. Vuelva a intentarlo en unos minutos.",
+      "emailNotConfirmed": "Esta cuenta espera confirmación por correo. Use Google mientras tanto.",
+      "network": "No se pudo conectar. Compruebe su red e inténtelo de nuevo.",
+      "signupFailed": "La creación de la cuenta ha fallado. Inténtelo de nuevo, o use Google.",
+      "signinFailed": "El inicio de sesión ha fallado. Inténtelo de nuevo, o use Google.",
+      "passwordTooShortSubmit": "{count, plural, one {La contraseña debe tener al menos # carácter.} other {La contraseña debe tener al menos # caracteres.}}",
+      "passwordsDontMatch": "Las dos contraseñas no son idénticas.",
+      "confirmEmailReminder": "Esta cuenta espera confirmación por correo. Compruebe el ajuste «Confirm email» del proyecto Supabase, o use Google."
+    }
+  },
+  "expenses": {
+    "fundingMode": {
+      "byo": {
+        "label": "Cada uno trae lo suyo",
+        "description": "Sin seguimiento de dinero: cada uno compra lo que ha elegido"
+      },
+      "split": {
+        "label": "Reparto de gastos",
+        "description": "Cada uno paga lo que compra y, al final, Lehaim calcula quién debe a quién."
+      },
+      "pot": {
+        "label": "Bote común",
+        "description": "Cada uno pone la misma cantidad antes, y las compras salen del bote."
+      },
+      "host_pays": {
+        "label": "El anfitrión adelanta todo",
+        "description": "El anfitrión lo compra todo y Lehaim calcula lo que cada uno le devuelve."
+      },
+      "free": {
+        "label": "Sin control de gastos",
+        "description": "Nadie cuenta: Lehaim no registra ningún gasto."
+      }
+    },
+    "title": "Gastos",
+    "modeLabel": "Modo {label}",
+    "changeFundingMode": "Cambiar el modo de financiación",
+    "free": {
+      "activatedTitle": "Modo libre activado",
+      "description": "Lehaim no hace seguimiento de los gastos de este Shabat. Puede cambiar esta elección en cualquier momento.",
+      "changeMode": "Cambiar de modo"
+    },
+    "pot": {
+      "available": "Bote disponible",
+      "recentlyDeducted": "Deducido recientemente",
+      "autoDeductNote": "Cada compra declarada se deduce automáticamente del bote común.",
+      "contribute": "Contribuir al bote"
+    },
+    "split": {
+      "totalCommitted": "Total comprometido",
+      "whoOwesWhom": "Quién debe a quién",
+      "owesGroup": "{name} debe al grupo",
+      "noExpensesYet": "Aún no se ha declarado ningún gasto.",
+      "history": "Historial"
+    },
+    "hostPays": {
+      "advancedByHost": "Adelantado por el anfitrión",
+      "eachWillOwe": "Cada uno deberá"
+    },
+    "byo": {
+      "infoNote": "Cada uno compra lo que ha elegido: Lehaim no calcula ningún reembolso. Los importes de abajo solo sirven para seguir el presupuesto.",
+      "totalDeclared": "Total declarado"
+    },
+    "expenseLabelPlaceholder": "Compra en el súper",
+    "addExpense": "Añadir"
+  },
+  "missions": {
+    "category": {
+      "food": "Comida",
+      "drinks": "Bebidas",
+      "equipment": "Material",
+      "hosting": "Recepción",
+      "other": "Otro"
+    },
+    "noOneAssigned": "Nadie asignado",
+    "status": {
+      "todo": "Por hacer",
+      "inProgress": "En curso",
+      "done": "Terminado"
+    },
+    "board": {
+      "title": "Tablero de necesidades",
+      "emptyColumn": "Nada aquí.",
+      "add": "Añadir una necesidad",
+      "addTitle": "Añadir necesidades",
+      "addIntro": "Elija del catálogo o escriba la suya.",
+      "addCustom": "Crear una necesidad a medida",
+      "alreadyAsked": "{count, plural, one {# necesidad ya pedida} other {# necesidades ya pedidas}}"
+    },
+    "equipment": {
+      "title": "Material",
+      "claimedBy": "A cargo de {name}",
+      "ownedCount": "{count, plural, one {# en propiedad} other {# en propiedad}}",
+      "missingCount": "{count, plural, one {# faltante} other {# faltantes}}",
+      "ownedPill": "En propiedad",
+      "claimedPill": "A cargo",
+      "missingPill": "Falta",
+      "emptyList": "Ningún material en la lista. Añada lo que pueda faltar.",
+      "namePlaceholder": "Sillas",
+      "iHaveLabel": "Tengo",
+      "iNeedLabel": "Necesito"
+    },
+    "choose": {
+      "allTaken": "¡Ya está todo cogido!",
+      "allTakenText": "Sus amigos han sido rápidos. Aún puede ofrecer una mano.",
+      "offerHelp": "Ofrecer una mano",
+      "title": "Elija una misión",
+      "remainingCount": "{count, plural, one {queda # misión por cubrir} other {quedan # misiones por cubrir}}",
+      "addMissionAria": "Añadir una misión",
+      "youveGotThis": "Usted se encarga",
+      "viewMyMission": "Ver mi misión",
+      "slotsLeft": "{count, plural, one {# plaza restante} other {# plazas restantes}}",
+      "takeMission": "Cojo esta misión",
+      "surpriseMe": "Dime qué traer",
+      "noneYet": "Aún no se ha pedido nada",
+      "noneYetManager": "Diga al grupo qué necesita: un plato, sillas, un postre.",
+      "noneYetGuest": "El anfitrión aún no ha pedido nada. Vuelva pronto."
+    },
+    "detail": {
+      "leadRole": "Responsable · {role}",
+      "writeToGroupAria": "Escribir al grupo",
+      "freeSlots": "{count, plural, one {# plaza libre} other {# plazas libres}}",
+      "participants": "Participantes",
+      "and": " y ",
+      "participantsVerb": "{names} {count, plural, one {participa} other {participan}}",
+      "expectedQuantity": "Cantidad esperada: {quantity}.",
+      "suggestions": "Sugerencias",
+      "notesTitle": "Notas",
+      "notesQuote": "«{notes}»",
+      "progressTitle": "Progreso",
+      "readyStatus": "Listo",
+      "changeMission": "Cambiar de misión",
+      "allSlotsTaken": "Todas las plazas están ocupadas"
+    },
+    "suggestions": {
+      "placeholder": "Proponer una idea…",
+      "propose": "Proponer",
+      "proposedBy": "Propuesto por {name}",
+      "chosen": "Elegido",
+      "choose": "Elegir",
+      "removeVoteAria": "Quitar mi voto",
+      "voteAria": "Votar",
+      "noIdeasYet": "Aún no se ha propuesto ninguna idea."
+    },
+    "release": {
+      "yourSwapTitle": "Su intercambio",
+      "waitingFor": "Esperando a {name}",
+      "aResponse": "una respuesta",
+      "requestReceivedByPerson": "{name} ha recibido su solicitud para hacerse cargo de «{missionTitle}».",
+      "requestOpenToGroup": "Su solicitud para «{missionTitle}» está abierta al grupo.",
+      "notifiedOnReply": "Se le notificará en cuanto responda.",
+      "cancelRequest": "Cancelar la solicitud",
+      "alreadyHasMission": "Ya tiene una misión",
+      "alreadyPresentNoMission": "Ya viene · sin misión",
+      "title": "¿Algún imprevisto?",
+      "yourCurrentMission": "Su misión actual",
+      "reassureText": "No se preocupe, ofrezca esta misión a otra persona, o devuélvala al bote.",
+      "noOneElseConfirmed": "Aún no hay nadie más confirmado, devuelva la misión al bote.",
+      "sendRequestTo": "Enviar la solicitud a {name}",
+      "chooseSomeone": "Elegir a alguien",
+      "putBackInPot": "Devolver al bote"
+    },
+    "form": {
+      "categoryLabel": "Categoría",
+      "emojiLabel": "Emoji",
+      "titleLabel": "Título de la misión",
+      "titlePlaceholder": "Plato principal",
+      "slotsLabel": "Plazas",
+      "decreaseSlotsAria": "Menos plazas",
+      "increaseSlotsAria": "Más plazas",
+      "quantityLabel": "Cantidad",
+      "quantityPlaceholder": "Para 8 personas",
+      "priorityLabel": "Prioridad",
+      "priorityStandard": "Estándar",
+      "notesLabel": "Notas para el voluntario",
+      "notesPlaceholder": "Ej. Evite los frutos secos, por favor…",
+      "deleteMission": "Eliminar esta misión",
+      "editMissionTitle": "Editar misión",
+      "newMissionTitle": "Nueva misión"
+    },
+    "dishes": {
+      "title": "Algunas ideas",
+      "noneOfThese": "¿Ninguna te convence? Escribe tu plato",
+      "customPlaceholder": "Lo que traes",
+      "confirmDish": "Confirmar: {dish}",
+      "brings": "{name} trae: {dish}",
+      "confirm": "Confirmar"
+    },
+    "recommendation": {
+      "title": "Recomendación de preparación",
+      "essential": "Esencial",
+      "intro": "{count, plural, one {Para # invitado} other {Para # invitados}} — lo mínimo para un Shabat: un plato principal, jalot y vino para el kidush.",
+      "items": {
+        "main": {
+          "label": "Plato principal",
+          "quantity": "{count, plural, one {Para # persona} other {Para # personas}} (~150-200 g c/u)"
+        },
+        "challah": {
+          "label": "Jalot",
+          "quantity": "{count, plural, one {# pan} other {# panes}}"
+        },
+        "wine": {
+          "label": "Vino y bebidas",
+          "quantity": "{count, plural, one {# botella} other {# botellas}} (kidush)"
+        },
+        "sides": {
+          "label": "Entrantes y ensaladas",
+          "quantity": "{count, plural, one {# plato} other {# platos}}"
+        },
+        "dessert": {
+          "label": "Postre",
+          "quantity": "{count, plural, one {# postre} other {# postres}}"
+        }
+      }
+    },
+    "roles": {
+      "pastry": {
+        "name": "El pastelero del finde",
+        "tagline": "Te conviertes en el pastelero del finde"
+      },
+      "wine": {
+        "name": "El bodeguero",
+        "tagline": "El Kidush del viernes es un poco gracias a ti"
+      },
+      "salad": {
+        "name": "El jefe de las ensaladas",
+        "tagline": "La frescura de la mesa depende de ti"
+      },
+      "bread": {
+        "name": "El guardián de las jalot",
+        "tagline": "No hay Shabat sin tus jalot"
+      },
+      "main": {
+        "name": "El jefe del caliente",
+        "tagline": "El plato que todos esperamos es el tuyo"
+      },
+      "cold": {
+        "name": "El maestro del frío",
+        "tagline": "Nadie pasará sed gracias a ti"
+      },
+      "table": {
+        "name": "El jefe de la mesa",
+        "tagline": "La mesa quedará impecable"
+      },
+      "seats": {
+        "name": "El salvador de los asientos",
+        "tagline": "Cuatro invitados te deberán su silla"
+      },
+      "bedding": {
+        "name": "El maestro de los colchones",
+        "tagline": "Quienes se queden a dormir te lo agradecerán"
+      },
+      "candles": {
+        "name": "El guardián de la llama",
+        "tagline": "Eres tú quien hace entrar Shabat"
+      },
+      "starter": {
+        "name": "El que abre el baile",
+        "tagline": "Tú das el tono de la comida"
+      },
+      "decor": {
+        "name": "El decorador",
+        "tagline": "La mesa tendrá estilo"
+      },
+      "support": {
+        "name": "El refuerzo",
+        "tagline": "Una mano que cuenta"
+      }
+    },
+    "role": {
+      "overline": "Tu papel",
+      "seeMission": "Ver lo que llevo",
+      "takeAnother": "{count, plural, one {Queda # cosa por coger} other {Quedan # cosas por coger}}",
+      "backHome": "Volver al inicio",
+      "shabbatOf": "Shabat del {date}",
+      "tableComplete": "Todo está cogido — la mesa está completa"
+    }
+  },
+  "invitation": {
+    "confirmee": {
+      "badge": "Ya está",
+      "title": "Anotado, le esperamos",
+      "subtitle": "{host} le abre su mesa. Venga tal como es.",
+      "hostForTheEvening": "Su anfitrión para la velada",
+      "guestsAroundTable": "{count, plural, one {# invitado alrededor de la mesa} other {# invitados alrededor de la mesa}}",
+      "sayHello": "Saludar al grupo",
+      "viewEvening": "Ver la velada",
+      "theDayItself": "El gran día",
+      "viewContributions": "Ver las aportaciones",
+      "backHome": "Volver al inicio"
+    },
+    "dayOf": {
+      "title": "¡Buen Shabat!",
+      "subtitle": "Nos vemos a las {time} en casa de {host}.",
+      "addressLabel": "Dirección",
+      "directions": "Cómo llegar",
+      "bringing": "Usted trae",
+      "onMyWayMessage": "Voy de camino 🙂",
+      "notifyArrival": "Avisar de mi llegada"
+    },
+    "detail": {
+      "yourResponse": "Su respuesta",
+      "youAre": "Usted es {role}",
+      "toConfirmBeforeThursday": "Por confirmar antes del jueves",
+      "hostsAtHome": "le recibe en su casa",
+      "confirmedGuestsCount": "{count, plural, one {# invitado confirmado} other {# invitados confirmados}}",
+      "accompanying": "le acompañan",
+      "stillMissing": "Aún falta",
+      "dishesWithoutPerson": "{count, plural, one {# plato sin nadie} other {# platos sin nadie}}",
+      "chooseWhatIBring": "Elegir lo que traigo",
+      "writeToGroup": "Escribir al grupo",
+      "sleepingAvailable": "{count, plural, one {# plaza para dormir} other {# plazas para dormir}}"
+    },
+    "rsvp": {
+      "title": "¿Vendrá?",
+      "subtitle": "Seleccione lo que le concierne.",
+      "registeredCount": "{count, plural, one {# inscrito} other {# inscritos}}",
+      "noMomentsYet": "El anfitrión aún no ha precisado los momentos.",
+      "confirmAndChooseMission": "Confirmar y elegir una misión",
+      "imComing": "Voy",
+      "notThisTime": "Esta vez no"
+    },
+    "shareLanding": {
+      "badge": "Está invitado/a",
+      "opensTable": "le abre su mesa",
+      "confirmedOf": "{confirmed, plural, one {# confirmado} other {# confirmados}} de {guestTarget} plazas",
+      "instructions": "Confirme su asistencia y luego elija lo que trae. Lleva treinta segundos.",
+      "respond": "Responder a la invitación",
+      "aMoment": "Un momento…",
+      "joinThisTable": "Unirse a esta mesa",
+      "linkNoLongerValid": "Este enlace ya no corresponde a ningún Shabat.",
+      "viaWhatsApp": "Vía WhatsApp",
+      "hostsInviteYou": "{host} te invita",
+      "addressAfterConfirm": "{area} · dirección enviada tras confirmar",
+      "addressHidden": "Dirección enviada tras confirmar",
+      "sleepoverAvailable": "Alojamiento disponible",
+      "alreadyConfirmed": "{count, plural, one {# persona ya confirmada} other {# personas ya confirmadas}}",
+      "imComing": "Voy",
+      "cantMakeIt": "No puedo",
+      "responding": "Un momento…",
+      "metaFallbackTitle": "Esta invitación ya no es válida",
+      "metaDescription": "{host} te invita — {when}. Confirma tu asistencia y elige lo que llevas.",
+      "metaDescriptionPlace": "{host} te invita — {when}, {place}. Confirma tu asistencia y elige lo que llevas."
+    },
+    "guests": {
+      "assignRole": "Asignar un rol",
+      "statusPending": "Pendiente",
+      "markPresentAria": "Marcar a {name} como presente",
+      "removeAria": "Quitar a {name}",
+      "guestNamePlaceholder": "Nombre del invitado",
+      "addGuest": "Añadir",
+      "roleDetailPlaceholder": "Detalle (costillas estofadas…)",
+      "whatsappInviteMessage": "{title}, {date} a las {time}. Confirme su asistencia y elija lo que trae aquí:",
+      "guestsTitle": "Invitados · {confirmed}/{total}",
+      "codeLabel": "Código del Shabat"
+    },
+    "cancel": {
+      "action": "Al final no podré ir",
+      "warning": "Tus aportaciones vuelven al grupo, tu plaza para dormir queda libre y un mensaje avisa a todos.",
+      "keep": "Sí voy",
+      "confirm": "Cancelar mi plaza",
+      "groupNotice": "{name} al final no podrá venir."
+    },
+    "contributionsWithoutPerson": "{count, plural, one {# aportación sin voluntario} other {# aportaciones sin voluntario}}"
+  },
+  "settings": {
+    "notificationsPrompt": {
+      "title": "No se pierda nada",
+      "text": "Active las notificaciones para recibir avisos de confirmaciones, mensajes y recordatorios del Shabat.",
+      "enable": "Activar notificaciones",
+      "later": "Más tarde"
+    },
+    "account": "Cuenta",
+    "phoneAndEmail": "Número y correo",
+    "notifications": "Notificaciones",
+    "newReplies": "Nuevas respuestas",
+    "prepReminders": "Recordatorios de preparación",
+    "design": "Diseño",
+    "allMockups": "Todas las maquetas",
+    "uiStates": "Estados de interfaz"
+  },
+  "landing": {
+    "title": "Organiza tu Shabat.",
+    "cta": "Registrarse",
+    "ctaSignIn": "Iniciar sesión",
+    "steps": {
+      "setup": {
+        "title": "Configura",
+        "text": "Fecha, lugar, momentos"
+      },
+      "invite": {
+        "title": "Invita",
+        "text": "Basta un enlace de WhatsApp"
+      },
+      "share": {
+        "title": "Reparte",
+        "text": "Cada uno elige su aportación"
+      },
+      "buy": {
+        "title": "Compra",
+        "text": "Click & collect en nuestras tiendas"
+      },
+      "celebrate": {
+        "title": "Celebra",
+        "text": "Llegada la noche, todo está listo"
+      }
+    }
+  },
+  "install": {
+    "title": "Instalar Lehaim",
+    "subtitle": "Acceso más rápido desde tu pantalla de inicio",
+    "action": "Instalar",
+    "dismiss": "Ocultar"
+  },
+  "history": {
+    "title": "Historial",
+    "whatSignedOut": "tus Shabat pasados",
+    "finished": "Terminado",
+    "recreate": {
+      "title": "¿Lo repetimos?",
+      "basedOn": "Según tu Shabat del {date}",
+      "keepGuests": "{count, plural, one {# invitado} other {# invitados}}",
+      "keepMissions": "{count, plural, one {# misión de la misma plantilla} other {# misiones de la misma plantilla}}",
+      "keepFunding": "Modo de financiación · {mode}",
+      "keepMoments": "{count, plural, one {# momento} other {# momentos}}",
+      "createWithSettings": "Crear con estos ajustes",
+      "creating": "Creando…"
+    },
+    "viewRecap": "Ver resumen",
+    "emptyTitle": "Nada en el historial",
+    "emptyText": "Tus Shabat pasados aparecerán aquí, listos para repetirse.",
+    "emptyCta": "Crear un Shabat",
+    "recreateCta": "Recrear este Shabat"
+  },
+  "shop": {
+    "title": "Tienda · Click & Collect",
+    "subtitle": "Pide y recoge antes de Shabat",
+    "searchPlaceholder": "Buscar una tienda o un producto…",
+    "open": "Abierto",
+    "closed": "Cerrado",
+    "distance": "{km} km",
+    "closesAt": "Cierra a las {time}",
+    "opensAt": "Abre a las {time}",
+    "orderClickCollect": "Pedir con click & collect",
+    "comingSoon": "Todavía no hay ninguna tienda asociada conectada.",
+    "filters": {
+      "nearby": "Cerca de mí",
+      "kosher": "Kosher",
+      "openNow": "Abierto ahora"
+    },
+    "categories": {
+      "mains": "Platos y carnes",
+      "starters": "Entrantes",
+      "bakery": "Panadería",
+      "drinks": "Bebidas"
+    }
+  },
+  "todo": {
+    "title": "Tareas",
+    "subtitle": "Lo que te espera, en todos tus Shabat.",
+    "whatSignedOut": "tus tareas",
+    "urgent": "Urgente",
+    "orphanMissions": "{count, plural, one {# misión sin voluntario} other {# misiones sin voluntario}}",
+    "orphanMissionsDetail": "Avisa al grupo",
+    "pendingAnswers": "{count, plural, one {# respuesta pendiente} other {# respuestas pendientes}}",
+    "pendingAnswersDetail": "Recuerda a quienes no han respondido",
+    "missingEquipment": "{count, plural, one {# objeto que falta} other {# objetos que faltan}}",
+    "missingEquipmentDetail": "Nadie se ha encargado",
+    "pickMission": "Elegir una misión",
+    "pickMissionDetail": "Todavía no llevas nada",
+    "missionInProgress": "Tu misión en curso",
+    "emptyTitle": "Nada pendiente",
+    "emptyText": "Todo está al día. Disfruta."
+  },
+  "market": {
+    "title": "Los comercios cashér",
+    "subtitle": "Recogida en tienda o entrega, cashrut a la vista",
+    "searchPlaceholder": "Un comercio, un plato, un antojo",
+    "open": "Abierto",
+    "closed": "Cerrado",
+    "today": "hoy",
+    "noHours": "Horario no indicado",
+    "closesAt": "Cierra a las {time}",
+    "opensOn": "Abre el {day} a las {time}",
+    "prepMinutes": "{minutes} min de preparación",
+    "certifiedUntil": "Válido hasta el {date}",
+    "noCertificate": "Este comercio aún no ha presentado su certificado de cashrut.",
+    "preorderBy": "Pedido anticipado hasta {when}",
+    "zone": "{label} · {fee}",
+    "zoneWithMinimum": "{label} · {fee} · mín. {minimum}",
+    "noProducts": "La carta de este comercio aún no está en línea.",
+    "contains": "Contiene {allergen}",
+    "freeFrom": "Sin {allergen}",
+    "unavailable": "No disponible",
+    "unavailableLong": "Este producto no está disponible hoy. Vuelve mañana o elige otra cosa de la carta.",
+    "notePlaceholder": "¿Alguna indicación para el comercio?",
+    "addToCart": "Añadir · {price}",
+    "browseByCategory": "Explorar por categoría",
+    "filters": {
+      "all": "Todo"
+    },
+    "empty": {
+      "title": "Todavía no hay comercios en línea",
+      "body": "Los primeros expedientes están en revisión. Cada comercio presenta su certificado de cashrut antes de aparecer aquí.",
+      "cta": "¿Tienes un comercio? Únete"
+    },
+    "noResults": {
+      "title": "Nada para «{query}»",
+      "body": "Prueba con una palabra más corta o explora las categorías."
+    },
+    "mode": {
+      "pickup": "Recogida",
+      "delivery": "Entrega",
+      "deliveryShort": "Entrega",
+      "pickupShort": "Recogida"
+    },
+    "shopCategories": {
+      "caterer": "Catering",
+      "butcher": "Carnicería",
+      "bakery": "Pastelería",
+      "grocery": "Ultramarinos",
+      "wine": "Bodega"
+    },
+    "productCategories": {
+      "entree": "Entrantes",
+      "plat": "Platos",
+      "dessert": "Postres",
+      "patisserie": "Pastelería",
+      "pain": "Pan y jalot",
+      "boisson": "Bebidas",
+      "epicerie": "Despensa",
+      "other": "Otros"
+    },
+    "allergens": {
+      "title": "Alérgenos y dietas",
+      "contains": "Contiene",
+      "traces": "Posibles trazas",
+      "free": "Garantizado sin",
+      "disclaimer": "Declarado por el comercio. En caso de alergia grave, llámalo antes de pedir.",
+      "list": {
+        "gluten": "gluten",
+        "lait": "leche",
+        "oeuf": "huevo",
+        "arachide": "cacahuete",
+        "fruits_a_coque": "frutos de cáscara",
+        "sesame": "sésamo",
+        "soja": "soja",
+        "poisson": "pescado",
+        "moutarde": "mostaza",
+        "sulfites": "sulfitos"
+      },
+      "workshop": "Preparado en un obrador que manipula estos alérgenos."
+    },
+    "cart": {
+      "title": "Mi cesta",
+      "bar": "{count, plural, one {# artículo} other {# artículos}} · {shop}",
+      "subtotal": "Subtotal",
+      "feesLater": "Los gastos de entrega se calculan en el paso siguiente.",
+      "checkout": "Continuar",
+      "remove": "Quitar",
+      "lineUnavailable": "Retirado de la carta — no se pedirá",
+      "unavailableWarning": "{count, plural, one {Un producto ya no está disponible} other {# productos ya no están disponibles}} y no saldrá con tu pedido.",
+      "empty": {
+        "title": "Tu cesta está vacía",
+        "body": "Elige un comercio y añade lo que te apetezca.",
+        "cta": "Ver los comercios"
+      }
+    },
+    "checkout": {
+      "title": "Tu pedido",
+      "address": "Dirección de entrega",
+      "addressPlaceholder": "Número, calle, código, piso",
+      "zone": "Zona de entrega",
+      "slot": "Franja horaria",
+      "noSlots": "Este comercio aún no ha abierto franjas. Tu pedido saldrá sin horario y te llamarán.",
+      "left": "{n, plural, one {queda # } other {quedan #}}",
+      "note": "Nota para el comercio",
+      "notePlaceholder": "Sin cebolla, llamar a…",
+      "paymentNotice": "El pago se hace al comercio, al recoger o al recibir. Confirma tu pedido antes de prepararlo.",
+      "sending": "Enviando…",
+      "submit": "Enviar mi pedido",
+      "shopLine": "{shop} · {minutes} min de preparación",
+      "belowMinimum": "no llegas al mínimo"
+    },
+    "refusal": {
+      "generic": "Tu pedido no ha podido salir. Inténtalo de nuevo en un momento.",
+      "address_required": "Indica la dirección de entrega.",
+      "signed_out": "Vuelve a iniciar sesión para pedir.",
+      "not_live": "Este comercio no acepta pedidos por ahora.",
+      "mode_unavailable": "Este comercio no ofrece esa modalidad.",
+      "cart_empty": "Tu cesta está vacía.",
+      "slot_gone": "Esa franja ya no existe. Elige otra.",
+      "slot_closed": "El comercio acaba de cerrar esa franja.",
+      "slot_full": "Esa franja está completa. Elige otra.",
+      "nothing_available": "Ningún producto de tu cesta está disponible aún.",
+      "below_minimum": "No se alcanza el pedido mínimo de esta zona.",
+      "shop_paused": "Este comercio acaba de suspender sus pedidos."
+    },
+    "orders": {
+      "title": "Mis pedidos",
+      "live": "En curso",
+      "past": "Anteriores",
+      "detail": "El detalle",
+      "deliveryFee": "Entrega",
+      "total": "Total",
+      "deliverTo": "Entrega en",
+      "pickUpAt": "Recoger en",
+      "callShop": "Llamar al comercio · {phone}",
+      "yourNote": "Tu nota: {note}",
+      "cancel": "Renunciar a este pedido",
+      "orderAgain": "Pedir de nuevo",
+      "empty": {
+        "title": "Ningún pedido",
+        "body": "Tus pedidos y su seguimiento aparecerán aquí.",
+        "cta": "Ver los comercios"
+      },
+      "slot": {
+        "pickup": "Recoger {when}",
+        "delivery": "Entrega {when}"
+      },
+      "status": {
+        "pending": "En espera",
+        "accepted": "Aceptado",
+        "preparing": "En preparación",
+        "ready": "Listo",
+        "delivering": "En camino",
+        "completed": "Entregado",
+        "cancelled": "Anulado",
+        "refused": "Rechazado"
+      },
+      "headline": {
+        "pending": "Pedido enviado",
+        "accepted": "El comercio lo ha aceptado",
+        "preparing": "Se está preparando",
+        "ready": "Tu pedido está listo",
+        "delivering": "De camino hacia ti",
+        "completed": "Pedido entregado",
+        "cancelled": "Pedido anulado",
+        "refused": "El comercio no ha podido aceptarlo"
+      },
+      "step": {
+        "pending": "Pedido enviado",
+        "accepted": "Aceptado por el comercio",
+        "preparing": "En preparación",
+        "ready": "Listo",
+        "delivering": "En camino",
+        "completed": "Entregado"
+      }
+    },
+    "mentions": {
+      "halav_israel": "Halav Israel",
+      "pat_israel": "Pat Israel",
+      "bishoul_israel": "Bishoul Israel",
+      "viande": "Carne",
+      "parve": "Parve"
+    },
+    "paused": "En pausa",
+    "pausedBanner": "Este comercio ha suspendido los pedidos por ahora. Su carta sigue visible — vuelve un poco más tarde.",
+    "addOne": "Añadir {name}",
+    "bestSellers": "Los más pedidos",
+    "seeMenu": "Ver la carta",
+    "wholeMenu": "Toda la carta",
+    "productCount": "{count, plural, one {# producto} other {# productos}}",
+    "noPhoto": "sin foto",
+    "unavailableToday": "No disponible hoy",
+    "noRating": "Sin valoraciones",
+    "favorite": "Añadir a favoritos",
+    "unfavorite": "Quitar de favoritos",
+    "freeMode": "Sin gastos",
+    "soonest": "Lo antes posible · {minutes} min",
+    "fromPrice": "desde {price}",
+    "tracesOf": "Trazas de {allergen}",
+    "noteForShop": "Nota para el comercio",
+    "options": {
+      "required": "Obligatorio",
+      "chosen": "Elegido",
+      "pickToContinue": "{group}: hay que elegir"
+    },
+    "favorites": {
+      "title": "Mis favoritos",
+      "empty": {
+        "title": "Sin favoritos",
+        "body": "Toca el corazón en la ficha de un comercio para encontrarlo aquí.",
+        "signedOut": "Inicia sesión para recuperar los comercios que has marcado.",
+        "cta": "Ver los comercios"
+      }
+    }
+  }
+}

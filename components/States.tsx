@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ButtonLink, Card } from "./ui";
@@ -27,7 +30,7 @@ export function EmptyState({
         />
       )}
       <h2 className="font-display text-base font-semibold">{title}</h2>
-      <p className="mt-1.5 max-w-[260px] text-[12.5px] leading-relaxed text-ink/55">{text}</p>
+      <p className="mt-1.5 max-w-[260px] text-[14px] leading-relaxed text-ink/55">{text}</p>
       {cta && href && (
         <ButtonLink href={href} full={false} size="sm" className="mt-5">
           {cta}
@@ -39,11 +42,12 @@ export function EmptyState({
 
 /** Affiché lorsqu'aucune session n'est active. */
 export function SignedOut({ suite, what }: { suite: string; what: string }) {
+  const t = useTranslations("common");
   return (
     <Card className="p-4 text-center">
-      <h2 className="font-display text-[15px] font-semibold">Connectez-vous</h2>
-      <p className="mt-1.5 text-[12.5px] leading-relaxed text-ink/55">
-        Une fois votre compte ouvert, vous retrouverez ici {what}.
+      <h2 className="font-display text-[15px] font-semibold">{t("signedOut.title")}</h2>
+      <p className="mt-1.5 text-[14px] leading-relaxed text-ink/55">
+        {t("signedOut.text", { what })}
       </p>
       <ButtonLink
         href={`/connexion?suite=${encodeURIComponent(suite)}`}
@@ -51,7 +55,7 @@ export function SignedOut({ suite, what }: { suite: string; what: string }) {
         size="sm"
         className="mt-4"
       >
-        Se connecter
+        {t("login")}
       </ButtonLink>
     </Card>
   );
@@ -69,7 +73,7 @@ export function Banner({
     warning: "border-gold/40 bg-gold-wash text-gold-ink",
   };
   return (
-    <div className={`rounded-card border-[1.5px] p-3.5 text-[12px] leading-snug ${tones[tone]}`}>
+    <div className={`rounded-card border-[1.5px] p-3.5 text-[13.5px] leading-snug ${tones[tone]}`}>
       {children}
     </div>
   );

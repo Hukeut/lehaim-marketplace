@@ -1,5 +1,7 @@
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { BackButton } from "@/components/BackButton";
+import { requireManager } from "@/lib/access";
 import { getShabbat } from "@/lib/data";
 import { getOps } from "@/lib/missions";
 import { buildMessage, MESSAGE_TABS, type MessageKind } from "@/lib/whatsapp";
@@ -12,6 +14,8 @@ export default async function MessagesWhatsApp({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  await requireManager(id);
+  const t = await getTranslations("shabbat.whatsapp");
   const [shabbat, ops] = await Promise.all([getShabbat(id), getOps(id)]);
   if (!shabbat || !ops) notFound();
 
@@ -23,8 +27,8 @@ export default async function MessagesWhatsApp({
     <main className="flex min-h-dvh flex-1 flex-col sm:min-h-0">
       <div className="flex items-center gap-2.5 px-5 pt-[54px] pb-1">
         <BackButton fallback={`/shabbat/${id}`} />
-        <h1 className="flex-1 font-display text-[18px] font-semibold">
-          Messages prêts à l&apos;emploi
+        <h1 className="flex-1 font-display text-[20px] font-semibold">
+          {t("readyMadeTitle")}
         </h1>
       </div>
 

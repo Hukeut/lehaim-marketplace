@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lehaim
 
-## Getting Started
+Organiser un Shabbat à plusieurs : l'hôte fixe la date et le lieu, invite par
+lien WhatsApp ou par code, et chacun choisit ce qu'il apporte.
 
-First, run the development server:
+Le périmètre est **privé** : il n'y a ni Shabbat public, ni annuaire d'hôtes,
+ni communauté. C'est inscrit jusque dans le schéma — `shabbats.visibility`
+n'accepte que `invite` ou `link`, aucune valeur publique n'est représentable.
+
+Next.js 16 (App Router) · React 19 · Supabase · next-intl · Tailwind 4.
+Cinq langues à parité : français, anglais, espagnol, hébreu (RTL), russe.
+
+## Démarrer
+
+Node 22 (voir `.nvmrc`).
 
 ```bash
+npm ci
+cp .env.example .env.local   # puis renseigner les deux variables
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`predev` fabrique `lib/updates.generated.json` à partir de l'historique git —
+c'est ce qui alimente l'écran `/admin/mises-a-jour`. Le fichier n'est pas
+versionné : il contient l'historique jusqu'au dernier commit, le versionner
+obligerait à le recommitter après chaque commit.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Commandes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| | |
+|---|---|
+| `npm run dev` | serveur de développement |
+| `npm run build` | construction de production |
+| `npm run lint` | ESLint |
+| `npx tsc --noEmit` | typecheck |
+| `npm run i18n:check` | parité des clés entre les cinq langues **et** texte en dur |
+| `npm run i18n:missing` | clés manquantes, langue par langue |
+| `npm run test:rls` | 15 vérifications d'autorisation contre la base liée |
+| `npm run updates` | régénère le journal des mises à jour |
 
-## Learn More
+`npm run test:rls` s'exécute dans une transaction qui s'annule toujours : il
+ne laisse rien en base, y compris lancé contre la production. Il demande une
+CLI Supabase authentifiée et un projet lié (voir plus bas).
 
-To learn more about Next.js, take a look at the following resources:
+## Vérifications automatiques
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`.github/workflows/deploy.yml` fait tourner lint, typecheck et parité des
+traductions **sur toutes les branches**, avant tout déploiement. Le job de
+déploiement n'écoute que `main`, `v2` et `refonte-aout` ; seule `v2` part en
+production, le reste en préversion.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Next 16 n'exécute plus ESLint pendant `next build` : c'est l'étape de CI qui
+l'applique. Le typecheck, lui, tourne à l'intérieur de `vercel build`, et
+`next.config.ts` ne désactive ni `typescript.ignoreBuildErrors` ni
+`eslint.ignoreDuringBuilds`.
 
-## Deploy on Vercel
+## Base de données
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Supabase (Postgres 17). Les migrations vivent dans `supabase/migrations`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Ne jamais lancer `supabase db push`** sur ce projet : l'historique n'est pas
+enregistré côté serveur, la CLI croirait devoir tout rejouer depuis `0001`.
+La procédure, les pièges et l'état réel du schéma sont dans
+[docs/base-de-donnees.md](docs/base-de-donnees.md).
+
+Pour lier la CLI :
+
+```bash
+npx supabase login
+npx supabase link --project-ref <ref du projet>
+```
+
+## Repères de code
+
+| | |
+|---|---|
+| `app/` | routes App Router, et les Server Actions à la racine |
+| `components/` | design system et composants partagés |
+| `lib/` | accès aux données, i18n, gabarits — protégé par `server-only` |
+| `messages/` | les cinq catalogues de traduction |
+| `proxy.ts` | session Supabase, résolution de langue, chemins publics |
+| `supabase/` | migrations et tests d'autorisation |
+
+Deux conventions valent d'être connues avant de toucher au code.
+
+**Toute lecture ou écriture Supabase passe par `run()`** (`lib/db.ts`), qui lit
+l'erreur et la journalise. Sans lui, une écriture refusée par RLS produit
+exactement la même expérience qu'un succès — la page se rafraîchit, sans le
+changement, sans un mot. Deux bugs ont vécu des mois dans ce silence.
+
+**L'autorisation vit dans les politiques RLS**, pas dans les Server Actions ;
+`lib/access.ts` ne sert qu'à l'affichage. Toute modification de politique
+appelle donc un test dans `supabase/tests/rls.sql`.

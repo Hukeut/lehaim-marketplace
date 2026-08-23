@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Share, User } from "@/components/icons";
 import { Card } from "@/components/ui";
 import { MESSAGE_TABS, type MessageKind } from "@/lib/whatsapp";
@@ -13,6 +14,7 @@ export function MessagePicker({
   messages: Record<MessageKind, { body: string; audience: string }>;
   shareUrlPath: string;
 }) {
+  const t = useTranslations("shabbat.whatsapp");
   const [kind, setKind] = useState<MessageKind>("invitation");
   const [drafts, setDrafts] = useState<Partial<Record<MessageKind, string>>>({});
   const [editing, setEditing] = useState(false);
@@ -65,8 +67,8 @@ export function MessagePicker({
           <span className="flex size-[26px] items-center justify-center rounded-full bg-teal text-white">
             <Share size={13} strokeWidth={2.2} />
           </span>
-          <span className="text-[10.5px] font-extrabold tracking-[0.04em] text-ink/45 uppercase">
-            Aperçu · {label.replace(/^\S+\s/, "")}
+          <span className="text-[12px] font-extrabold tracking-[0.04em] text-ink/45 uppercase">
+            {t("previewLabel", { label: label.replace(/^\S+\s/, "") })}
           </span>
         </div>
 
@@ -75,40 +77,40 @@ export function MessagePicker({
             value={body}
             onChange={(e) => setDrafts({ ...drafts, [kind]: e.target.value })}
             rows={6}
-            className="w-full resize-none rounded-[16px_16px_16px_4px] bg-[#EAF6F5] px-3.5 py-3 text-[13.5px] leading-relaxed text-ink outline-none focus:ring-2 focus:ring-teal/40"
+            className="w-full resize-none rounded-[16px_16px_16px_4px] bg-[#EAF6F5] px-3.5 py-3 text-[15px] leading-relaxed text-ink outline-none focus:ring-2 focus:ring-teal/40"
           />
         ) : (
-          <div className="rounded-[16px_16px_16px_4px] bg-[#EAF6F5] px-3.5 py-3 text-[13.5px] leading-relaxed whitespace-pre-line text-ink">
+          <div className="rounded-[16px_16px_16px_4px] bg-[#EAF6F5] px-3.5 py-3 text-[15px] leading-relaxed whitespace-pre-line text-ink">
             {body}
           </div>
         )}
 
         <div className="mt-3 flex items-center gap-1.5">
           <User size={13} strokeWidth={2} className="text-ink/40" />
-          <span className="text-[11px] text-ink/50">{messages[kind].audience}</span>
+          <span className="text-[12.5px] text-ink/65">{messages[kind].audience}</span>
         </div>
       </Card>
 
       <div className="flex gap-2.5">
         <button
           onClick={copy}
-          className="flex-1 rounded-full border-2 border-line bg-white py-3 font-display text-[13px] font-semibold text-ink"
+          className="flex-1 rounded-full border-2 border-line bg-white py-3 font-display text-[14.5px] font-semibold text-ink"
         >
-          {copied ? "Copié ✓" : "Copier le texte"}
+          {copied ? `${t("copied")} ✓` : t("copyText")}
         </button>
         <button
           onClick={() => setEditing((v) => !v)}
-          className="flex-1 rounded-full border-2 border-line bg-white py-3 font-display text-[13px] font-semibold text-ink"
+          className="flex-1 rounded-full border-2 border-line bg-white py-3 font-display text-[14.5px] font-semibold text-ink"
         >
-          {editing ? "Terminer" : "✏️ Modifier"}
+          {editing ? t("done") : `✏️ ${t("edit")}`}
         </button>
       </div>
 
       <button
         onClick={share}
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3.5 font-display text-[14.5px] font-semibold text-white transition-transform active:scale-[0.985]"
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3.5 font-display text-[16px] font-semibold text-white transition-transform active:scale-[0.985]"
       >
-        Partager sur WhatsApp
+        {t("shareOnWhatsapp")}
       </button>
     </>
   );

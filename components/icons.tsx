@@ -200,6 +200,13 @@ export const Heart = (p: IconProps) => (
   </Stroke>
 );
 
+/** Le cœur plein, pour un commerce déjà mis en favori. */
+export const HeartSolid = (p: IconProps) => (
+  <Solid {...p}>
+    <path d="M12 20s-7-4.4-9.5-9A5 5 0 0112 6a5 5 0 019.5 5c-2.5 4.6-9.5 9-9.5 9z" />
+  </Solid>
+);
+
 export const ArrowRight = (p: IconProps) => (
   <Stroke strokeWidth={2.3} {...p}>
     <path d="M5 12h14M13 6l6 6-6 6" />
@@ -264,5 +271,28 @@ export const Google = ({ size = 18, ...rest }: IconProps) => (
       fill="#EA4335"
       d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4A12 12 0 001.4 6.7l4 3.1C6.3 6.9 8.9 4.8 12 4.8z"
     />
+  </svg>
+);
+
+export const Meal = (p: IconProps) => (
+  <Stroke {...p}>
+    <path d="M4 12a8 8 0 0016 0" />
+    <path d="M4 12h16" />
+    <path d="M12 12V6M9 9l-1-3M15 9l1-3" />
+  </Stroke>
+);
+
+export const Users = (p: IconProps) => (
+  <Stroke {...p}>
+    <circle cx="9" cy="8" r="3" />
+    <path d="M2.5 19c0-3 2.9-5.4 6.5-5.4s6.5 2.4 6.5 5.4" />
+    <circle cx="17" cy="9" r="2.4" />
+    <path d="M15 13.5c2.6.3 4.5 2 4.5 4.2" />
+  </Stroke>
+);
+
+export const WhatsApp = ({ size = 20, ...rest }: IconProps) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true" {...rest}>
+    <path d="M12.04 3.5a8.42 8.42 0 00-7.2 12.8L3.8 20.5l4.3-1a8.42 8.42 0 003.94.99h.01a8.5 8.5 0 000-17zm4.92 11.94c-.2.57-1.15 1.08-1.6 1.12-.41.04-.93.06-1.5-.1-.35-.11-.8-.26-1.37-.51-2.41-1.04-3.98-3.45-4.1-3.61-.12-.16-.98-1.3-.98-2.48s.62-1.76.84-2c.22-.24.48-.3.64-.3h.46c.15 0 .35-.05.54.41.2.49.68 1.68.74 1.8.06.12.1.27.02.43-.08.16-.12.26-.24.4-.12.14-.25.31-.36.42-.12.12-.25.25-.11.49.14.24.61 1 .13 1.62 1.11.99 1.65 1.3 1.9 1.45.24.14.39.12.53-.07.16-.18.61-.71.78-.96.16-.24.33-.2.55-.12.22.08 1.42.67 1.66.79.25.12.41.18.47.28.06.1.06.59-.14 1.16z" />
   </svg>
 );

@@ -59,7 +59,7 @@ export function TopBar({
   return (
     <div className="flex items-center gap-2.5 px-[18px] pt-[54px] pb-1.5">
       {back !== false && <BackButton fallback={back} />}
-      <div className="flex-1 font-display text-[17px] font-semibold">{title}</div>
+      <div className="flex-1 font-display text-[19px] font-semibold">{title}</div>
       {action}
     </div>
   );
@@ -83,7 +83,7 @@ export function SectionTitle({
 
 export function Overline({ children }: { children: ReactNode }) {
   return (
-    <div className="mb-2 text-[11px] font-extrabold tracking-[0.04em] text-ink/45 uppercase">
+    <div className="mb-2 text-[12.5px] font-extrabold tracking-[0.04em] text-ink/45 uppercase">
       {children}
     </div>
   );
@@ -97,17 +97,21 @@ type ButtonVariant = "primary" | "secondary" | "dark" | "ghost" | "outlineTeal";
 type ButtonSize = "lg" | "md" | "sm";
 
 const buttonVariants: Record<ButtonVariant, string> = {
-  primary: "bg-coral text-white shadow-[var(--shadow-coral)] active:bg-[#f26a49]",
+  // Blanc sur `coral` (#e88a2e) donnait 2,59:1 — sous le seuil de 3:1 même
+  // pour de l'interface, et loin des 4,5:1 exigés pour du texte. C'est le
+  // bouton d'action principal de l'app, donc celui qui compte le plus.
+  // `coral-deep` (#b0631a) atteint 4,52:1 sans sortir de la palette.
+  primary: "bg-coral-deep text-white shadow-[var(--shadow-coral)] active:bg-[#8f4f13]",
   secondary: "bg-white text-ink border-2 border-line active:bg-line-soft",
   dark: "bg-ink text-white active:bg-[#0a2233]",
-  ghost: "bg-transparent text-ink/50 active:text-ink",
+  ghost: "bg-transparent text-ink/65 active:text-ink",
   outlineTeal: "bg-transparent text-teal border-2 border-teal active:bg-teal/10",
 };
 
 const buttonSizes: Record<ButtonSize, string> = {
   lg: "py-4 text-[15px]",
-  md: "py-3.5 text-[14.5px]",
-  sm: "py-3 text-[13px]",
+  md: "py-3.5 text-[16px]",
+  sm: "py-3 text-[14.5px]",
 };
 
 function buttonClass(variant: ButtonVariant, size: ButtonSize, full: boolean) {
@@ -179,7 +183,7 @@ export function Field({
 }) {
   return (
     <div className={className}>
-      <div className="mb-1.5 text-[11px] font-bold text-ink/55">{label}</div>
+      <div className="mb-1.5 text-[12.5px] font-bold text-ink/55">{label}</div>
       {children}
     </div>
   );
@@ -205,7 +209,7 @@ export function FieldBox({
 export function TextInput({ className = "", ...rest }: ComponentProps<"input">) {
   return (
     <input
-      className={`w-full rounded-field bg-white px-4 py-3.5 text-[13px] font-bold shadow-[var(--shadow-card)] outline-none focus:ring-2 focus:ring-teal/40 ${className}`}
+      className={`w-full rounded-field bg-white px-4 py-3.5 text-[14.5px] font-bold shadow-[var(--shadow-card)] outline-none focus:ring-2 focus:ring-teal/40 ${className}`}
       {...rest}
     />
   );
@@ -215,12 +219,13 @@ export function TextInput({ className = "", ...rest }: ComponentProps<"input">) 
 /* Pastilles et badges                                                  */
 /* ------------------------------------------------------------------ */
 
-export type PillTone = "success" | "warning" | "urgent" | "info" | "neutral";
+export type PillTone = "success" | "warning" | "urgent" | "danger" | "info" | "neutral";
 
 const pillTones: Record<PillTone, string> = {
   success: "bg-olive-wash text-olive-deep",
   warning: "bg-gold-wash text-gold-ink",
   urgent: "bg-coral/15 text-coral-deep",
+  danger: "bg-violet-wash text-violet",
   info: "bg-teal/15 text-teal-deep",
   neutral: "bg-line text-mist",
 };
@@ -234,7 +239,7 @@ export function StatusPill({
 }) {
   return (
     <span
-      className={`shrink-0 rounded-full px-[11px] py-1.5 text-[9.5px] font-extrabold tracking-[0.01em] whitespace-nowrap ${pillTones[tone]}`}
+      className={`shrink-0 rounded-full px-[11px] py-1.5 text-[11px] font-extrabold tracking-[0.01em] whitespace-nowrap ${pillTones[tone]}`}
     >
       {children}
     </span>
@@ -317,7 +322,7 @@ export function AvatarStack({
       {people.map((p, i) => (
         <span
           key={`${p.initial}-${i}`}
-          className={`flex items-center justify-center rounded-full font-extrabold ring-2 ${ring} ${avatarTones[p.tone]} ${i > 0 ? "-ml-2" : ""}`}
+          className={`flex items-center justify-center rounded-full font-extrabold ring-2 ${ring} ${avatarTones[p.tone]} ${i > 0 ? "-ms-2" : ""}`}
           style={{ width: size, height: size, fontSize: Math.round(size * 0.38) }}
         >
           {p.initial}
@@ -325,7 +330,7 @@ export function AvatarStack({
       ))}
       {extra !== undefined && extra > 0 && (
         <span
-          className={`-ml-2 flex items-center justify-center rounded-full font-extrabold ring-2 ${ring} ${extraTone ? avatarTones[extraTone] : "bg-ink/10 text-ink"}`}
+          className={`-ms-2 flex items-center justify-center rounded-full font-extrabold ring-2 ${ring} ${extraTone ? avatarTones[extraTone] : "bg-ink/10 text-ink"}`}
           style={{ width: size, height: size, fontSize: Math.round(size * 0.35) }}
         >
           +{extra}
@@ -400,7 +405,7 @@ export function ProgressRing({
           cy="18"
           r="15.5"
           fill="none"
-          stroke="#2AA7A1"
+          stroke="#224FA7"
           strokeWidth="3"
           strokeDasharray={`${dash} ${circumference}`}
           strokeLinecap="round"
@@ -431,7 +436,7 @@ export function StatTile({
         {value}
         {suffix && <span className="text-xs text-ink/40">{suffix}</span>}
       </div>
-      <div className="text-[9.5px] font-bold text-ink/50">{label}</div>
+      <div className="text-[11px] font-bold text-ink/65">{label}</div>
     </Card>
   );
 }
@@ -459,8 +464,8 @@ export function ListRow({
     <>
       {icon}
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[12.5px] font-bold">{title}</div>
-        {subtitle && <div className="truncate text-[11px] text-ink/50">{subtitle}</div>}
+        <div className="truncate text-[14px] font-bold">{title}</div>
+        {subtitle && <div className="truncate text-[12.5px] text-ink/65">{subtitle}</div>}
       </div>
       {trailing ?? <ChevronRight size={15} className="shrink-0 text-ink/30" />}
     </>

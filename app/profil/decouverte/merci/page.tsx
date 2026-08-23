@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { ButtonLink, Screen } from "@/components/ui";
 import { getOnboardingState } from "@/lib/onboarding-state";
 
@@ -7,12 +8,14 @@ export default async function MerciPage() {
   const state = await getOnboardingState();
   if (!state) redirect("/connexion?suite=/profil/decouverte");
 
+  const t = await getTranslations("survey.outro");
+
   return (
     <Screen>
       <div className="relative flex flex-1 flex-col bg-cream">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/illustrations/celebration-confirmation.jpg"
+          src="/illustrations/celebration-confirmation.webp"
           alt=""
           className="h-[240px] w-full shrink-0 object-cover object-[center_15%] sm:rounded-t-[36px]"
         />
@@ -23,15 +26,15 @@ export default async function MerciPage() {
             🥂
           </div>
           <h1 className="font-display text-xl font-semibold">
-            Merci{state.firstName ? ` ${state.firstName}` : ""}, à toi de régaler
+            {t("title", { name: state.firstName ?? "" })}
           </h1>
-          <p className="max-w-[250px] text-[13px] leading-relaxed text-ink/60">
-            Tes prochaines suggestions de missions seront déjà plus justes.
+          <p className="max-w-[250px] text-[14.5px] leading-relaxed text-ink/60">
+            {t("subtitle")}
           </p>
         </div>
 
         <div className="px-[30px] pt-4 pb-[34px]">
-          <ButtonLink href="/accueil">Retour à l&apos;app</ButtonLink>
+          <ButtonLink href="/accueil">{t("cta")}</ButtonLink>
         </div>
       </div>
     </Screen>

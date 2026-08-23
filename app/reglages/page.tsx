@@ -1,56 +1,48 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Toggle } from "@/components/interactive";
 import { SignOutButton } from "@/components/SignOutButton";
 import { Card, Overline, TopBar } from "@/components/ui";
-import { isMarketplaceAdmin } from "@/lib/marketplace";
 
 /** 20 · Réglages */
 export default async function Reglages() {
-  const isAdmin = await isMarketplaceAdmin();
-
+  const t = await getTranslations("settings");
+  const tc = await getTranslations("common");
+  const tp = await getTranslations("profile");
   return (
     <main className="flex min-h-dvh flex-1 flex-col sm:min-h-0">
-      <TopBar title="Réglages" back="/profil" />
+      <TopBar title={tc("settings")} back="/profil" />
 
       <div className="flex-1 overflow-y-auto px-[18px] pt-3 pb-4">
-        <Overline>Compte</Overline>
+        <Overline>{t("account")}</Overline>
         <Card className="mb-4.5">
-          <Row href="/profil/modifier" label="Modifier le profil" />
-          <Row href="/profil/modifier" label="Numéro & e-mail" last />
+          <Row href="/profil/modifier" label={tp("editProfile")} />
+          <Row href="/profil/modifier" label={t("phoneAndEmail")} last />
         </Card>
 
-        <Overline>Notifications</Overline>
+        <Overline>{t("notifications")}</Overline>
         <Card className="mb-4.5">
           <div className="border-b border-line-soft">
-            <Toggle label="Nouvelles réponses" defaultOn />
+            <Toggle label={t("newReplies")} defaultOn />
           </div>
-          <div className="border-b border-line-soft">
-            <Toggle label="Messages" defaultOn />
-          </div>
-          <Toggle label="Rappels de préparation" />
+          <Toggle label={t("prepReminders")} />
         </Card>
 
-        <Overline>Assistance</Overline>
+        {/* La section « Assistance » a disparu : « Centre d'aide » et
+            « Confidentialité » pointaient tous deux vers /etats, la planche
+            des états d'interface. Mieux vaut pas de lien qu'un lien qui ment ;
+            les deux rangées reviendront quand les pages existeront. */}
+
+        {/* Planches de relecture, gardées : elles servent à revoir les écrans
+            sans parcourir l'app. /legacy, en revanche, est parti — c'était
+            l'ancienne maquette v1, en anglais, avec ses onglets Explore et
+            Community, soit exactement le positionnement public que la v2 a
+            abandonné. Elle était publique par-dessus le marché. */}
+        <Overline>{t("design")}</Overline>
         <Card className="mb-4.5">
-          <Row href="/etats" label="Centre d'aide" />
-          <Row href="/etats" label="Confidentialité" last />
+          <Row href="/ecrans" label={t("allMockups")} />
+          <Row href="/etats" label={t("uiStates")} last />
         </Card>
-
-        <Overline>Design</Overline>
-        <Card className="mb-4.5">
-          <Row href="/ecrans" label="Toutes les maquettes" />
-          <Row href="/etats" label="États d'interface" />
-          <Row href="/legacy" label="Ancienne version (stand-by)" last />
-        </Card>
-
-        {isAdmin && (
-          <>
-            <Overline>Équipe lehaim</Overline>
-            <Card className="mb-4.5">
-              <Row href="/admin/traiteurs" label="Validation traiteurs" last />
-            </Card>
-          </>
-        )}
 
         <Card className="px-3.5 py-3.5">
           <SignOutButton />
@@ -66,7 +58,7 @@ function Row({ href, label, last = false }: { href: string; label: string; last?
       href={href}
       className={`flex items-center justify-between px-3.5 py-3.5 ${last ? "" : "border-b border-line-soft"}`}
     >
-      <span className="text-[12.5px] font-bold">{label}</span>
+      <span className="text-[14px] font-bold">{label}</span>
       <span className="text-ink/30">›</span>
     </Link>
   );

@@ -17,21 +17,21 @@ export default function Etats() {
         </Card>
 
         <Card className="p-4 text-center">
-          <div className="text-left">
+          <div className="text-start">
             <Overline>Aucun résultat</Overline>
           </div>
           <span className="mx-auto mb-2 flex size-11 items-center justify-center rounded-full bg-ink/6 text-ink">
             <Search size={20} />
           </span>
-          <div className="text-[12.5px] font-bold">Aucun Shabbat ne correspond</div>
-          <div className="mt-0.5 text-[11px] text-ink/50">Essayez d&apos;élargir votre recherche</div>
+          <div className="text-[14px] font-bold">Aucun Shabbat ne correspond</div>
+          <div className="mt-0.5 text-[12.5px] text-ink/65">Essayez d&apos;élargir votre recherche</div>
         </Card>
 
         <div className="flex items-center gap-3 rounded-card bg-coral-wash p-3.5">
           <Alert size={20} className="text-coral-deep" />
           <div className="flex-1">
-            <div className="text-[12.5px] font-bold text-coral-deep">Connexion perdue</div>
-            <div className="text-[11px] text-coral-deep/75">
+            <div className="text-[14px] font-bold text-coral-deep">Connexion perdue</div>
+            <div className="text-[12.5px] text-coral-deep/75">
               Vos modifications seront synchronisées
             </div>
           </div>
@@ -41,7 +41,7 @@ export default function Etats() {
           <span className="mx-auto mb-2 flex size-11 items-center justify-center rounded-full bg-olive/14 text-olive">
             <Check size={20} strokeWidth={2.4} />
           </span>
-          <div className="text-[12.5px] font-bold">Modifications enregistrées</div>
+          <div className="text-[14px] font-bold">Modifications enregistrées</div>
         </Card>
       </div>
     </main>

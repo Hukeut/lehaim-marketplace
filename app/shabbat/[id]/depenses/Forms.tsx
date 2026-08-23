@@ -1,15 +1,17 @@
 "use client";
 
 import { useActionState, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { addExpense, type ActionState } from "@/app/actions";
 import { contribute } from "@/app/mission-actions";
 
 const initial: ActionState = { ok: false, message: null };
 
 const field =
-  "rounded-field bg-white px-3.5 py-3 text-[13px] font-bold shadow-[var(--shadow-card)] outline-none focus:ring-2 focus:ring-teal/40";
+  "rounded-field bg-white px-3.5 py-3 text-[14.5px] font-bold shadow-[var(--shadow-card)] outline-none focus:ring-2 focus:ring-teal/40";
 
 export function ExpenseForm({ shabbatId }: { shabbatId: string }) {
+  const t = useTranslations("expenses");
   const [state, formAction, pending] = useActionState(addExpense, initial);
   const form = useRef<HTMLFormElement>(null);
 
@@ -26,7 +28,7 @@ export function ExpenseForm({ shabbatId }: { shabbatId: string }) {
       <input
         name="label"
         required
-        placeholder="Courses Monoprix"
+        placeholder={t("expenseLabelPlaceholder")}
         className={`${field} min-w-0 flex-1`}
       />
       <input
@@ -39,9 +41,9 @@ export function ExpenseForm({ shabbatId }: { shabbatId: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="shrink-0 rounded-field bg-coral px-4 text-[13px] font-bold text-white disabled:opacity-50"
+        className="shrink-0 rounded-field bg-coral px-4 text-[14.5px] font-bold text-white disabled:opacity-50"
       >
-        Ajouter
+        {t("addExpense")}
       </button>
       {state.message && (
         <span className="sr-only" role="alert">
@@ -53,6 +55,7 @@ export function ExpenseForm({ shabbatId }: { shabbatId: string }) {
 }
 
 export function ContributionForm({ shabbatId }: { shabbatId: string }) {
+  const t = useTranslations("expenses");
   const [state, formAction, pending] = useActionState(contribute, initial);
   const form = useRef<HTMLFormElement>(null);
 
@@ -78,11 +81,11 @@ export function ContributionForm({ shabbatId }: { shabbatId: string }) {
           disabled={pending}
           className="shrink-0 rounded-full bg-coral px-5 py-3 font-display text-[14px] font-semibold text-white shadow-[var(--shadow-coral)] disabled:opacity-50"
         >
-          Participer à la cagnotte
+          {t("pot.contribute")}
         </button>
       </div>
       {state.message && (
-        <p className="mt-2 text-[11.5px] font-bold text-coral-deep">{state.message}</p>
+        <p className="mt-2 text-[13px] font-bold text-coral-deep">{state.message}</p>
       )}
     </form>
   );

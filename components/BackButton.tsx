@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "./icons";
 
@@ -10,13 +11,14 @@ import { ChevronLeft } from "./icons";
  */
 export function BackButton({
   fallback = "/accueil",
-  label = "Retour",
+  label,
   className = "",
 }: {
   fallback?: string;
   label?: string;
   className?: string;
 }) {
+  const t = useTranslations("common");
   const router = useRouter();
 
   function goBack() {
@@ -28,8 +30,8 @@ export function BackButton({
     <button
       type="button"
       onClick={goBack}
-      aria-label={label}
-      className={`-ml-1 flex size-8 shrink-0 items-center justify-center rounded-full text-ink transition-colors active:bg-line-soft ${className}`}
+      aria-label={label ?? t("back")}
+      className={`-ms-1 flex size-8 shrink-0 items-center justify-center rounded-full text-ink transition-colors active:bg-line-soft ${className}`}
     >
       <ChevronLeft size={18} />
     </button>
@@ -38,6 +40,7 @@ export function BackButton({
 
 /** Variante posée par-dessus une illustration plein cadre. */
 export function FloatingBackButton({ fallback = "/accueil" }: { fallback?: string }) {
+  const t = useTranslations("common");
   const router = useRouter();
 
   function goBack() {
@@ -49,8 +52,8 @@ export function FloatingBackButton({ fallback = "/accueil" }: { fallback?: strin
     <button
       type="button"
       onClick={goBack}
-      aria-label="Retour"
-      className="absolute top-[54px] left-[18px] z-20 flex size-9 items-center justify-center rounded-full bg-white/92 text-ink shadow-[0_2px_10px_rgba(13,43,62,0.18)] backdrop-blur-sm transition-transform active:scale-95"
+      aria-label={t("back")}
+      className="absolute top-[54px] start-[18px] z-20 flex size-9 items-center justify-center rounded-full bg-white/92 text-ink shadow-[0_2px_10px_rgba(15,39,77,0.18)] backdrop-blur-sm transition-transform active:scale-95"
     >
       <ChevronLeft size={18} />
     </button>

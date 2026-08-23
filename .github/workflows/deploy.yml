@@ -1,0 +1,112 @@
+name: Deploy
+
+# Déploie via la CLI Vercel plutôt que par l'intégration git native, qui reste
+# bloquée sur ce projet (déploiements créés mais builds jamais démarrés).
+# Conséquence utile : personne n'a besoin d'un compte Vercel pour publier,
+# le token du propriétaire fait foi.
+#
+#   push sur main          → production (lehaim.vercel.app)
+#   push sur toute branche → vérifications seules, sans déploiement
+#
+# Le workflow a longtemps écouté `[main, v2]` alors que le travail se faisait
+# sur `refonte-aout` : aucun push ne déclenchait plus rien, pas même un build
+# de contrôle, et le typecheck — seul garde-fou automatique du projet — ne
+# s'exécutait jamais sur le code réellement écrit.
+#
+# Depuis la remise à plat des branches, `main` porte le produit. Les
+# vérifications tournent sur toutes les branches ; seule `main` déploie, et
+# elle déploie en production. La mise en ligne cesse donc d'être un geste
+# manuel : c'est le pipeline qui publie, après lint, typecheck et traductions.
+on:
+  push:
+  workflow_dispatch:
+
+# Un push qui en suit un autre annule le précédent : on ne déploie jamais
+# un commit déjà dépassé.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ------------------------------------------------------------------
+  # Vérifications — sur toutes les branches, sans exception
+  # ------------------------------------------------------------------
+  # Séparées du déploiement pour deux raisons : elles tournent partout, et
+  # elles échouent en une minute au lieu d'attendre le `vercel pull` puis le
+  # `vercel build`, qui sont lents et consomment du quota.
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      # `lib/updates.generated.json` n'est pas versionné : il faut le fabriquer
+      # avant le typecheck, qui sinon ne trouve pas le module.
+      - name: Journal des mises à jour
+        run: npm run updates
+
+      # Next 16 n'exécute plus ESLint pendant `next build` : sans cette étape,
+      # `eslint.config.mjs` ne serait jamais appliqué automatiquement.
+      # Les avertissements ne bloquent pas encore — il en reste 16, tous des
+      # imports inutilisés, à nettoyer avec le code mort. Passer à
+      # `--max-warnings 0` une fois que c'est fait.
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      # Bloque si une langue est incomplète.
+      - name: Vérifier les traductions
+        run: node scripts/i18n-check.mjs
+
+  # ------------------------------------------------------------------
+  # Déploiement — seulement sur les branches qui portent un site
+  # ------------------------------------------------------------------
+  deploy:
+    needs: checks
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      PROD: "--prod"
+      TARGET: production
+
+    steps:
+      # Profondeur explicite : `actions/checkout` clone à 1 commit par défaut,
+      # or `scripts/build-updates.mjs` lit l'historique pendant la construction
+      # pour alimenter /admin/mises-a-jour. Sans ça, le journal serait vide à
+      # chaque déploiement.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 150
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Part d'un clone neuf : un fichier oublié dans un commit fait échouer
+      # l'étape et affiche une croix rouge sur GitHub, avant tout déploiement.
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Installer la CLI Vercel
+        run: npm install --global vercel@latest
+
+      - name: Récupérer la configuration du projet
+        run: vercel pull --yes --environment=$TARGET --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Construire
+        run: vercel build $PROD --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Déployer
+        run: vercel deploy --prebuilt $PROD --token=${{ secrets.VERCEL_TOKEN }}

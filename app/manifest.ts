@@ -8,14 +8,17 @@ import type { MetadataRoute } from "next";
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "lehaim",
-    short_name: "lehaim",
+    // C'est ce nom qui s'inscrit sous l'icône, sur l'écran d'accueil du
+    // téléphone. Il portait la marque en minuscules — invisible jusqu'ici,
+    // puisque le manifeste lui-même était injoignable (cf. `PUBLIC_PATHS`).
+    name: "Lehaim",
+    short_name: "Lehaim",
     description: "Organisez votre Shabbat, ensemble.",
     lang: "fr",
     start_url: "/",
     display: "standalone",
-    background_color: "#F4F0E6",
-    theme_color: "#F4F0E6",
+    background_color: "#FFF9F0",
+    theme_color: "#FFF9F0",
     // Chrome n'installe une app que sur du PNG : le SVG seul ne suffit pas,
     // et « maskable » évite qu'Android recadre l'icône dans une pastille grise.
     icons: [

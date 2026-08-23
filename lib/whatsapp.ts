@@ -2,24 +2,6 @@ import type { ShabbatDetail } from "@/lib/data";
 import { formatDate, formatTime } from "@/lib/format";
 import type { Ops } from "@/lib/missions";
 
-/**
- * Lien wa.me vers un numéro précis (contrairement au partage générique
- * `wa.me/?text=`). On ne garde que les chiffres : si le traiteur a saisi
- * son numéro avec l'indicatif (ex. "+972 50 123 4567"), ça fonctionne ;
- * un numéro purement local sans indicatif peut ne pas router correctement,
- * ça reste hors de notre contrôle.
- */
-export function waLink(phone: string, text?: string) {
-  const digits = phone.replace(/[^\d]/g, "");
-  const query = text ? `?text=${encodeURIComponent(text)}` : "";
-  return `https://wa.me/${digits}${query}`;
-}
-
-/** Partage générique (pas de destinataire précis) : ouvre le choix de contact WhatsApp. */
-export function waShareLink(text: string) {
-  return `https://wa.me/?text=${encodeURIComponent(text)}`;
-}
-
 export type MessageKind =
   | "invitation"
   | "rsvp"
@@ -60,12 +42,12 @@ export function buildMessage(
   switch (kind) {
     case "invitation":
       return {
-        body: `Coucou ! 🕯️ On organise un Chabbat ${date} chez nous, dès ${time}. Ça nous ferait très plaisir de vous avoir à table — vous êtes libres ?`,
+        body: `Coucou ! 🕯️ On organise un Shabbat ${date} chez nous, dès ${time}. Ça nous ferait très plaisir de vous avoir à table, vous êtes libres ?`,
         audience: `Sera envoyé à ${shabbat.invitations.length} invité${shabbat.invitations.length > 1 ? "s" : ""}`,
       };
     case "rsvp":
       return {
-        body: `Petit rappel pour le Chabbat du ${date} : il manque encore ${pending.length} réponse${pending.length > 1 ? "s" : ""}. Dis-nous si tu viens, ça nous aide à prévoir.`,
+        body: `Petit rappel pour le Shabbat du ${date} : il manque encore ${pending.length} réponse${pending.length > 1 ? "s" : ""}. Dis-nous si tu viens, ça nous aide à prévoir.`,
         audience: `${pending.length} personne${pending.length > 1 ? "s" : ""} n'a pas répondu`,
       };
     case "missions":
@@ -77,24 +59,24 @@ export function buildMessage(
       };
     case "recap":
       return {
-        body: `Récap du Chabbat de ${date} · ${time}\n📍 ${shabbat.address ?? shabbat.neighbourhood ?? "chez nous"}\n👥 ${shabbat.counts.confirmed} confirmés\n✅ ${ops.counts.slotsTaken}/${ops.counts.slotsTotal} places pourvues\nTout le détail ici :`,
+        body: `Récap du Shabbat de ${date} · ${time}\n📍 ${shabbat.address ?? shabbat.neighbourhood ?? "chez nous"}\n👥 ${shabbat.counts.confirmed} confirmés\n✅ ${ops.counts.slotsTaken}/${ops.counts.slotsTotal} places pourvues\nTout le détail ici :`,
         audience: "Sera envoyé au groupe",
       };
     case "countdown":
       return {
         body: ops.readyBy
-          ? `On doit être prêts pour ${formatDate(ops.readyBy)} à ${formatTime(ops.readyBy)}. Il reste ${openMissions.length} mission${openMissions.length > 1 ? "s" : ""} à couvrir — un dernier coup de main ?`
-          : `Le Chabbat approche : ${date}. Il reste ${openMissions.length} mission${openMissions.length > 1 ? "s" : ""} à couvrir.`,
+          ? `On doit être prêts pour ${formatDate(ops.readyBy)} à ${formatTime(ops.readyBy)}. Il reste ${openMissions.length} mission${openMissions.length > 1 ? "s" : ""} à couvrir, un dernier coup de main ?`
+          : `Le Shabbat approche : ${date}. Il reste ${openMissions.length} mission${openMissions.length > 1 ? "s" : ""} à couvrir.`,
         audience: "Sera envoyé au groupe",
       };
     case "expenses":
       return {
-        body: `Petit point dépenses pour le Chabbat du ${date} : ${shabbat.counts.spent.toFixed(0)} € engagés. Le détail et ce que chacun doit, c'est ici :`,
+        body: `Petit point dépenses pour le Shabbat du ${date} : ${shabbat.counts.spent.toFixed(0)} € engagés. Le détail et ce que chacun doit, c'est ici :`,
         audience: "Sera envoyé au groupe",
       };
     case "ready":
       return {
-        body: `Tout est prêt pour ${date} 🕯️\n${ops.counts.slotsTaken} missions accomplies, ${shabbat.counts.confirmed} convives confirmés. Rendez-vous à ${time}${shabbat.address ? `, ${shabbat.address}` : ""}. Chabbat Shalom !`,
+        body: `Tout est prêt pour ${date} 🕯️\n${ops.counts.slotsTaken} missions accomplies, ${shabbat.counts.confirmed} convives confirmés. Rendez-vous à ${time}${shabbat.address ? `, ${shabbat.address}` : ""}. Shabbat Shalom !`,
         audience: "Sera envoyé au groupe",
       };
   }

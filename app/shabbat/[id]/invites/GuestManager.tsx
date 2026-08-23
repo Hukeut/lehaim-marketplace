@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
-  addGuest,
   removeGuest,
   setGuestRole,
   setGuestStatus,
@@ -14,7 +14,23 @@ import type { Invitation } from "@/lib/data";
 
 const initial: ActionState = { ok: false, message: null };
 
-/** Rôles ludiques proposés par le document produit. */
+/**
+ * Rôles ludiques proposés par le document produit. Volontairement non
+ * traduits (Task 6) : la valeur choisie ici est stockée telle quelle dans
+ * `invitations.role_name` et réaffichée en texte brut ailleurs (vue invité,
+ * jour J) — comme un titre de mission ou un nom de plat, c'est une valeur de
+ * donnée plutôt qu'un libellé d'interface figé. La traduire changerait ce
+ * qui est stocké et casserait l'affichage existant sur les autres écrans.
+ *
+ * DETTE ASSUMÉE, pas un oubli : la vraie correction serait de stocker une
+ * clé stable (ex. `patissier`) et de résoudre le libellé traduit à chaque
+ * affichage (vue invité, jour J, ici) — le même changement de forme déjà
+ * fait pour `Category`/`FundingMode` dans lib/missions.ts. Non fait ici
+ * parce que ça touche le contrat de la colonne `invitations.role_name` en
+ * base (donc potentiellement des lignes déjà écrites) et l'affichage sur
+ * plusieurs écrans déjà livrés — un changement de modèle de données, pas
+ * une extraction de chaîne, donc hors périmètre de cette tâche.
+ */
 const ROLES = [
   "Le pâtissier",
   "Le caviste",
@@ -33,9 +49,9 @@ export function GuestManager({
   shabbatId: string;
   invitations: Invitation[];
 }) {
-  const [state, formAction, pending] = useActionState(addGuest, initial);
+  const t = useTranslations("invitation.guests");
+  const tc = useTranslations("common");
   const [editing, setEditing] = useState<string | null>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
 
   return (
     <>
@@ -45,11 +61,11 @@ export function GuestManager({
             <div className="flex items-center gap-3 px-3.5 py-2.5">
               <Avatar initial={guest.initial} tone={guest.tone} />
               <div className="min-w-0 flex-1">
-                <div className="truncate text-[12.5px] font-bold">{guest.name}</div>
+                <div className="truncate text-[14px] font-bold">{guest.name}</div>
                 {guest.role ? (
                   <div className="mt-0.5 flex items-center gap-1">
                     <Medal size={11} strokeWidth={2.6} className="shrink-0 text-coral-deep" />
-                    <span className="truncate text-[10.5px] font-bold text-coral-deep">
+                    <span className="truncate text-[12px] font-bold text-coral-deep">
                       {guest.role}
                       {guest.roleDetail ? ` · ${guest.roleDetail}` : ""}
                     </span>
@@ -59,9 +75,9 @@ export function GuestManager({
                     onClick={() =>
                       setEditing(editing === guest.invitationId ? null : guest.invitationId)
                     }
-                    className="text-[10.5px] text-ink/50 underline-offset-2 hover:underline"
+                    className="text-[12px] text-ink/65 underline-offset-2 hover:underline"
                   >
-                    Attribuer un rôle
+                    {t("assignRole")}
                   </button>
                 )}
               </div>
@@ -76,10 +92,10 @@ export function GuestManager({
                 }
               >
                 {guest.status === "confirmed"
-                  ? "Confirmé"
+                  ? tc("status.confirmed")
                   : guest.status === "declined"
-                    ? "Décliné"
-                    : "En attente"}
+                    ? tc("status.declined")
+                    : t("statusPending")}
               </StatusPill>
 
               {guest.status !== "confirmed" && (
@@ -93,7 +109,7 @@ export function GuestManager({
                 >
                   <button
                     type="submit"
-                    aria-label={`Marquer ${guest.name} comme présent`}
+                    aria-label={t("markPresentAria", { name: guest.name })}
                     className="flex size-7 items-center justify-center rounded-full bg-olive/14 text-olive"
                   >
                     <Check size={13} />
@@ -104,7 +120,7 @@ export function GuestManager({
               <form action={removeGuest.bind(null, shabbatId, guest.invitationId)}>
                 <button
                   type="submit"
-                  aria-label={`Retirer ${guest.name}`}
+                  aria-label={t("removeAria", { name: guest.name })}
                   className="flex size-7 items-center justify-center rounded-full bg-ink/6 text-ink/60"
                 >
                   <Close size={12} />
@@ -123,34 +139,6 @@ export function GuestManager({
         ))}
       </ul>
 
-      <form
-        action={(fd) => {
-          formAction(fd);
-          if (nameRef.current) nameRef.current.value = "";
-        }}
-        className="mt-4"
-      >
-        <input type="hidden" name="shabbat_id" value={shabbatId} />
-        <div className="flex gap-2">
-          <input
-            ref={nameRef}
-            name="guest_name"
-            required
-            placeholder="Prénom de l'invité"
-            className="min-w-0 flex-1 rounded-field bg-white px-4 py-3 text-[13px] font-bold shadow-[var(--shadow-card)] outline-none focus:ring-2 focus:ring-teal/40"
-          />
-          <button
-            type="submit"
-            disabled={pending}
-            className="shrink-0 rounded-field bg-teal px-4 text-[13px] font-bold text-white disabled:opacity-50"
-          >
-            Ajouter
-          </button>
-        </div>
-        {state.message && (
-          <p className="mt-2 text-[11.5px] font-bold text-ink/60">{state.message}</p>
-        )}
-      </form>
     </>
   );
 }
@@ -164,6 +152,7 @@ function RoleForm({
   invitationId: string;
   onDone: () => void;
 }) {
+  const t = useTranslations("invitation.guests");
   const [, formAction, pending] = useActionState(setGuestRole, initial);
 
   return (
@@ -180,7 +169,7 @@ function RoleForm({
         {ROLES.map((role) => (
           <label key={role} className="cursor-pointer">
             <input type="radio" name="role_name" value={role} className="peer sr-only" />
-            <span className="block rounded-full border-[1.5px] border-line-soft bg-white px-2.5 py-1 text-[10.5px] font-bold peer-checked:border-ink peer-checked:bg-ink peer-checked:text-white">
+            <span className="block rounded-full border-[1.5px] border-line-soft bg-white px-2.5 py-1 text-[12px] font-bold peer-checked:border-ink peer-checked:bg-ink peer-checked:text-white">
               {role}
             </span>
           </label>
@@ -189,13 +178,13 @@ function RoleForm({
       <div className="flex gap-2">
         <input
           name="role_detail"
-          placeholder="Précision (côtes braisées…)"
-          className="min-w-0 flex-1 rounded-field bg-line-soft px-3 py-2 text-[12px] outline-none"
+          placeholder={t("roleDetailPlaceholder")}
+          className="min-w-0 flex-1 rounded-field bg-line-soft px-3 py-2 text-[13.5px] outline-none"
         />
         <button
           type="submit"
           disabled={pending}
-          className="shrink-0 rounded-field bg-ink px-3 text-[12px] font-bold text-white disabled:opacity-50"
+          className="shrink-0 rounded-field bg-ink px-3 text-[13.5px] font-bold text-white disabled:opacity-50"
         >
           OK
         </button>

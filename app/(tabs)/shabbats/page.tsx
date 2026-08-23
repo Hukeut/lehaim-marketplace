@@ -1,7 +1,9 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Plus } from "@/components/icons";
 import { SegmentedTabs } from "@/components/interactive";
 import { EmptyState, SignedOut } from "@/components/States";
+import { JoinByCode } from "@/components/JoinByCode";
 import { Card, ProgressBar, ScreenBody, StatusPill } from "@/components/ui";
 import {
   countdown,
@@ -15,29 +17,38 @@ import { BrandMark } from "@/components/BrandMark";
 
 /** 17 · Mes Shabbats */
 export default async function MesShabbats() {
-  const profile = await getCurrentProfile();
+  const t = await getTranslations("shabbat.list");
+  const tc = await getTranslations("common");
+  // Le profil, les Chabbats organisés et ceux rejoints partent ensemble. Le
+  // profil ne conditionne que la sortie anticipée ci-dessous, pas les deux
+  // listes : les attendre l'un après l'autre coûtait un aller-retour complet
+  // sur l'écran le plus visité de l'app.
+  const [profile, hosted, joined] = await Promise.all([
+    getCurrentProfile(),
+    listHostedShabbats(),
+    listJoinedShabbats(),
+  ]);
 
   if (!profile) {
     return (
       <ScreenBody>
         <BrandMark className="mb-3" />
-        <h1 className="mb-4 font-display text-[19px] font-semibold">Mes Shabbats</h1>
-        <SignedOut suite="/shabbats" what="vos Shabbats" />
+        <h1 className="mb-4 font-display text-[21px] font-semibold">{t("title")}</h1>
+        <SignedOut suite="/shabbats" what={t("signedOutWhat")} />
       </ScreenBody>
     );
   }
 
-  const [hosted, joined] = await Promise.all([listHostedShabbats(), listJoinedShabbats()]);
 
   return (
     <ScreenBody>
       <BrandMark className="mb-3" />
       <div className="mb-3.5 flex items-center justify-between">
-        <h1 className="font-display text-[19px] font-semibold">Mes Shabbats</h1>
+        <h1 className="font-display text-[21px] font-semibold">{t("title")}</h1>
         <Link
           href="/creer"
-          aria-label="Créer un Shabbat"
-          className="flex size-[38px] items-center justify-center rounded-full bg-teal text-white shadow-[0_6px_14px_rgba(42,167,161,0.35)] active:scale-95"
+          aria-label={tc("createShabbat")}
+          className="flex size-[38px] items-center justify-center rounded-full bg-teal text-white shadow-[0_6px_14px_rgba(34,79,167,0.35)] active:scale-95"
         >
           <Plus size={17} />
         </Link>
@@ -45,7 +56,7 @@ export default async function MesShabbats() {
 
       <SegmentedTabs
         className="mb-4"
-        tabs={["J'organise", "J'y participe"]}
+        tabs={[t("tabs.hosting"), t("tabs.joining")]}
         panels={[
           hosted.length ? (
             <ul key="h" className="flex flex-col gap-2.5">
@@ -59,19 +70,19 @@ export default async function MesShabbats() {
                           <div className="truncate font-display text-sm font-semibold">
                             {s.title}
                           </div>
-                          <div className="text-[11px] text-ink/50">
+                          <div className="text-[12.5px] text-ink/65">
                             {formatDate(s.startsAt)} · {formatTime(s.startsAt)}
                           </div>
                         </div>
                         <StatusPill tone={past ? "neutral" : "info"}>
-                          {past ? "Terminé" : countdown(s.startsAt)}
+                          {past ? tc("status.ended") : countdown(s.startsAt)}
                         </StatusPill>
                       </div>
                       {!past && (
                         <div className="mt-2.5">
                           <ProgressBar value={0} />
-                          <div className="mt-1.5 text-[10.5px] text-ink/50">
-                            {s.guestTarget} places prévues
+                          <div className="mt-1.5 text-[12px] text-ink/65">
+                            {t("plannedSeats", { count: s.guestTarget })}
                           </div>
                         </div>
                       )}
@@ -83,10 +94,10 @@ export default async function MesShabbats() {
           ) : (
             <EmptyState
               key="h"
-              illustration="/illustrations/etat-vide-table.jpg"
-              title="Aucun Shabbat prévu"
-              text="Ouvrez votre table à vos proches : choisissez une date, on s'occupe du reste."
-              cta="Créer un Shabbat"
+              illustration="/illustrations/etat-vide-table.webp"
+              title={tc("emptyState.noShabbat.title")}
+              text={tc("emptyState.noShabbat.text")}
+              cta={tc("createShabbat")}
               href="/creer"
             />
           ),
@@ -100,12 +111,12 @@ export default async function MesShabbats() {
                   >
                     <div className="min-w-0">
                       <div className="truncate font-display text-sm font-semibold">{s.title}</div>
-                      <div className="text-[11px] text-ink/50">
+                      <div className="text-[12.5px] text-ink/65">
                         {formatDate(s.startsAt)} · {formatTime(s.startsAt)}
                         {s.neighbourhood ? ` · ${s.neighbourhood}` : ""}
                       </div>
                       {s.myRole && (
-                        <div className="mt-1 text-[10.5px] font-bold text-coral-deep">
+                        <div className="mt-1 text-[12px] font-bold text-coral-deep">
                           {s.myRole}
                         </div>
                       )}
@@ -120,10 +131,10 @@ export default async function MesShabbats() {
                       }
                     >
                       {s.myStatus === "confirmed"
-                        ? "Confirmé"
+                        ? tc("status.confirmed")
                         : s.myStatus === "declined"
-                          ? "Décliné"
-                          : "À répondre"}
+                          ? tc("status.declined")
+                          : tc("status.pending")}
                     </StatusPill>
                   </Link>
                 </Card>
@@ -132,13 +143,17 @@ export default async function MesShabbats() {
           ) : (
             <EmptyState
               key="j"
-              illustration="/illustrations/choisir-un-shabbat.jpg"
-              title="Aucune invitation"
-              text="Quand un proche vous ouvrira sa table, elle apparaîtra ici."
+              illustration="/illustrations/choisir-un-shabbat.webp"
+              title={t("noInvitation.title")}
+              text={t("noInvitation.text")}
             />
           ),
         ]}
       />
+
+      {/* La seconde porte d'entrée : on rejoint par lien WhatsApp, ou par un
+          code qu'on se dicte. Elle était devenue inatteignable. */}
+      <JoinByCode label={tc("joinShabbat")} className="mt-4" />
     </ScreenBody>
   );
 }

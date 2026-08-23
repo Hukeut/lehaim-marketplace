@@ -3,6 +3,8 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import type { Update } from "@/lib/supabase/rows";
+import { userMessage } from "@/lib/db";
 import {
   CONTENT_PREFS,
   DIET_TAGS,
@@ -16,7 +18,7 @@ import type { StepState } from "@/app/onboarding/actions";
  * et quitter en cours de route laisse simplement les réponses déjà données.
  */
 async function save(
-  payload: Record<string, unknown>,
+  payload: Update<"profiles">,
   next: string,
 ): Promise<StepState | never> {
   const supabase = await createClient();
@@ -28,15 +30,9 @@ async function save(
 
   const { error } = await supabase.from("profiles").update(payload).eq("id", user.id);
 
-  if (error) {
-    if (error.code === "42703") {
-      return {
-        error:
-          "La base n'est pas à jour : la migration 0007_onboarding.sql n'a pas encore été exécutée.",
-      };
-    }
-    return { error: error.message };
-  }
+  // Même remarque que dans app/onboarding/actions.ts : le code SQLSTATE va au
+  // journal, la personne reçoit une phrase qui lui parle.
+  if (error) return { error: await userMessage("saveDiscoveryStep", error) };
 
   revalidatePath("/profil");
   redirect(next);

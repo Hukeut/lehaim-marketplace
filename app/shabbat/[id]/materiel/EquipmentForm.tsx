@@ -1,15 +1,17 @@
 "use client";
 
 import { useActionState, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { saveEquipment } from "@/app/mission-actions";
 import type { ActionState } from "@/app/actions";
 
 const initial: ActionState = { ok: false, message: null };
 
 const field =
-  "rounded-field bg-white px-3 py-2.5 text-[12.5px] font-bold shadow-[var(--shadow-card)] outline-none focus:ring-2 focus:ring-teal/40";
+  "rounded-field bg-white px-3 py-2.5 text-[14px] font-bold shadow-[var(--shadow-card)] outline-none focus:ring-2 focus:ring-teal/40";
 
 export function EquipmentForm({ shabbatId }: { shabbatId: string }) {
+  const t = useTranslations("missions.equipment");
   const [state, formAction, pending] = useActionState(saveEquipment, initial);
   const form = useRef<HTMLFormElement>(null);
 
@@ -25,11 +27,11 @@ export function EquipmentForm({ shabbatId }: { shabbatId: string }) {
       <input type="hidden" name="shabbat_id" value={shabbatId} />
       <div className="mb-2 flex gap-2">
         <input name="emoji" defaultValue="📦" maxLength={4} className={`${field} w-14 text-center`} />
-        <input name="name" required placeholder="Chaises" className={`${field} min-w-0 flex-1`} />
+        <input name="name" required placeholder={t("namePlaceholder")} className={`${field} min-w-0 flex-1`} />
       </div>
       <div className="flex gap-2">
         <label className="flex flex-1 items-center gap-2">
-          <span className="text-[11px] font-bold text-ink/55">J&apos;ai</span>
+          <span className="text-[12.5px] font-bold text-ink/55">{t("iHaveLabel")}</span>
           <input
             name="owned"
             type="number"
@@ -39,7 +41,7 @@ export function EquipmentForm({ shabbatId }: { shabbatId: string }) {
           />
         </label>
         <label className="flex flex-1 items-center gap-2">
-          <span className="text-[11px] font-bold text-ink/55">Il faut</span>
+          <span className="text-[12.5px] font-bold text-ink/55">{t("iNeedLabel")}</span>
           <input
             name="needed"
             type="number"
@@ -51,13 +53,13 @@ export function EquipmentForm({ shabbatId }: { shabbatId: string }) {
         <button
           type="submit"
           disabled={pending}
-          className="shrink-0 rounded-field bg-teal px-3.5 text-[12.5px] font-bold text-white disabled:opacity-50"
+          className="shrink-0 rounded-field bg-teal px-3.5 text-[14px] font-bold text-white disabled:opacity-50"
         >
           +
         </button>
       </div>
       {state.message && (
-        <p className="mt-2 text-[11.5px] font-bold text-coral-deep">{state.message}</p>
+        <p className="mt-2 text-[13px] font-bold text-coral-deep">{state.message}</p>
       )}
     </form>
   );

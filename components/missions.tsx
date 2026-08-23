@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { Card } from "./ui";
+import { LehaimIcon } from "./LehaimIcon";
+import { iconForMission } from "@/lib/mission-icons";
 import type { Category, Claimer } from "@/lib/missions";
 
 /** Couleurs de catégorie, conformes au fichier Missions & Ops. */
@@ -15,14 +17,14 @@ export const CATEGORY_STYLE: Record<
     label: "Equipment",
   },
   hosting: { chip: "bg-gold/28 text-gold-ink", tile: "bg-gold/28 text-gold-ink", label: "Hosting" },
-  other: { chip: "bg-ink/6 text-ink/60", tile: "bg-ink/6 text-ink/50", label: "Autre" },
+  other: { chip: "bg-ink/6 text-ink/60", tile: "bg-ink/6 text-ink/65", label: "Autre" },
 };
 
 export function CategoryChip({ category }: { category: Category }) {
   const style = CATEGORY_STYLE[category];
   return (
     <span
-      className={`shrink-0 rounded-full px-2.5 py-1.5 text-[9.5px] font-extrabold whitespace-nowrap ${style.chip}`}
+      className={`shrink-0 rounded-full px-2.5 py-1.5 text-[11px] font-extrabold whitespace-nowrap ${style.chip}`}
     >
       {style.label}
     </span>
@@ -34,18 +36,27 @@ export function EmojiTile({
   category,
   size = 36,
   radius = 11,
+  title,
 }: {
   emoji: string;
   category: Category;
   size?: number;
   radius?: number;
+  /** Titre de l'apport : c'est lui qui désigne l'illustration. */
+  title?: string;
 }) {
+  const icon = title ? iconForMission(title) : null;
+
   return (
     <span
-      className={`flex shrink-0 items-center justify-center ${CATEGORY_STYLE[category].tile}`}
+      className={`flex shrink-0 items-center justify-center overflow-hidden ${CATEGORY_STYLE[category].tile}`}
       style={{ width: size, height: size, borderRadius: radius, fontSize: size * 0.46 }}
     >
-      {emoji}
+      {icon && icon !== "other" ? (
+        <LehaimIcon name={icon} size={Math.round(size * 0.92)} />
+      ) : (
+        emoji
+      )}
     </span>
   );
 }
@@ -57,17 +68,17 @@ export function ClaimerStack({ people }: { people: Claimer[] }) {
       {people.slice(0, 3).map((person, i) => (
         <span
           key={person.id || i}
-          className={`flex size-6 items-center justify-center rounded-full text-[10px] font-extrabold text-white ring-2 ring-white ${
+          className={`flex size-6 items-center justify-center rounded-full text-[11.5px] font-extrabold text-white ring-2 ring-white ${
             { coral: "bg-coral", teal: "bg-teal", violet: "bg-violet", gold: "bg-gold text-gold-ink", olive: "bg-olive", ink: "bg-ink" }[
               person.tone
             ]
-          } ${i > 0 ? "-ml-2" : ""}`}
+          } ${i > 0 ? "-ms-2" : ""}`}
         >
           {person.initial}
         </span>
       ))}
       {people.length > 3 && (
-        <span className="-ml-2 flex size-6 items-center justify-center rounded-full bg-ink/10 text-[9px] font-extrabold text-ink ring-2 ring-white">
+        <span className="-ms-2 flex size-6 items-center justify-center rounded-full bg-ink/10 text-[9px] font-extrabold text-ink ring-2 ring-white">
           +{people.length - 3}
         </span>
       )}
@@ -93,7 +104,7 @@ export function InfoNote({ children }: { children: ReactNode }) {
         <circle cx="12" cy="12" r="8.5" />
         <path d="M12 8v5M12 16.5v.1" />
       </svg>
-      <div className="text-[11.5px] leading-relaxed text-teal-deep">{children}</div>
+      <div className="text-[13px] leading-relaxed text-teal-deep">{children}</div>
     </div>
   );
 }
@@ -117,7 +128,7 @@ export function AlertNote({ title, text }: { title: string; text: string }) {
       </svg>
       <div className="flex-1">
         <div className="text-xs font-bold text-coral-deep">{title}</div>
-        <div className="text-[10.5px] text-coral-deep/75">{text}</div>
+        <div className="text-[12px] text-coral-deep/75">{text}</div>
       </div>
     </div>
   );
@@ -146,7 +157,7 @@ export function Countdown({
           className={`rounded-[10px] px-2.5 py-1.5 text-center ${dark ? "bg-white/10" : "bg-ink/6"}`}
         >
           <div className="font-display text-[15px] font-semibold">{value}</div>
-          <div className={`text-[8px] ${dark ? "text-white/60" : "text-ink/50"}`}>{label}</div>
+          <div className={`text-[8px] ${dark ? "text-white/60" : "text-ink/65"}`}>{label}</div>
         </div>
       ))}
     </div>
@@ -162,7 +173,7 @@ export function SectionCard({
 }) {
   return (
     <Card className="p-4">
-      <div className="mb-2.5 text-[10.5px] font-extrabold tracking-[0.04em] text-ink/45 uppercase">
+      <div className="mb-2.5 text-[12px] font-extrabold tracking-[0.04em] text-ink/45 uppercase">
         {title}
       </div>
       {children}

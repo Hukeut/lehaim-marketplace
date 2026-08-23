@@ -37,7 +37,7 @@ export default async function Ecrans() {
         { id: "S02", label: "Créer un Shabbat · 1/5", href: "/creer" },
         ...(sample
           ? [
-              { id: "S03", label: "Choisir un modèle · 2/5", href: `/creer/${sample.id}/modele` },
+              { id: "S03", label: "Choisir un modèle · 2/5", href: `/creer/${sample.id}/moments` },
               { id: "S04a", label: "Que proposez-vous ?", href: `/creer/${sample.id}/moments` },
               { id: "S04", label: "Personnaliser les missions · 3/5", href: `/creer/${sample.id}/missions` },
               { id: "S05bis", label: "Mode de financement · 4/5", href: `/creer/${sample.id}/financement` },
@@ -48,7 +48,7 @@ export default async function Ecrans() {
       ],
     },
     {
-      title: "Piloter le Chabbat",
+      title: "Piloter le Shabbat",
       screens: sample
         ? [
             { id: "S10", label: "Dashboard hôte", href: `/shabbat/${sample.id}` },
@@ -60,7 +60,6 @@ export default async function Ecrans() {
             { id: "S17", label: "Shabbat Ready", href: `/shabbat/${sample.id}/ready` },
             { id: "26", label: "Gérer les invités", href: `/shabbat/${sample.id}/invites` },
             { id: "27", label: "Résumé après l'événement", href: `/shabbat/${sample.id}/recap` },
-            { id: "19", label: "Discussion", href: `/discussion/${sample.id}` },
           ]
         : [],
     },
@@ -93,11 +92,11 @@ export default async function Ecrans() {
         <div className="mb-3">
           <BackButton fallback="/accueil" />
         </div>
-        <div className="mb-2 text-[11px] font-extrabold tracking-[0.08em] text-teal uppercase">
+        <div className="mb-2 text-[12.5px] font-extrabold tracking-[0.08em] text-teal uppercase">
           Écrans de l&apos;application · v2
         </div>
         <Wordmark className="text-[26px]" />
-        <p className="mt-2 text-[12.5px] leading-relaxed text-ink/55">
+        <p className="mt-2 text-[14px] leading-relaxed text-ink/55">
           Toutes les données viennent de Supabase. Les écrans liés à un Shabbat n&apos;apparaissent
           qu&apos;une fois connecté et après en avoir créé un.
         </p>
@@ -133,10 +132,10 @@ export default async function Ecrans() {
                   href={screen.href}
                   className="flex items-center gap-3 px-3.5 py-3 active:bg-line-soft/60"
                 >
-                  <span className="w-9 shrink-0 font-display text-[11px] font-semibold text-teal">
+                  <span className="w-9 shrink-0 font-display text-[12.5px] font-semibold text-teal">
                     {screen.id}
                   </span>
-                  <span className="flex-1 text-[12.5px] font-bold">{screen.label}</span>
+                  <span className="flex-1 text-[14px] font-bold">{screen.label}</span>
                   <span className="text-ink/30">›</span>
                 </Link>
               </Card>

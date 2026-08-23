@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { currentUser } from "@/lib/supabase/user";
 import type { DietTag } from "@/lib/onboarding";
 
 export type Survey = {
@@ -28,9 +29,7 @@ const EMPTY: Survey = {
  */
 export async function readSurvey(): Promise<Survey | null> {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await currentUser();
 
   if (!user) return null;
 

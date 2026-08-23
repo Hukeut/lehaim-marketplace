@@ -1,17 +1,22 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { Sliders } from "@/components/icons";
 import { SignOutButton } from "@/components/SignOutButton";
 import { Avatar, Card, ScreenBody, SectionTitle, StatTile } from "@/components/ui";
 import { me } from "@/lib/demo";
-import { getCurrentProfile } from "@/lib/profile";
+import { getCurrentProfile, getProfileStats } from "@/lib/profile";
 import { BrandMark } from "@/components/BrandMark";
+import { DeleteAccount } from "@/components/DeleteAccount";
+import { LanguageSwitch } from "@/components/LanguageSwitch";
 
-/** 12 · Profil — identité réelle (table `profiles`), compteurs encore en démo. */
+/** 12 · Profil — identité et compteurs lus dans la base. */
 export default async function Profil() {
-  const account = await getCurrentProfile();
+  const t = await getTranslations("profile");
+  const tc = await getTranslations("common");
+  const [account, stats] = await Promise.all([getCurrentProfile(), getProfileStats()]);
 
   // Sans compte, on affiche la maquette : c'est ce qui permet de faire relire
-  // les écrans sans obliger à se connecter.
+  // les écrans sans obliger à se connecter. Les compteurs, eux, restent à zéro
+  // — un visiteur non connecté n'a pas d'historique à montrer.
   const profile = account ?? {
     fullName: me.fullName,
     initial: me.initial,
@@ -38,65 +43,45 @@ export default async function Profil() {
           <div className="truncate font-display text-base font-semibold">
             {profile.fullName}
           </div>
-          <div className="truncate text-[11.5px] text-ink/50">{profile.memberSince}</div>
+          <div className="truncate text-[13px] text-ink/65">{profile.memberSince}</div>
         </div>
-        <Link
-          href="/reglages"
-          aria-label="Réglages"
-          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-ink shadow-[var(--shadow-float)]"
-        >
-          <Sliders size={15} />
-        </Link>
       </div>
 
       {!account && (
         <Card className="mb-4 border-[1.5px] border-gold/40 bg-gold-wash p-3.5">
-          <div className="text-[12px] font-bold text-gold-ink">Aperçu sans compte</div>
-          <p className="mt-1 text-[11.5px] leading-snug text-gold-ink/80">
-            Vous consultez la maquette avec des données de démonstration.{" "}
+          <div className="text-[13.5px] font-bold text-gold-ink">{t("previewNoAccount.title")}</div>
+          <p className="mt-1 text-[13px] leading-snug text-gold-ink/80">
+            {t("previewNoAccount.text")}{" "}
             <Link href="/connexion?suite=/profil" className="underline">
-              Se connecter
+              {tc("login")}
             </Link>{" "}
-            pour voir votre vrai profil.
+            {t("previewNoAccount.loginSuffix")}
           </p>
         </Card>
       )}
 
       <div className="mb-5 grid grid-cols-3 gap-2">
-        <StatTile value={me.stats.organises} label="Organisés" />
-        <StatTile value={me.stats.joined} label="Participés" />
-        <StatTile value={me.stats.contacts} label="Proches" />
+        <StatTile value={stats.hosted} label={t("stats.hosted")} />
+        <StatTile value={stats.joined} label={t("stats.joined")} />
+        <StatTile value={stats.contacts} label={t("stats.contacts")} />
       </div>
 
-      <SectionTitle>Mes proches</SectionTitle>
-      <ul className="mb-5 flex flex-col gap-1.5">
-        {me.circles.map((circle) => (
-          <Card as="li" key={circle.label} className="rounded-field">
-            <div className="flex items-center justify-between px-3.5 py-3">
-              <span className="text-[12.5px] font-bold">{circle.label}</span>
-              <span className="text-[11.5px] text-ink/50">{circle.count}</span>
-            </div>
-          </Card>
-        ))}
-      </ul>
-
       <div className="flex flex-col">
-        <Row href="/profil/modifier" label="Modifier le profil" />
-        <Row href="/reglages" label="Notifications" />
-        <Row href="/shabbats" label="Historique" />
-        <Row href="/devenir-traiteur" label="Espace fournisseur" />
-        <Row href="/marketplace" label="Marketplace" />
-        <Row href="/marketplace/mes-commandes" label="Mes commandes marketplace" />
+        <Row href="/profil/modifier" label={t("editProfile")} />
+        <LanguageSwitch />
+        <Row href="/historique" label={t("history")} />
         {account ? (
           <div className="px-0.5 py-3.5">
             <SignOutButton />
           </div>
         ) : (
           <Link href="/connexion?suite=/profil" className="px-0.5 py-3.5">
-            <span className="text-[12.5px] font-bold text-teal">Se connecter</span>
+            <span className="text-[14px] font-bold text-teal">{tc("login")}</span>
           </Link>
         )}
       </div>
+
+      {account && <DeleteAccount />}
     </ScreenBody>
   );
 }
@@ -107,7 +92,7 @@ function Row({ href, label }: { href: string; label: string }) {
       href={href}
       className="flex items-center justify-between border-b border-line px-0.5 py-3.5"
     >
-      <span className="text-[12.5px] font-bold">{label}</span>
+      <span className="text-[14px] font-bold">{label}</span>
       <span className="text-ink/30">›</span>
     </Link>
   );

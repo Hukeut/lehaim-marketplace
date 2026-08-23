@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { ChevronRight, Sliders } from "@/components/icons";
 import { IconTile } from "@/components/ui";
 import { readSurvey } from "@/lib/survey";
@@ -12,6 +13,8 @@ export async function SurveyBanner() {
   const survey = await readSurvey();
   if (!survey || survey.completed) return null;
 
+  const t = await getTranslations("survey.banner");
+
   return (
     <Link
       href="/profil/decouverte"
@@ -21,11 +24,11 @@ export async function SurveyBanner() {
         <Sliders size={16} />
       </IconTile>
       <div className="min-w-0 flex-1">
-        <div className="text-[12.5px] font-bold">
-          {survey.postponed ? "Votre profil vous attend" : "Complétez votre profil"}
+        <div className="text-[14px] font-bold">
+          {survey.postponed ? t("titlePostponed") : t("titleDefault")}
         </div>
-        <div className="text-[11px] text-ink/55">
-          4 questions, 30 secondes — pour des suggestions plus justes.
+        <div className="text-[12.5px] text-ink/55">
+          {t("subtitle")}
         </div>
       </div>
       <ChevronRight size={15} className="shrink-0 text-teal" />

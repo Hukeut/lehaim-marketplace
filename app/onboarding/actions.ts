@@ -3,6 +3,8 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import type { Update } from "@/lib/supabase/rows";
+import { userMessage } from "@/lib/db";
 import {
   COUNTRIES,
   FREQUENCIES,
@@ -19,7 +21,7 @@ export type StepState = { error: string | null };
  * de reprise pour savoir où reprendre.
  */
 async function saveStep(
-  payload: Record<string, unknown>,
+  payload: Update<"profiles">,
   nextStep: OnboardingStep,
 ): Promise<StepState | never> {
   const supabase = await createClient();
@@ -29,21 +31,15 @@ async function saveStep(
 
   if (!user) redirect("/connexion?suite=/onboarding/prenom");
 
-  const row: Record<string, unknown> = { ...payload, onboarding_step: nextStep };
+  const row: Update<"profiles"> = { ...payload, onboarding_step: nextStep };
   if (nextStep === "done") row.onboarding_done_at = new Date().toISOString();
 
   const { error } = await supabase.from("profiles").update(row).eq("id", user.id);
 
-  if (error) {
-    // 42703 = colonne inconnue : la migration 0007 n'a pas encore été passée.
-    if (error.code === "42703") {
-      return {
-        error:
-          "La base n'est pas à jour : la migration 0007_onboarding.sql n'a pas encore été exécutée.",
-      };
-    }
-    return { error: error.message };
-  }
+  // Le cas « colonne inconnue » (42703) portait ici un message d'ingénieur,
+  // affiché tel quel à la personne en train de s'inscrire. Le code SQLSTATE
+  // part désormais au journal, seul endroit où il sert à quelqu'un.
+  if (error) return { error: await userMessage("saveOnboardingStep", error) };
 
   revalidatePath("/profil");
   revalidatePath("/accueil");

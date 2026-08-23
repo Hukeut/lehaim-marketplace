@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { ChoiceStep } from "@/components/onboarding";
 import { DISH_SPECIALTIES, type DishSpecialty } from "@/lib/onboarding";
 import { getOnboardingState } from "@/lib/onboarding-state";
@@ -11,19 +12,21 @@ export default async function PlatPage() {
   if (!state) redirect("/connexion?suite=/profil/decouverte/plat");
 
   const survey = await readSurvey();
+  const t = await getTranslations("survey.dishStep");
 
   return (
     <ChoiceStep<DishSpecialty>
       action={saveSpecialty}
       name="dish_specialty"
+      namespace="survey"
       options={DISH_SPECIALTIES}
       initial={(survey?.dishSpecialty as DishSpecialty | null) ?? null}
-      image="/illustrations/dresser-la-table.jpg"
+      image="/illustrations/dresser-la-table.webp"
       imagePosition="center 30%"
       step={1}
       close="/accueil"
-      title="Si on te demande d'apporter un plat…"
-      cta="Continuer"
+      title={t("title")}
+      cta={t("cta")}
     />
   );
 }

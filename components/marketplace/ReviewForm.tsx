@@ -9,9 +9,10 @@ import { Card } from "@/components/ui";
 const initial: ActionState = { ok: false, message: null };
 
 /**
- * Formulaire d'avis, affiché une fois la commande récupérée et tant que
- * la personne n'a pas encore noté. Un avis par commande (contrainte
- * unique côté DB), pas d'édition en v1 — voir migration 0018.
+ * Formulaire d'avis, affiché une fois la commande récupérée et tant que la
+ * personne n'a pas encore noté. Un avis par commande (contrainte unique côté
+ * DB), pas d'édition — porté depuis lehaim-marketplace (0018_marketplace_
+ * reviews.sql + components/marketplace/ReviewForm.tsx).
  */
 export function ReviewForm({ orderId }: { orderId: string }) {
   const [state, formAction, pending] = useActionState(submitReview, initial);

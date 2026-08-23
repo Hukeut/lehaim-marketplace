@@ -45,17 +45,18 @@ export function stepsLeft(step: OnboardingStep): number {
 export type Country = {
   code: string;
   flag: string;
-  name: string;
+  /** Chemin de la clé de traduction, relatif à "onboarding.phone". */
+  nameKey: string;
   dial: string;
   /** Nombre de chiffres attendus après l'indicatif. */
   digits: number;
 };
 
 export const COUNTRIES: Country[] = [
-  { code: "FR", flag: "🇫🇷", name: "France", dial: "+33", digits: 9 },
-  { code: "IL", flag: "🇮🇱", name: "Israël", dial: "+972", digits: 9 },
-  { code: "GB", flag: "🇬🇧", name: "Royaume-Uni", dial: "+44", digits: 10 },
-  { code: "US", flag: "🇺🇸", name: "États-Unis", dial: "+1", digits: 10 },
+  { code: "FR", flag: "🇫🇷", nameKey: "countryNames.fr", dial: "+33", digits: 9 },
+  { code: "IL", flag: "🇮🇱", nameKey: "countryNames.il", dial: "+972", digits: 9 },
+  { code: "GB", flag: "🇬🇧", nameKey: "countryNames.gb", dial: "+44", digits: 10 },
+  { code: "US", flag: "🇺🇸", nameKey: "countryNames.us", dial: "+1", digits: 10 },
 ];
 
 export function countryByCode(code: string | null | undefined): Country {
@@ -75,10 +76,11 @@ export function formatNationalNumber(digits: string): string {
 export type Option<T extends string> = {
   value: T;
   emoji: string;
-  label: string;
-  hint?: string;
+  /** Chemin de la clé de traduction, relatif à l'espace de noms passé à ChoiceStep. */
+  labelKey: string;
+  hintKey?: string;
   /** Le petit mot affiché sous la liste dès que l'option est choisie. */
-  reaction: { emoji: string; text: string; tone: ReactionTone };
+  reaction: { emoji: string; textKey: string; tone: ReactionTone };
 };
 
 export type Frequency = "weekly" | "biweekly" | "sometimes" | "discovering";
@@ -87,26 +89,26 @@ export const FREQUENCIES: Option<Frequency>[] = [
   {
     value: "weekly",
     emoji: "🔥",
-    label: "Toutes les semaines",
-    reaction: { emoji: "🔥", text: "Un vrai habitué ! On va te faire gagner un temps fou.", tone: "gold" },
+    labelKey: "frequency.weekly.label",
+    reaction: { emoji: "🔥", textKey: "frequency.weekly.reaction", tone: "gold" },
   },
   {
     value: "biweekly",
     emoji: "📅",
-    label: "Deux fois par mois",
-    reaction: { emoji: "📅", text: "Le bon rythme : assez souvent pour que ça reste simple.", tone: "gold" },
+    labelKey: "frequency.biweekly.label",
+    reaction: { emoji: "📅", textKey: "frequency.biweekly.reaction", tone: "gold" },
   },
   {
     value: "sometimes",
     emoji: "🌤️",
-    label: "De temps en temps",
-    reaction: { emoji: "🌤️", text: "Parfait. On te préviendra sans jamais te presser.", tone: "teal" },
+    labelKey: "frequency.sometimes.label",
+    reaction: { emoji: "🌤️", textKey: "frequency.sometimes.reaction", tone: "teal" },
   },
   {
     value: "discovering",
     emoji: "🌱",
-    label: "Je découvre",
-    reaction: { emoji: "🌱", text: "Bienvenue ! On t'accompagne pas à pas pour le premier.", tone: "olive" },
+    labelKey: "frequency.discovering.label",
+    reaction: { emoji: "🌱", textKey: "frequency.discovering.reaction", tone: "olive" },
   },
 ];
 
@@ -116,23 +118,23 @@ export const HOSTING_STYLES: Option<HostingStyle>[] = [
   {
     value: "host",
     emoji: "🏠",
-    label: "J'organise chez moi",
-    hint: "Je suis souvent l'hôte",
-    reaction: { emoji: "🏠", text: "Les hosts comme toi vont gagner un temps fou.", tone: "teal" },
+    labelKey: "hostingStyle.host.label",
+    hintKey: "hostingStyle.host.hint",
+    reaction: { emoji: "🏠", textKey: "hostingStyle.host.reaction", tone: "teal" },
   },
   {
     value: "guest",
     emoji: "🎁",
-    label: "Je suis invité",
-    hint: "Je participe chez les autres",
-    reaction: { emoji: "🎁", text: "On te trouvera toujours une place à table.", tone: "coral" },
+    labelKey: "hostingStyle.guest.label",
+    hintKey: "hostingStyle.guest.hint",
+    reaction: { emoji: "🎁", textKey: "hostingStyle.guest.reaction", tone: "coral" },
   },
   {
     value: "both",
     emoji: "🤝",
-    label: "Les deux, ça dépend",
-    hint: "Selon les semaines",
-    reaction: { emoji: "🤝", text: "L'équilibre parfait. L'app s'adapte aux deux.", tone: "olive" },
+    labelKey: "hostingStyle.both.label",
+    hintKey: "hostingStyle.both.hint",
+    reaction: { emoji: "🤝", textKey: "hostingStyle.both.reaction", tone: "olive" },
   },
 ];
 
@@ -142,40 +144,40 @@ export const DISH_SPECIALTIES: Option<DishSpecialty>[] = [
   {
     value: "wine",
     emoji: "🍷",
-    label: "J'arrive avec du vin",
-    hint: "Toujours, sans réfléchir",
-    reaction: { emoji: "🍷", text: "Tu vas vite devenir le spécialiste des bonnes bouteilles.", tone: "coral" },
+    labelKey: "dish.wine.label",
+    hintKey: "dish.wine.hint",
+    reaction: { emoji: "🍷", textKey: "dish.wine.reaction", tone: "coral" },
   },
   {
     value: "dessert",
     emoji: "🍰",
-    label: "Je cuisine un dessert",
-    hint: "J'adore ça",
-    reaction: { emoji: "🍰", text: "On te réservera les desserts, personne ne s'en plaindra.", tone: "coral" },
+    labelKey: "dish.dessert.label",
+    hintKey: "dish.dessert.hint",
+    reaction: { emoji: "🍰", textKey: "dish.dessert.reaction", tone: "coral" },
   },
   {
     value: "cooked",
     emoji: "🥗",
-    label: "Salade ou plat, ça dépend",
-    hint: "Selon l'inspiration",
-    reaction: { emoji: "🥗", text: "Polyvalent : on te proposera ce qui manque le jour J.", tone: "olive" },
+    labelKey: "dish.cooked.label",
+    hintKey: "dish.cooked.hint",
+    reaction: { emoji: "🥗", textKey: "dish.cooked.reaction", tone: "olive" },
   },
   {
     value: "bought",
     emoji: "🛍️",
-    label: "Je préfère acheter tout fait",
-    hint: "Pas de honte à ça",
-    reaction: { emoji: "🛍️", text: "Aucun souci. On te glissera les bonnes adresses.", tone: "teal" },
+    labelKey: "dish.bought.label",
+    hintKey: "dish.bought.hint",
+    reaction: { emoji: "🛍️", textKey: "dish.bought.reaction", tone: "teal" },
   },
 ];
 
 export type DietTag = "casher" | "vegetarien" | "sans-gluten" | "sans-lactose";
 
-export const DIET_TAGS: { value: DietTag; emoji: string; label: string }[] = [
-  { value: "casher", emoji: "✅", label: "Casher" },
-  { value: "vegetarien", emoji: "🥦", label: "Végétarien" },
-  { value: "sans-gluten", emoji: "🌾", label: "Sans gluten" },
-  { value: "sans-lactose", emoji: "🥛", label: "Sans lactose" },
+export const DIET_TAGS: { value: DietTag; emoji: string; labelKey: string }[] = [
+  { value: "casher", emoji: "🕎", labelKey: "diet.casher.label" },
+  { value: "vegetarien", emoji: "🥦", labelKey: "diet.vegetarien.label" },
+  { value: "sans-gluten", emoji: "🌾", labelKey: "diet.sans-gluten.label" },
+  { value: "sans-lactose", emoji: "🥛", labelKey: "diet.sans-lactose.label" },
 ];
 
 export type SynagogueHabit = "always" | "sometimes" | "rarely" | "never";
@@ -184,26 +186,26 @@ export const SYNAGOGUE_HABITS: Option<SynagogueHabit>[] = [
   {
     value: "always",
     emoji: "🕍",
-    label: "La synagogue, toujours",
-    reaction: { emoji: "🕍", text: "On te proposera les départs groupés du samedi matin.", tone: "gold" },
+    labelKey: "synagogue.always.label",
+    reaction: { emoji: "🕍", textKey: "synagogue.always.reaction", tone: "gold" },
   },
   {
     value: "sometimes",
     emoji: "🕍",
-    label: "Parfois",
-    reaction: { emoji: "🕍", text: "On te signalera les offices quand ça tombe bien.", tone: "gold" },
+    labelKey: "synagogue.sometimes.label",
+    reaction: { emoji: "🕍", textKey: "synagogue.sometimes.reaction", tone: "gold" },
   },
   {
     value: "rarely",
     emoji: "☕",
-    label: "Rarement",
-    reaction: { emoji: "☕", text: "Noté. On mettra plutôt l'accent sur la table.", tone: "teal" },
+    labelKey: "synagogue.rarely.label",
+    reaction: { emoji: "☕", textKey: "synagogue.rarely.reaction", tone: "teal" },
   },
   {
     value: "never",
     emoji: "🛌",
-    label: "Jamais",
-    reaction: { emoji: "🛌", text: "C'est noté, on ne t'en parlera pas.", tone: "teal" },
+    labelKey: "synagogue.never.label",
+    reaction: { emoji: "🛌", textKey: "synagogue.never.reaction", tone: "teal" },
   },
 ];
 
@@ -213,19 +215,19 @@ export const CONTENT_PREFS: Option<ContentPref>[] = [
   {
     value: "recipes",
     emoji: "📖",
-    label: "Des idées de recettes",
-    reaction: { emoji: "📖", text: "On te glissera des idées, jamais de spam.", tone: "olive" },
+    labelKey: "contentPref.recipes.label",
+    reaction: { emoji: "📖", textKey: "contentPref.recipes.reaction", tone: "olive" },
   },
   {
     value: "places",
     emoji: "📍",
-    label: "De bonnes adresses",
-    reaction: { emoji: "📍", text: "Traiteurs, caves, pâtisseries : on ouvre le carnet.", tone: "olive" },
+    labelKey: "contentPref.places.label",
+    reaction: { emoji: "📍", textKey: "contentPref.places.reaction", tone: "olive" },
   },
   {
     value: "both",
     emoji: "✨",
-    label: "Les deux",
-    reaction: { emoji: "✨", text: "Le meilleur des deux, sans jamais encombrer.", tone: "olive" },
+    labelKey: "contentPref.both.label",
+    reaction: { emoji: "✨", textKey: "contentPref.both.reaction", tone: "olive" },
   },
 ];

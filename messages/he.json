@@ -1,0 +1,1361 @@
+{
+  "common": {
+    "appName": "Lehaim",
+    "back": "חזרה",
+    "brandHome": "Lehaim · חזרה למסך הבית",
+    "nav": {
+      "home": "בית",
+      "shabbats": "שבתות",
+      "profile": "פרופיל",
+      "main": "ניווט ראשי",
+      "todo": "משימות",
+      "marketplace": "חנויות"
+    },
+    "createShabbat": "יצירת שבת",
+    "login": "התחברות",
+    "signedOut": {
+      "title": "התחברו",
+      "text": "לאחר פתיחת החשבון שלכם, {what} יופיע כאן."
+    },
+    "stepper": {
+      "decrease": "הפחיתו",
+      "increase": "הוסיפו"
+    },
+    "guestFallback": "אורח",
+    "missionFallback": "משימה",
+    "you": "אתם",
+    "memberSince": "אצלנו מאז {month} {year}",
+    "months": {
+      "0": "ינואר",
+      "1": "פברואר",
+      "2": "מרץ",
+      "3": "אפריל",
+      "4": "מאי",
+      "5": "יוני",
+      "6": "יולי",
+      "7": "אוגוסט",
+      "8": "ספטמבר",
+      "9": "אוקטובר",
+      "10": "נובמבר",
+      "11": "דצמבר"
+    },
+    "settings": "הגדרות",
+    "status": {
+      "urgent": "דחוף",
+      "confirmed": "מאושר",
+      "declined": "נדחה",
+      "pending": "ממתין לתשובה",
+      "ended": "הסתיים",
+      "recommended": "מומלץ"
+    },
+    "emptyState": {
+      "noShabbat": {
+        "title": "אין שבת מתוכננת",
+        "text": "פתחו את השולחן שלכם לקרובים: בחרו תאריך, אנחנו נטפל בשאר."
+      }
+    },
+    "continue": "המשך",
+    "createThisShabbat": "יצירת השבת הזו",
+    "host": "מארח/ת",
+    "loadingShabbat": "טוענים את השבת שלכם…",
+    "enter": "כניסה",
+    "meta": {
+      "description": "ארגנו את השבת שלכם, יחד.",
+      "ogDescription": "שבת עם חברים, בלי הלחץ.",
+      "ogImageAlt": "משפחה יושבת סביב השולחן לשבת"
+    },
+    "copyLink": {
+      "copied": "הועתק",
+      "copyLink": "העתקת הקישור"
+    },
+    "shareOnWhatsapp": "שיתוף בוואטסאפ",
+    "signingOut": "מתנתקים…",
+    "signOut": "התנתקות",
+    "stepOfTotal": "שלב {current} מתוך {total}",
+    "joinShabbat": "הצטרפות לשבת",
+    "all": "הכול",
+    "organise": "לארגן",
+    "joinShort": "להצטרף",
+    "backHome": "חזרה לדף הבית",
+    "backToShabbat": "חזרה לשבת",
+    "remove": {
+      "label": "מחיקת {name}",
+      "confirm": "למחוק את ״{name}״?",
+      "keep": "להשאיר",
+      "action": "מחיקה",
+      "removing": "מוחק…",
+      "claimed": "{count, plural, one {{names} לקח/ה את זה — התפקיד יאבד.} two {{names} לקחו את זה — התפקידים יאבדו.} other {{names} לקחו את זה — התפקידים יאבדו.}}"
+    }
+  },
+  "errors": {
+    "page": {
+      "title": "לא ניתן היה להציג את המסך הזה",
+      "text": "התקלה היא שלנו, לא שלכם. היא נרשמה ואנחנו נבדוק אותה.",
+      "retry": "נסו שוב",
+      "home": "חזרה לדף הבית"
+    },
+    "notFound": {
+      "title": "הדף הזה לא קיים",
+      "text": "ייתכן שהקישור פג או שהכתובת חלקית. בקשו מהמארח שלכם לשלוח אותו שוב.",
+      "home": "חזרה לדף הבית"
+    },
+    "db": {
+      "full": "כבר מלא — מישהו בדיוק תפס את המקום האחרון.",
+      "denied": "אין לכם הרשאה לעשות את זה.",
+      "duplicate": "זה כבר נשמר.",
+      "generic": "השמירה לא הצליחה. נסו שוב בעוד רגע."
+    }
+  },
+  "onboarding": {
+    "intro": {
+      "title": "שבת עם חברים, בלי הלחץ",
+      "subtitle": "השיחה נשארת בוואטסאפ. Lehaim מטפלת בשאר.",
+      "cta": "בואו נתחיל",
+      "loginPrompt": "כבר יש לכם חשבון?",
+      "loginCta": "להתחבר"
+    },
+    "resume": {
+      "greeting": "חוזרים מהמקום שבו עצרתם, {name}",
+      "questionsLeft": "{count, plural, one {נשארה עוד שאלה אחת והחשבון שלכם מוכן.} two {נשארו עוד שתי שאלות והחשבון שלכם מוכן.} other {נשארו עוד # שאלות והחשבון שלכם מוכן.}}",
+      "cta": "להמשיך"
+    },
+    "firstName": {
+      "title": "איך קוראים לכם?",
+      "subtitle": "אנחנו אוהבים להכיר את מי שאנחנו מזמינים.",
+      "placeholder": "הוגו",
+      "greeting": "נעים מאוד, {name} 👋",
+      "cta": "להמשיך"
+    },
+    "phone": {
+      "title": "המספר שלכם, כדי למצוא אתכם",
+      "subtitle": "לעולם לא ישותף, לעולם לא ספאם. בלי קוד להזין.",
+      "numberAriaLabel": "מספר טלפון",
+      "placeholder": "6 12 34 56 78",
+      "incompleteError": "חסרות כמה ספרות",
+      "cta": "יוצאים לדרך",
+      "countryPickerTitle": "בחירת קידומת",
+      "closeAriaLabel": "סגירה",
+      "countryNames": {
+        "fr": "צרפת",
+        "il": "ישראל",
+        "gb": "בריטניה",
+        "us": "ארצות הברית"
+      }
+    },
+    "welcome": {
+      "title": "ברוכים הבאים, {name}!",
+      "subtitle": "אתם מוכנים לארגן את השבת הבאה שלכם.",
+      "cta": "להתחיל"
+    },
+    "frequencyStep": {
+      "title": "שבת עם חברים אצלכם, זה בדרך כלל…",
+      "cta": "מושלם"
+    },
+    "frequency": {
+      "weekly": {
+        "label": "כל שבוע",
+        "reaction": "ותיקים אמיתיים! נחסוך לכם המון זמן."
+      },
+      "biweekly": {
+        "label": "פעמיים בחודש",
+        "reaction": "הקצב הנכון: מספיק לעיתים קרובות כדי שזה יישאר פשוט."
+      },
+      "sometimes": {
+        "label": "מדי פעם",
+        "reaction": "מושלם. נעדכן אתכם בלי ללחוץ."
+      },
+      "discovering": {
+        "label": "אני בתחילת הדרך",
+        "reaction": "ברוכים הבאים! נלווה אתכם צעד אחר צעד בפעם הראשונה."
+      }
+    },
+    "roleStep": {
+      "title": "זה קורה יותר אצלכם, או שאתם באים כאורחים?",
+      "cta": "השלב האחרון"
+    },
+    "hostingStyle": {
+      "host": {
+        "label": "אני מארח/ת בבית",
+        "hint": "בדרך כלל אני מארח/ת",
+        "reaction": "מארחים כמוכם יחסכו המון זמן."
+      },
+      "guest": {
+        "label": "אני אורח/ת",
+        "hint": "אני משתתף/ת אצל אחרים",
+        "reaction": "תמיד נמצא לכם מקום בשולחן."
+      },
+      "both": {
+        "label": "שניהם, תלוי",
+        "hint": "תלוי בשבוע",
+        "reaction": "האיזון המושלם. האפליקציה מתאימה את עצמה לשניהם."
+      }
+    },
+    "stepHero": {
+      "closeAriaLabel": "יציאה"
+    },
+    "language": {
+      "title": "באיזו שפה?",
+      "subtitle": "אפשר לשנות בכל רגע בהגדרות.",
+      "cta": "להמשיך",
+      "required": "בחרו שפה כדי להמשיך.",
+      "fr": {
+        "label": "Français",
+        "reaction": "On continue en français."
+      },
+      "en": {
+        "label": "English",
+        "reaction": "We'll continue in English."
+      },
+      "he": {
+        "label": "עברית",
+        "reaction": "נמשיך בעברית."
+      },
+      "es": {
+        "label": "Español",
+        "reaction": "Seguimos en español."
+      },
+      "ru": {
+        "label": "Русский",
+        "reaction": "Продолжим по-русски."
+      }
+    }
+  },
+  "survey": {
+    "intro": {
+      "title": "ככל שנכיר אתכם טוב יותר, ההמלצות שלנו יהיו טובות יותר",
+      "subtitle": "4 שאלות קצרות, 30 שניות. אפשר לעצור בכל רגע.",
+      "cta": "יוצאים לדרך",
+      "later": "אולי מאוחר יותר"
+    },
+    "outro": {
+      "title": "תודה, {name}, עכשיו תורכם לפנק",
+      "subtitle": "ההמלצות הבאות שלנו למשימות כבר יהיו מדויקות יותר.",
+      "cta": "חזרה לאפליקציה"
+    },
+    "dishStep": {
+      "title": "אם מבקשים מכם להביא מנה…",
+      "cta": "להמשיך"
+    },
+    "dish": {
+      "wine": {
+        "label": "אני מגיע/ה עם יין",
+        "hint": "תמיד, בלי לחשוב פעמיים",
+        "reaction": "עוד מעט תהיו המומחים של הבקבוקים הטובים."
+      },
+      "dessert": {
+        "label": "אני מכין/ה קינוח",
+        "hint": "אני מת/ה על זה",
+        "reaction": "נשמור לכם את הקינוחים, אף אחד לא יתלונן."
+      },
+      "cooked": {
+        "label": "סלט או מנה, תלוי",
+        "hint": "לפי ההשראה",
+        "reaction": "רב-תכליתי: נציע לכם מה שחסר באותו יום."
+      },
+      "bought": {
+        "label": "אני מעדיף/ה לקנות מוכן",
+        "hint": "אין בזה שום בושה",
+        "reaction": "אין שום בעיה. נעביר לכם את הכתובות הכי טובות."
+      }
+    },
+    "dietStep": {
+      "title": "יש הגבלות שכדאי שנדע עליהן?",
+      "subtitle": "בחרו כל מה שרלוונטי, או כלום.",
+      "cta": "להמשיך",
+      "reaction": "נרשם, ניקח את זה בחשבון."
+    },
+    "diet": {
+      "casher": {
+        "label": "כשר"
+      },
+      "vegetarien": {
+        "label": "צמחוני"
+      },
+      "sans-gluten": {
+        "label": "ללא גלוטן"
+      },
+      "sans-lactose": {
+        "label": "ללא לקטוז"
+      }
+    },
+    "synagogueStep": {
+      "title": "בשבת בבוקר, לאן פונים?",
+      "cta": "להמשיך"
+    },
+    "synagogue": {
+      "always": {
+        "label": "לבית הכנסת, תמיד",
+        "reaction": "נציע לכם יציאות קבוצתיות בבוקר שבת."
+      },
+      "sometimes": {
+        "label": "לפעמים",
+        "reaction": "נעדכן אתכם כשזה מתאים."
+      },
+      "rarely": {
+        "label": "לעיתים רחוקות",
+        "reaction": "נרשם. נשים דגש על השולחן."
+      },
+      "never": {
+        "label": "אף פעם",
+        "reaction": "נרשם, לא נדבר על זה."
+      }
+    },
+    "contentStep": {
+      "title": "כדי לקבל השראה, מה מעניין אתכם יותר?",
+      "cta": "השלב האחרון"
+    },
+    "contentPref": {
+      "recipes": {
+        "label": "רעיונות למתכונים",
+        "reaction": "נעביר לכם רעיונות, לעולם לא ספאם."
+      },
+      "places": {
+        "label": "כתובות טובות",
+        "reaction": "קייטרינג, יקבים, קונדיטוריות: פותחים את המחברת."
+      },
+      "both": {
+        "label": "שניהם",
+        "reaction": "הכי טוב משני העולמות, בלי להעמיס אף פעם."
+      }
+    },
+    "banner": {
+      "titlePostponed": "הפרופיל שלכם מחכה לכם",
+      "titleDefault": "השלימו את הפרופיל שלכם",
+      "subtitle": "4 שאלות, 30 שניות, להמלצות מדויקות יותר."
+    }
+  },
+  "shabbat": {
+    "home": {
+      "greetingGeneric": "שלום",
+      "greeting": "שלום, {firstName}",
+      "signedOutNext": "השבת הבאה שלכם",
+      "signedOutThis": "השבת הזו",
+      "todoTitle": "מה שנשאר לעשות",
+      "quickOverview": "מבט מהיר",
+      "budget": "תקציב",
+      "guests": "אורחים",
+      "dishes": "מנות",
+      "manage": "ניהול",
+      "invite": "הזמנה",
+      "confirmedCount": "{confirmed}/{invited} {confirmed, plural, one {אורח מאושר} two {אורחים מאושרים} other {אורחים מאושרים}}",
+      "assignRoles": "{count, plural, one {הקצו תפקיד אחד} two {הקצו שני תפקידים} other {הקצו # תפקידים}}",
+      "pendingResponses": "{count, plural, one {תשובה אחת ממתינה} two {שתי תשובות ממתינות} other {# תשובות ממתינות}}",
+      "contributions": "תרומות"
+    },
+    "list": {
+      "title": "השבתות שלי",
+      "signedOutWhat": "השבתות שלכם",
+      "tabs": {
+        "hosting": "אני מארח/ת",
+        "joining": "אני משתתפ/ת"
+      },
+      "plannedSeats": "{count, plural, one {מקום אחד מתוכנן} two {שני מקומות מתוכננים} other {# מקומות מתוכננים}}",
+      "noInvitation": {
+        "title": "אין הזמנות",
+        "text": "כשקרוב יפתח לכם את השולחן שלו, זה יופיע כאן."
+      }
+    },
+    "create": {
+      "title": "שבת חדשה",
+      "titleLabel": "כותרת",
+      "titleDefault": "שבת אצלכם",
+      "dateLabel": "תאריך",
+      "timeLabel": "שעה",
+      "addressLabel": "כתובת",
+      "addressPlaceholder": "רחוב דיזנגוף 12, תל אביב",
+      "neighbourhoodLabel": "שכונה",
+      "neighbourhoodPlaceholder": "פלורנטין",
+      "guestCountLabel": "מספר האורחים",
+      "removeGuestAria": "הסרת אורח",
+      "addGuestAria": "הוספת אורח",
+      "visibilityLabel": "נראות",
+      "visibilityInvite": "בהזמנה בלבד",
+      "visibilityLink": "קישור לשיתוף",
+      "creating": "יוצרים…",
+      "loginToCreate": "התחברו כדי ליצור",
+      "financement": {
+        "title": "איך תממנו את השבת הזו?",
+        "subtitle": "תוכלו לשנות את הבחירה הזו בהמשך."
+      },
+      "missionsStep": {
+        "title": "מה שצריך להיות בשבת",
+        "preview": "תצוגה מקדימה",
+        "slots": "{count, plural, one {מקום אחד} two {שני מקומות} other {# מקומות}}",
+        "priority": "בעדיפות",
+        "noMissionsYet": "אין עדיין משימות.",
+        "addMission": "הוספת משימה",
+        "catalog": {
+          "title": "משימות נפוצות",
+          "subtitle": "הוסיפו בלחיצה את מה שצריך.",
+          "already": "כבר קיים",
+          "slots": "{count, plural, one {מקום #} other {# מקומות}}",
+          "addHint": "הוספה"
+        },
+        "addSlot": "עוד אדם אחד",
+        "removeSlot": "אדם אחד פחות",
+        "people": "אנשים"
+      },
+      "modele": {
+        "title": "בחרו את התבנית שלכם",
+        "subtitle": "תוכלו להתאים הכול אישית בשלב הבא.",
+        "missionsCount": "{count, plural, one {משימה אחת} two {שתי משימות} other {# משימות}}",
+        "momentsCount": "{count, plural, one {רגע אחד} two {שני רגעים} other {# רגעים}}"
+      },
+      "moments": {
+        "title": "מה תציעו?",
+        "subtitle": "הפעילו את מה שרלוונטי לשבת הזו.",
+        "detail": {
+          "meetAt": "שעת מפגש",
+          "arrivalAt": "שעת הגעה",
+          "capacity": "מקומות פנויים",
+          "policy": "למי",
+          "policies": {
+            "mixed": "מעורב",
+            "girls": "בנות",
+            "boys": "בנים"
+          },
+          "setTime": "הוספת שעה",
+          "otherTime": "שעה אחרת",
+          "places": "{count, plural, one {מקום #} other {# מקומות}}",
+          "manageRooms": "ניהול החדרים",
+          "synagoguePlaceholder": "כתובת בית הכנסת"
+        },
+        "chosen": "הארוחה הנוספת",
+        "extras": "להוסיף במידת הצורך"
+      },
+      "publie": {
+        "title": "השולחן שלכם פתוח",
+        "subtitle": "הקרובים שלכם יכולים כעת להצטרף בתאריך {date}. תהיו הראשונים לדעת על כל תשובה.",
+        "inviteFirstGuests": "הזמנת האורחים הראשונים שלי",
+        "viewMyShabbat": "צפייה בשבת שלי",
+        "backToHome": "חזרה לדף הבית"
+      },
+      "rebours": {
+        "title": "תאריך יעד כדי להיות מוכנים?",
+        "subtitle": "הספירה לאחור מניעה את הקבוצה ומפעילה תזכורות.",
+        "enableCountdown": "הפעלת ספירה לאחור",
+        "readyByLabel": "הכול צריך להיות מוכן…",
+        "infoNote": "הספירה לאחור מפעילה את פס ההתקדמות, את התזכורות האוטומטיות ואת הודעות הוואטסאפ המוצעות.",
+        "options": {
+          "eveningBefore": "בערב שלפני, 18:00",
+          "sameDayNoon": "באותו יום, 12:00",
+          "sameDayAfternoon": "באותו יום, 16:00"
+        },
+        "exact": {
+          "label": "תאריך ושעה אחרים",
+          "hint": "למועד שלא מתאים לאף קיצור דרך.",
+          "save": "שמירה",
+          "saved": "נשמר"
+        }
+      },
+      "visibilityInviteHint": "בהזמנה: אתם מוסיפים אנשים אחד אחד, אף אחד אחר לא נכנס.",
+      "visibilityLinkHint": "קישור לשיתוף: כל מי שיש לו הקישור או הקוד יכול להצטרף. נוח לקבוצת וואטסאפ.",
+      "alsoFriday": "להוסיף גם את ליל שישי",
+      "alsoSaturday": "להוסיף גם את צהרי שבת",
+      "alsoHint": "זה חוסך לכם את השלב הבא."
+    },
+    "dashboard": {
+      "discussionAria": "שיחה",
+      "readyByLabel": "הכול צריך להיות מוכן",
+      "nextAppointment": "הפגישה הבאה",
+      "readinessSummary": "{pct}% מוכן · {label} · {covered}/{total} {total, plural, one {משימה} two {משימות} other {משימות}}",
+      "guestsTile": "אורחים",
+      "missionsTile": "תרומות",
+      "spentSoFar": "{amount} € הוצאו עד כה",
+      "orphanMissions": "{count, plural, one {משימה אחת ללא מתנדב} two {שתי משימות ללא מתנדב} other {# משימות ללא מתנדב}}",
+      "freeSlotsToFill": "{count, plural, one {מקום אחד עוד פנוי} two {שני מקומות עוד פנויים} other {# מקומות עוד פנויים}}",
+      "pendingSwaps": "{count, plural, one {חילופין אחד ממתין} two {שני חילופין ממתינים} other {# חילופין ממתינים}}",
+      "theGroup": "הקבוצה",
+      "shortcutsTitle": "קיצורי דרך",
+      "shortcuts": {
+        "besoins": "צרכים",
+        "missions": "תרומות",
+        "materiel": "ציוד",
+        "invites": "אורחים",
+        "depenses": "הוצאות",
+        "messages": "הודעות",
+        "coorganisation": "ארגון משותף",
+        "couchage": "לינה"
+      },
+      "viewLockedPlan": "צפייה בתוכנית הנעולה",
+      "goShabbatReady": "מעבר למצב שבת מוכנה",
+      "editDetails": "עריכת הפרטים"
+    },
+    "recap": {
+      "title": "איזו שבת!",
+      "subtitle": "בזכותכם, {date} יישאר זיכרון יפה",
+      "guestsPresent": "אורחים שהגיעו",
+      "finalBudget": "תקציב סופי",
+      "rolesFilled": "תפקידים שמולאו",
+      "thankYouMessage": "תודה לכולם על השבת הזו, היא הייתה מושלמת 🙏",
+      "thankGuests": "הודיה לאורחים שלי",
+      "backToMyShabbats": "חזרה לשבתות שלי",
+      "contributionsCovered": "תרומות מכוסות"
+    },
+    "ready": {
+      "countdownLabel": "ספירה לאחור",
+      "allReady": "הכול מוכן.",
+      "almostThere": "כמעט הגענו.",
+      "missionsAccomplished": "{count, plural, one {משימה אחת הושלמה} two {שתי משימות הושלמו} other {# משימות הושלמו}}",
+      "guestsConfirmed": "{count, plural, one {סועד אחד מאושר} two {שני סועדים מאושרים} other {# סועדים מאושרים}}",
+      "allCandlesLeft": "נשאר רק להדליק את הנרות.",
+      "slotsRemaining": "{count, plural, one {נותר מקום אחד למילוי.} two {נותרו שני מקומות למילוי.} other {נותרו # מקומות למילוי.}}",
+      "sendFinalRecap": "שליחת הסיכום הסופי",
+      "unlockPlan": "שחרור נעילת התוכנית",
+      "lockButton": "Shabbat Ready",
+      "backHome": "חזרה למסך הבית"
+    },
+    "whatsapp": {
+      "previewLabel": "תצוגה מקדימה · {label}",
+      "copied": "הועתק",
+      "copyText": "העתקת הטקסט",
+      "done": "סיום",
+      "edit": "עריכה",
+      "shareOnWhatsapp": "שיתוף בוואטסאפ",
+      "readyMadeTitle": "הודעות מוכנות מראש"
+    },
+    "cohost": {
+      "hostTitle": "ארגון משותף",
+      "cohostTitle": "אתם שותפים בארגון השבת הזו",
+      "hostSubtitle": "האצילו חלק מהארגון.",
+      "cohostSubtitle": "{host} נשאר המארח הראשי",
+      "mainHost": "מארח ראשי",
+      "youBadge": "אתם · שותפים לארגון",
+      "noCohostYet": "עדיין אין שותפים לארגון השבת הזו.",
+      "notACohost": "אינכם שותפים לארגון השבת הזו.",
+      "delegatedTo": "הואצל ל{name}",
+      "youCanManage": "אתם יכולים לנהל",
+      "hostOnlyNote": "רק {host} יכול לשנות את פרטי האירוע או את אופן המימון.",
+      "scopes": {
+        "missions": "תרומות וצרכים",
+        "guests": "משתתפים",
+        "messages": "הודעות וואטסאפ",
+        "expenses": "הוצאות"
+      },
+      "linkTitle": "מינוי שותף לארגון",
+      "linkHint": "הקישור הזה מעניק הרשאות ניהול: שלחו אותו לאדם אחד, לא לקבוצה.",
+      "copy": "העתקה",
+      "copied": "הועתק!",
+      "sendOnWhatsapp": "שליחה בוואטסאפ",
+      "shareMessage": "תעזור לי לארגן את „{title}”?",
+      "invitedBy": "{host} מזמין אתכם לארגן יחד",
+      "subtitle": "תנהלו את השבת הזו בשניים.",
+      "accept": "אישור",
+      "signInFirst": "התחברו כדי לאשר",
+      "linkNoLongerValid": "הקישור הזה כבר לא בתוקף.",
+      "can": {
+        "missions": "ניהול המשימות",
+        "guests": "ניהול האורחים",
+        "messages": "כתיבה לקבוצה"
+      }
+    },
+    "danger": {
+      "title": "מחיקת השבת הזו",
+      "text": "המשימות, האורחים והשיחה יימחקו יחד איתה.",
+      "confirmText": "„{title}” יימחק לצמיתות.",
+      "delete": "מחיקה",
+      "confirm": "כן, למחוק",
+      "cancel": "ביטול"
+    },
+    "join": {
+      "title": "הצטרפות לשבת",
+      "subtitle": "עם הקישור שקיבלתם, או הקוד שהמארח נתן לכם.",
+      "fieldLabel": "קישור או קוד",
+      "fieldHint": "הדביקו את הקישור מוואטסאפ, או הקלידו את שישת התווים של הקוד.",
+      "placeholder": "למשל KRAM47",
+      "joinButton": "הצטרפות",
+      "joining": "מוסיפים אתכם…",
+      "notFound": "לא נמצאה שבת מתאימה. בדקו את הקוד או הקישור.",
+      "codeLength": "קוד מורכב משישה תווים.",
+      "whereTitle": "איפה מוצאים את הקוד?",
+      "whereText": "המארח רואה אותו במסך האורחים של השבת שלו, ליד קישור השיתוף.",
+      "signedOut": "להצטרף לשבת"
+    },
+    "rooms": {
+      "title": "הלינה",
+      "subtitleHost": "תארו את החדרים: כל אחד יבחר אחר כך איפה הוא ישן.",
+      "subtitleGuest": "בחרו איפה אתם ישנים מבין המקומות הפנויים.",
+      "occupancy": "{taken} מתוך {total} מקומות",
+      "policies": {
+        "mixed": "מעורב",
+        "girls": "בנות",
+        "boys": "בנים"
+      },
+      "takeRoom": "אני ישן כאן",
+      "leaveRoom": "משחרר את המקום",
+      "full": "מלא",
+      "remove": "הסרה",
+      "addRoom": "הוספה",
+      "newRoomPlaceholder": "שם החדר",
+      "emptyHost": "אין עדיין חדרים. הוסיפו אחד כדי לחלק את המיטות.",
+      "emptyGuest": "המארח עדיין לא תיאר את החדרים."
+    },
+    "guestHome": {
+      "hostedBy": "מארגן: {host}",
+      "writeToGroup": "כתיבה לקבוצה",
+      "chooseContribution": "בחרו מה תביאו",
+      "editContributions": "שינוי מה שאביא",
+      "myContributionsCount": "{count, plural, =0 {עדיין לא נבחר} one {תרומה #} other {# תרומות}}",
+      "completeTable": "השלימו את השולחן",
+      "stillOpen": "{count, plural, one {תרומה # עדיין מחפשת מישהו} other {# תרומות עדיין מחפשות מישהו}}",
+      "pickRoom": "בחרו את החדר",
+      "pickRoomHint": "מעורב, בנות או בנים",
+      "myContributions": "התרומות שלכם",
+      "stillToFill": "נותר להשלים"
+    },
+    "edit": {
+      "title": "הגדרות השבת",
+      "subtitle": "הכתובת, התאריך והכותרת ניתנים לשינוי עד שהשבת מתקיימת.",
+      "save": "שמירה"
+    }
+  },
+  "profile": {
+    "previewNoAccount": {
+      "title": "תצוגה מקדימה ללא חשבון",
+      "text": "אתם צופים בתצוגה עם נתוני הדגמה.",
+      "loginSuffix": "כדי לראות את הפרופיל האמיתי שלכם."
+    },
+    "stats": {
+      "hosted": "אירחו",
+      "joined": "השתתפו",
+      "contacts": "קרובים"
+    },
+    "myCircle": "הקרובים שלי",
+    "editProfile": "עריכת פרופיל",
+    "notifications": "התראות",
+    "history": "היסטוריה",
+    "edit": {
+      "firstNameLabel": "שם פרטי",
+      "lastNameLabel": "שם משפחה",
+      "aboutLabel": "עליי",
+      "aboutPlaceholder": "ספרו קצת על עצמכם לקרובים שלכם…",
+      "phoneLabel": "מספר טלפון",
+      "emailLabel": "אימייל",
+      "emailNote": "הכתובת משמשת להתחברות, לא ניתן לשנות אותה כאן.",
+      "saving": "שומרים…",
+      "save": "שמירה",
+      "loginToEdit": "התחברו כדי לערוך"
+    },
+    "messages": "הודעות",
+    "deleteAccount": {
+      "action": "מחיקת החשבון",
+      "warning": "החשבון שלכם, השבתות שאתם מארגנים וכל מה שקשור אליהן יימחקו לצמיתות. ההשתתפויות אצל אחרים נשארות, בלי שמכם.",
+      "confirm": "מחיקה לצמיתות",
+      "cancel": "ביטול"
+    },
+    "language": "שפה"
+  },
+  "auth": {
+    "signInTitle": "ברוכים השבים",
+    "signUpTitle": "יצירת חשבון",
+    "signInSubtitle": "התחברו כדי למצוא שוב את השולחן והקרובים שלכם.",
+    "signUpSubtitle": "כמה שניות, והשולחן הראשון שלכם פתוח.",
+    "emailLabel": "כתובת אימייל",
+    "emailPlaceholder": "you@example.com",
+    "passwordLabel": "סיסמה",
+    "passwordTooShort": "{count, plural, one {נותר תו אחד.} two {נותרו שני תווים.} other {נותרו # תווים.}}",
+    "confirmPasswordLabel": "אימות סיסמה",
+    "passwordMismatch": "שתי הסיסמאות אינן תואמות.",
+    "passwordMatch": "הסיסמאות תואמות.",
+    "creating": "יוצרים…",
+    "signingIn": "מתחברים…",
+    "createAccount": "יצירת חשבון",
+    "login": "התחברות",
+    "or": "או",
+    "continueWithGoogle": "המשיכו עם Google",
+    "noAccountYet": "עדיין אין לכם חשבון?",
+    "createOne": "צרו אחד",
+    "alreadyHaveAccount": "כבר יש לכם חשבון?",
+    "errors": {
+      "invalidCredentials": "אימייל או סיסמה שגויים.",
+      "userExists": "כבר קיים חשבון בכתובת הזו. התחברו במקום זאת.",
+      "weakPassword": "הסיסמה קצרה מדי: {count} תווים לפחות.",
+      "invalidEmail": "כתובת האימייל הזו לא נראית תקינה. בדקו את איות הדומיין.",
+      "rateLimit": "יותר מדי ניסיונות כרגע. נסו שוב בעוד כמה דקות.",
+      "emailNotConfirmed": "החשבון הזה ממתין לאישור באימייל. השתמשו ב-Google בינתיים.",
+      "network": "לא ניתן להתחבר. בדקו את הרשת ונסו שוב.",
+      "signupFailed": "יצירת החשבון נכשלה. נסו שוב, או השתמשו ב-Google.",
+      "signinFailed": "ההתחברות נכשלה. נסו שוב, או השתמשו ב-Google.",
+      "passwordTooShortSubmit": "{count, plural, one {הסיסמה חייבת לכלול לפחות תו אחד.} two {הסיסמה חייבת לכלול לפחות שני תווים.} other {הסיסמה חייבת לכלול לפחות # תווים.}}",
+      "passwordsDontMatch": "שתי הסיסמאות אינן זהות.",
+      "confirmEmailReminder": "החשבון הזה ממתין לאישור באימייל. בדקו את ההגדרה \"Confirm email\" בפרויקט Supabase, או השתמשו ב-Google."
+    }
+  },
+  "expenses": {
+    "fundingMode": {
+      "byo": {
+        "label": "כל אחד מביא בעצמו",
+        "description": "בלי מעקב כספי, כל אחד קונה מה שבחר"
+      },
+      "split": {
+        "label": "חלוקת ההוצאות",
+        "description": "כל אחד משלם על מה שהוא קונה, ובסוף Lehaim מחשב מי חייב למי."
+      },
+      "pot": {
+        "label": "קופה משותפת",
+        "description": "כל אחד מכניס את אותו סכום מראש, והקניות יורדות מהקופה."
+      },
+      "host_pays": {
+        "label": "המארח מקדים הכול",
+        "description": "המארח קונה הכול, ו-Lehaim מחשב כמה כל אחד מחזיר לו."
+      },
+      "free": {
+        "label": "בלי מעקב כספי",
+        "description": "אף אחד לא סופר: Lehaim לא רושם שום הוצאה."
+      }
+    },
+    "title": "הוצאות",
+    "modeLabel": "מצב {label}",
+    "changeFundingMode": "החלפת אופן המימון",
+    "free": {
+      "activatedTitle": "מצב חופשי פעיל",
+      "description": "Lehaim לא עוקבים אחר ההוצאות של השבת הזו. תוכלו לשנות את הבחירה הזו בכל רגע.",
+      "changeMode": "החלפת מצב"
+    },
+    "pot": {
+      "available": "יתרת הקופה",
+      "recentlyDeducted": "נוכה לאחרונה",
+      "autoDeductNote": "כל רכישה שמדווחת מנוכה אוטומטית מהקופה המשותפת.",
+      "contribute": "תרומה לקופה"
+    },
+    "split": {
+      "totalCommitted": "סך הכול הוצא",
+      "whoOwesWhom": "מי חייב למי",
+      "owesGroup": "{name} חייב/ת לקבוצה",
+      "noExpensesYet": "עדיין לא דווחה אף הוצאה.",
+      "history": "היסטוריה"
+    },
+    "hostPays": {
+      "advancedByHost": "שולם מראש על ידי המארח/ת",
+      "eachWillOwe": "כל אחד יצטרך"
+    },
+    "byo": {
+      "infoNote": "כל אחד קונה מה שבחר: Lehaim לא מחשבים שום החזר. הסכומים שלמטה משמשים רק למעקב אחר התקציב.",
+      "totalDeclared": "סך הכול דווח"
+    },
+    "expenseLabelPlaceholder": "קניות בסופר",
+    "addExpense": "הוספה"
+  },
+  "missions": {
+    "category": {
+      "food": "אוכל",
+      "drinks": "משקאות",
+      "equipment": "ציוד",
+      "hosting": "אירוח",
+      "other": "אחר"
+    },
+    "noOneAssigned": "אין אחראי",
+    "status": {
+      "todo": "לביצוע",
+      "inProgress": "בתהליך",
+      "done": "הושלם"
+    },
+    "board": {
+      "title": "לוח הצרכים",
+      "emptyColumn": "אין כלום כאן.",
+      "add": "הוספת צורך",
+      "addTitle": "הוספת צרכים",
+      "addIntro": "בחרו מתוך הקטלוג, או כתבו משלכם.",
+      "addCustom": "יצירת צורך מותאם",
+      "alreadyAsked": "{count, plural, one {צורך אחד כבר התבקש} other {# צרכים כבר התבקשו}}"
+    },
+    "equipment": {
+      "title": "ציוד",
+      "claimedBy": "באחריות {name}",
+      "ownedCount": "{count, plural, one {פריט אחד ברשות} two {שני פריטים ברשות} other {# פריטים ברשות}}",
+      "missingCount": "{count, plural, one {פריט אחד חסר} two {שני פריטים חסרים} other {# פריטים חסרים}}",
+      "ownedPill": "ברשותכם",
+      "claimedPill": "באחריות מישהו",
+      "missingPill": "חסר",
+      "emptyList": "לא הוזן ציוד. הוסיפו את מה שעשוי לחסר.",
+      "namePlaceholder": "כיסאות",
+      "iHaveLabel": "יש לי",
+      "iNeedLabel": "צריך"
+    },
+    "choose": {
+      "allTaken": "הכול כבר תפוס!",
+      "allTakenText": "החברים שלכם היו מהירים. אתם עדיין יכולים להציע עזרה.",
+      "offerHelp": "הצעת עזרה",
+      "title": "בחרו משימה",
+      "remainingCount": "{count, plural, one {נותרה משימה אחת למילוי} two {נותרו שתי משימות למילוי} other {נותרו # משימות למילוי}}",
+      "addMissionAria": "הוספת משימה",
+      "youveGotThis": "אתם מטפלים בזה",
+      "viewMyMission": "צפייה במשימה שלי",
+      "slotsLeft": "{count, plural, one {מקום אחד נותר} two {שני מקומות נותרו} other {# מקומות נותרו}}",
+      "takeMission": "אני לוקח/ת את המשימה הזו",
+      "surpriseMe": "תגידו לי מה להביא",
+      "noneYet": "עדיין לא התבקש דבר",
+      "noneYetManager": "ספרו לקבוצה מה חסר: מנה, כיסאות, קינוח.",
+      "noneYetGuest": "המארח עדיין לא ביקש דבר. חזרו בקרוב."
+    },
+    "detail": {
+      "leadRole": "אחראי/ת · {role}",
+      "writeToGroupAria": "כתיבה לקבוצה",
+      "freeSlots": "{count, plural, one {מקום פנוי אחד} two {שני מקומות פנויים} other {# מקומות פנויים}}",
+      "participants": "משתתפים",
+      "and": " ו",
+      "participantsVerb": "{names} {count, plural, one {משתתפ/ת} two {משתתפים} other {משתתפים}}",
+      "expectedQuantity": "כמות צפויה: {quantity}.",
+      "suggestions": "הצעות",
+      "notesTitle": "הערות",
+      "notesQuote": "\"{notes}\"",
+      "progressTitle": "התקדמות",
+      "readyStatus": "מוכן",
+      "changeMission": "החלפת משימה",
+      "allSlotsTaken": "כל המקומות תפוסים"
+    },
+    "suggestions": {
+      "placeholder": "הציעו רעיון…",
+      "propose": "הצעה",
+      "proposedBy": "הוצע על ידי {name}",
+      "chosen": "נבחר",
+      "choose": "בחירה",
+      "removeVoteAria": "ביטול ההצבעה שלי",
+      "voteAria": "הצבעה",
+      "noIdeasYet": "עדיין לא הוצע אף רעיון."
+    },
+    "release": {
+      "yourSwapTitle": "החילופין שלכם",
+      "waitingFor": "ממתינים ל{name}",
+      "aResponse": "תשובה",
+      "requestReceivedByPerson": "{name} קיבל/ה את הבקשה שלכם לקחת את \"{missionTitle}\".",
+      "requestOpenToGroup": "הבקשה שלכם עבור \"{missionTitle}\" פתוחה לקבוצה.",
+      "notifiedOnReply": "תקבלו עדכון ברגע שיהיה מענה.",
+      "cancelRequest": "ביטול הבקשה",
+      "alreadyHasMission": "כבר יש לו/לה משימה",
+      "alreadyPresentNoMission": "כבר מגיע/ה · ללא משימה",
+      "title": "משהו השתבש?",
+      "yourCurrentMission": "המשימה הנוכחית שלכם",
+      "reassureText": "אין בעיה, הציעו את המשימה למישהו אחר, או החזירו אותה לקופה המשותפת.",
+      "noOneElseConfirmed": "אף אחד אחר עדיין לא אישר, החזירו את המשימה לקופה המשותפת.",
+      "sendRequestTo": "שליחת הבקשה ל{name}",
+      "chooseSomeone": "בחירת מישהו",
+      "putBackInPot": "החזרה לקופה המשותפת"
+    },
+    "form": {
+      "categoryLabel": "קטגוריה",
+      "emojiLabel": "אימוג'י",
+      "titleLabel": "שם המשימה",
+      "titlePlaceholder": "מנה עיקרית",
+      "slotsLabel": "מקומות",
+      "decreaseSlotsAria": "פחות מקומות",
+      "increaseSlotsAria": "עוד מקומות",
+      "quantityLabel": "כמות",
+      "quantityPlaceholder": "ל-8 סועדים",
+      "priorityLabel": "עדיפות",
+      "priorityStandard": "רגיל",
+      "notesLabel": "הערות למתנדב/ת",
+      "notesPlaceholder": "לדוגמה: נא להימנע מאגוזים…",
+      "deleteMission": "מחיקת המשימה הזו",
+      "editMissionTitle": "עריכת המשימה",
+      "newMissionTitle": "משימה חדשה"
+    },
+    "dishes": {
+      "title": "כמה רעיונות",
+      "noneOfThese": "אף אחד לא מתאים? כתבו מנה משלכם",
+      "customPlaceholder": "מה אתם מביאים",
+      "confirmDish": "אישור: {dish}",
+      "brings": "{name} מביא: {dish}",
+      "confirm": "אישור"
+    },
+    "recommendation": {
+      "title": "המלצת הכנה",
+      "essential": "חיוני",
+      "intro": "{count, plural, one {לאורח אחד} two {לשני אורחים} many {ל־# אורחים} other {ל־# אורחים}} — המינימום לשבת: מנה עיקרית, חלות ויין לקידוש.",
+      "items": {
+        "main": {
+          "label": "מנה עיקרית",
+          "quantity": "{count, plural, one {לאדם אחד} two {לשני אנשים} many {ל־# אנשים} other {ל־# אנשים}} (~150-200 גרם לאדם)"
+        },
+        "challah": {
+          "label": "חלות",
+          "quantity": "{count, plural, one {כיכר אחת} two {שתי כיכרות} many {# כיכרות} other {# כיכרות}}"
+        },
+        "wine": {
+          "label": "יין ומשקאות",
+          "quantity": "{count, plural, one {בקבוק אחד} two {שני בקבוקים} many {# בקבוקים} other {# בקבוקים}} (קידוש)"
+        },
+        "sides": {
+          "label": "מנות ראשונות וסלטים",
+          "quantity": "{count, plural, one {מנה אחת} two {שתי מנות} many {# מנות} other {# מנות}}"
+        },
+        "dessert": {
+          "label": "קינוח",
+          "quantity": "{count, plural, one {קינוח אחד} two {שני קינוחים} many {# קינוחים} other {# קינוחים}}"
+        }
+      }
+    },
+    "roles": {
+      "pastry": {
+        "name": "הקונדיטור של הסופ״ש",
+        "tagline": "מהיום אתם הקונדיטור של הסופ״ש"
+      },
+      "wine": {
+        "name": "אחראי היין",
+        "tagline": "הקידוש של שישי הוא קצת בזכותכם"
+      },
+      "salad": {
+        "name": "שף הסלטים",
+        "tagline": "הרעננות של השולחן תלויה בכם"
+      },
+      "bread": {
+        "name": "שומר החלות",
+        "tagline": "אין שבת בלי החלות שלכם"
+      },
+      "main": {
+        "name": "שף המנה החמה",
+        "tagline": "המנה שכולם מחכים לה היא שלכם"
+      },
+      "cold": {
+        "name": "אמן הקר",
+        "tagline": "בזכותכם אף אחד לא יישאר צמא"
+      },
+      "table": {
+        "name": "אחראי השולחן",
+        "tagline": "השולחן ייראה מושלם"
+      },
+      "seats": {
+        "name": "מציל המושבים",
+        "tagline": "ארבעה אורחים יחייבו לכם את מקומם"
+      },
+      "bedding": {
+        "name": "אמן המזרנים",
+        "tagline": "מי שיישן אצלכם יודה לכם"
+      },
+      "candles": {
+        "name": "שומר הלהבה",
+        "tagline": "אתם אלה שמכניסים את השבת"
+      },
+      "starter": {
+        "name": "פותח הערב",
+        "tagline": "אתם נותנים את הטון לארוחה"
+      },
+      "decor": {
+        "name": "המעצב",
+        "tagline": "לשולחן יהיה סטייל"
+      },
+      "support": {
+        "name": "התגבורת",
+        "tagline": "עזרה שנחשבת"
+      }
+    },
+    "role": {
+      "overline": "התפקיד שלכם",
+      "seeMission": "מה אני מביא",
+      "takeAnother": "{count, plural, one {נשאר עוד דבר אחד לקחת} two {נשארו עוד # דברים לקחת} other {נשארו עוד # דברים לקחת}}",
+      "backHome": "חזרה למסך הבית",
+      "shabbatOf": "שבת {date}",
+      "tableComplete": "הכול נלקח — השולחן מלא"
+    }
+  },
+  "invitation": {
+    "confirmee": {
+      "badge": "זהו זה, אתם בפנים",
+      "title": "נרשם, אנחנו מחכים לכם",
+      "subtitle": "{host} פותח/ת לכם את השולחן. בואו כמו שאתם.",
+      "hostForTheEvening": "המארח/ת שלכם לערב",
+      "guestsAroundTable": "{count, plural, one {סועד אחד סביב השולחן} two {שני סועדים סביב השולחן} other {# סועדים סביב השולחן}}",
+      "sayHello": "אמרו שלום לקבוצה",
+      "viewEvening": "צפייה בערב",
+      "theDayItself": "יום השבת",
+      "viewContributions": "לצפייה בתרומות",
+      "backHome": "חזרה למסך הבית"
+    },
+    "dayOf": {
+      "title": "שבת שלום!",
+      "subtitle": "נתראה בשעה {time} אצל {host}.",
+      "addressLabel": "כתובת",
+      "directions": "ניווט",
+      "bringing": "אתם מביאים",
+      "onMyWayMessage": "אני בדרך 🙂",
+      "notifyArrival": "עדכנו שאני בדרך"
+    },
+    "detail": {
+      "yourResponse": "התשובה שלכם",
+      "youAre": "אתם {role}",
+      "toConfirmBeforeThursday": "לאישור עד יום חמישי",
+      "hostsAtHome": "מארח/ת אתכם בביתו",
+      "confirmedGuestsCount": "{count, plural, one {סועד אחד מאושר} two {שני סועדים מאושרים} other {# סועדים מאושרים}}",
+      "accompanying": "מגיעים איתכם",
+      "stillMissing": "עדיין חסר",
+      "dishesWithoutPerson": "{count, plural, one {מנה אחת ללא אחראי} two {שתי מנות ללא אחראי} other {# מנות ללא אחראי}}",
+      "chooseWhatIBring": "בחירת מה שאני מביא/ה",
+      "writeToGroup": "כתיבה לקבוצה",
+      "sleepingAvailable": "{count, plural, one {מקום לינה אחד במקום} two {# מקומות לינה במקום} other {# מקומות לינה במקום}}"
+    },
+    "rsvp": {
+      "title": "אתם מגיעים?",
+      "subtitle": "בחרו את מה שרלוונטי לכם.",
+      "registeredCount": "{count, plural, one {נרשם אחד} two {שני נרשמים} other {# נרשמים}}",
+      "noMomentsYet": "המארח/ת עדיין לא פירט/ה את הרגעים.",
+      "confirmAndChooseMission": "אישור ובחירת משימה",
+      "imComing": "אני מגיע/ה",
+      "notThisTime": "לא הפעם"
+    },
+    "shareLanding": {
+      "badge": "אתם מוזמנים",
+      "opensTable": "פותח/ת לכם את השולחן",
+      "confirmedOf": "{confirmed, plural, one {אישור אחד} two {שני אישורים} other {# אישורים}} מתוך {guestTarget} מקומות",
+      "instructions": "אשרו את הגעתכם, ואז בחרו מה אתם מביאים. זה לוקח שלושים שניות.",
+      "respond": "מענה להזמנה",
+      "aMoment": "רגע אחד…",
+      "joinThisTable": "הצטרפות לשולחן הזה",
+      "linkNoLongerValid": "הקישור הזה כבר לא תואם לשבת קיימת.",
+      "viaWhatsApp": "דרך וואטסאפ",
+      "hostsInviteYou": "{host} מזמינים אתכם",
+      "addressAfterConfirm": "{area} · הכתובת תישלח לאחר אישור",
+      "addressHidden": "הכתובת תישלח לאחר אישור",
+      "sleepoverAvailable": "אפשרות ללינה",
+      "alreadyConfirmed": "{count, plural, one {# מוזמן כבר אישר} other {# מוזמנים כבר אישרו}}",
+      "imComing": "אני מגיע",
+      "cantMakeIt": "לא אוכל",
+      "responding": "רגע…",
+      "metaFallbackTitle": "ההזמנה הזאת כבר לא בתוקף",
+      "metaDescription": "{host} מזמין/ה אתכם — {when}. אשרו הגעה ובחרו מה אתם מביאים.",
+      "metaDescriptionPlace": "{host} מזמין/ה אתכם — {when}, {place}. אשרו הגעה ובחרו מה אתם מביאים."
+    },
+    "guests": {
+      "assignRole": "הקצאת תפקיד",
+      "statusPending": "ממתין",
+      "markPresentAria": "סימון {name} כנוכח/ת",
+      "removeAria": "הסרת {name}",
+      "guestNamePlaceholder": "שם פרטי של האורח/ת",
+      "addGuest": "הוספה",
+      "roleDetailPlaceholder": "פירוט (צלעות מבושלות…)",
+      "whatsappInviteMessage": "{title}, {date} בשעה {time}. אשרו את הגעתכם ובחרו כאן מה אתם מביאים:",
+      "guestsTitle": "אורחים · {confirmed}/{total}",
+      "codeLabel": "קוד השבת"
+    },
+    "cancel": {
+      "action": "בסוף לא אוכל להגיע",
+      "warning": "התרומות שלכם חוזרות לקבוצה, מקום הלינה מתפנה, והודעה מיידעת את כולם.",
+      "keep": "אני מגיע",
+      "confirm": "ביטול ההשתתפות",
+      "groupNotice": "{name} בסוף לא יוכל להגיע."
+    },
+    "contributionsWithoutPerson": "{count, plural, one {תרומה אחת ללא מתנדב} two {שתי תרומות ללא מתנדב} many {# תרומות ללא מתנדב} other {# תרומות ללא מתנדב}}"
+  },
+  "settings": {
+    "notificationsPrompt": {
+      "title": "אל תפספסו כלום",
+      "text": "הפעילו התראות כדי לדעת על אישורים, הודעות ותזכורות לשבת.",
+      "enable": "הפעלת התראות",
+      "later": "אחר כך"
+    },
+    "account": "חשבון",
+    "phoneAndEmail": "מספר טלפון ואימייל",
+    "notifications": "התראות",
+    "newReplies": "תשובות חדשות",
+    "prepReminders": "תזכורות הכנה",
+    "design": "עיצוב",
+    "allMockups": "כל התצוגות המקדימות",
+    "uiStates": "מצבי ממשק"
+  },
+  "landing": {
+    "title": "ארגנו את השבת שלכם.",
+    "cta": "הרשמה",
+    "ctaSignIn": "התחברות",
+    "steps": {
+      "setup": {
+        "title": "הגדירו",
+        "text": "תאריך, מקום, זמנים"
+      },
+      "invite": {
+        "title": "הזמינו",
+        "text": "קישור בוואטסאפ מספיק"
+      },
+      "share": {
+        "title": "חלקו",
+        "text": "כל אחד בוחר מה להביא"
+      },
+      "buy": {
+        "title": "קנו",
+        "text": "איסוף עצמי בחנויות שלנו"
+      },
+      "celebrate": {
+        "title": "חגגו",
+        "text": "כשמגיע הערב, הכול מוכן"
+      }
+    }
+  },
+  "install": {
+    "title": "התקנת Lehaim",
+    "subtitle": "גישה מהירה ישירות ממסך הבית",
+    "action": "התקנה",
+    "dismiss": "הסתרה"
+  },
+  "history": {
+    "title": "היסטוריה",
+    "whatSignedOut": "השבתות הקודמות שלכם",
+    "finished": "הסתיים",
+    "recreate": {
+      "title": "עושים את זה שוב?",
+      "basedOn": "לפי השבת שלכם מ־{date}",
+      "keepGuests": "{count, plural, one {מוזמן אחד} other {# מוזמנים}}",
+      "keepMissions": "{count, plural, one {משימה אחת מאותה תבנית} other {# משימות מאותה תבנית}}",
+      "keepFunding": "אופן מימון · {mode}",
+      "keepMoments": "{count, plural, one {מועד אחד} other {# מועדים}}",
+      "createWithSettings": "ליצור עם ההגדרות האלה",
+      "creating": "יוצרים…"
+    },
+    "viewRecap": "לצפות בסיכום",
+    "emptyTitle": "אין עדיין היסטוריה",
+    "emptyText": "השבתות הקודמות שלכם יופיעו כאן, מוכנות לחזרה.",
+    "emptyCta": "ליצור שבת",
+    "recreateCta": "ליצור שבת כזו שוב"
+  },
+  "shop": {
+    "title": "חנות · איסוף עצמי",
+    "subtitle": "מזמינים ואוספים לפני שבת",
+    "searchPlaceholder": "חיפוש חנות או מוצר…",
+    "open": "פתוח",
+    "closed": "סגור",
+    "distance": "{km} ק\"מ",
+    "closesAt": "נסגר ב־{time}",
+    "opensAt": "נפתח ב־{time}",
+    "orderClickCollect": "להזמין לאיסוף עצמי",
+    "comingSoon": "עדיין לא חוברה אף חנות שותפה.",
+    "filters": {
+      "nearby": "קרוב אליי",
+      "kosher": "כשר",
+      "openNow": "פתוח עכשיו"
+    },
+    "categories": {
+      "mains": "מנות עיקריות ובשר",
+      "starters": "מנות ראשונות",
+      "bakery": "מאפייה",
+      "drinks": "משקאות"
+    }
+  },
+  "todo": {
+    "title": "משימות",
+    "subtitle": "כל מה שמחכה לכם, בכל השבתות.",
+    "whatSignedOut": "המשימות שלכם",
+    "urgent": "דחוף",
+    "orphanMissions": "{count, plural, one {משימה אחת בלי מתנדב} other {# משימות בלי מתנדב}}",
+    "orphanMissionsDetail": "תזכורת לקבוצה",
+    "pendingAnswers": "{count, plural, one {תשובה אחת ממתינה} other {# תשובות ממתינות}}",
+    "pendingAnswersDetail": "תזכורת למי שטרם ענה",
+    "missingEquipment": "{count, plural, one {פריט אחד חסר} other {# פריטים חסרים}}",
+    "missingEquipmentDetail": "אף אחד לא לקח על עצמו",
+    "pickMission": "לבחור משימה",
+    "pickMissionDetail": "עדיין לא בחרתם מה להביא",
+    "missionInProgress": "המשימה שלכם",
+    "emptyTitle": "אין מה לעשות",
+    "emptyText": "הכול מעודכן. תיהנו."
+  },
+  "market": {
+    "title": "העסקים הכשרים",
+    "subtitle": "איסוף עצמי או משלוח, הכשרות מוצגת מראש",
+    "searchPlaceholder": "עסק, מנה, חשק",
+    "open": "פתוח",
+    "closed": "סגור",
+    "today": "היום",
+    "noHours": "שעות הפתיחה לא נמסרו",
+    "closesAt": "נסגר ב־{time}",
+    "opensOn": "נפתח ב{day} בשעה {time}",
+    "prepMinutes": "{minutes} דקות הכנה",
+    "certifiedUntil": "בתוקף עד {date}",
+    "noCertificate": "העסק הזה טרם הגיש תעודת כשרות.",
+    "preorderBy": "הזמנה מראש עד {when}",
+    "zone": "{label} · {fee}",
+    "zoneWithMinimum": "{label} · {fee} · מינימום {minimum}",
+    "noProducts": "התפריט של העסק הזה עדיין לא עלה.",
+    "contains": "מכיל {allergen}",
+    "freeFrom": "ללא {allergen}",
+    "unavailable": "לא זמין",
+    "unavailableLong": "המוצר הזה לא זמין היום. חזרו מחר, או בחרו משהו אחר מהתפריט.",
+    "notePlaceholder": "משהו שכדאי שהעסק ידע?",
+    "addToCart": "הוספה · {price}",
+    "browseByCategory": "עיון לפי קטגוריה",
+    "filters": {
+      "all": "הכול"
+    },
+    "empty": {
+      "title": "אין עדיין עסקים באוויר",
+      "body": "התיקים הראשונים בבדיקה. כל עסק מגיש תעודת כשרות לפני שהוא מופיע כאן.",
+      "cta": "יש לכם עסק? הצטרפו"
+    },
+    "noResults": {
+      "title": "אין תוצאות ל״{query}״",
+      "body": "נסו מילה קצרה יותר, או עיינו בקטגוריות."
+    },
+    "mode": {
+      "pickup": "איסוף עצמי",
+      "delivery": "משלוח",
+      "deliveryShort": "משלוח",
+      "pickupShort": "איסוף"
+    },
+    "shopCategories": {
+      "caterer": "קייטרינג",
+      "butcher": "אטליז",
+      "bakery": "מאפייה",
+      "grocery": "מכולת",
+      "wine": "יינות"
+    },
+    "productCategories": {
+      "entree": "מנות ראשונות",
+      "plat": "מנות עיקריות",
+      "dessert": "קינוחים",
+      "patisserie": "קונדיטוריה",
+      "pain": "לחם וחלות",
+      "boisson": "משקאות",
+      "epicerie": "מזון יבש",
+      "other": "אחר"
+    },
+    "allergens": {
+      "title": "אלרגנים ותזונה",
+      "contains": "מכיל",
+      "traces": "עלול להכיל שאריות",
+      "free": "מובטח ללא",
+      "disclaimer": "על פי הצהרת העסק. באלרגיה חמורה, התקשרו אליו לפני ההזמנה.",
+      "list": {
+        "gluten": "גלוטן",
+        "lait": "חלב",
+        "oeuf": "ביצה",
+        "arachide": "בוטנים",
+        "fruits_a_coque": "אגוזים",
+        "sesame": "שומשום",
+        "soja": "סויה",
+        "poisson": "דגים",
+        "moutarde": "חרדל",
+        "sulfites": "סולפיטים"
+      },
+      "workshop": "מוכן במטבח שמטפל באלרגנים האלה."
+    },
+    "cart": {
+      "title": "הסל שלי",
+      "bar": "{count, plural, one {פריט אחד} two {# פריטים} other {# פריטים}} · {shop}",
+      "subtotal": "סכום ביניים",
+      "feesLater": "דמי המשלוח מחושבים בשלב הבא.",
+      "checkout": "המשך",
+      "remove": "הסרה",
+      "lineUnavailable": "הוסר מהתפריט — לא יוזמן",
+      "unavailableWarning": "{count, plural, one {מוצר אחד כבר לא זמין} two {# מוצרים כבר לא זמינים} other {# מוצרים כבר לא זמינים}} ולא יצורפו להזמנה.",
+      "empty": {
+        "title": "הסל שלכם ריק",
+        "body": "בחרו עסק והוסיפו את מה שמתחשק.",
+        "cta": "לרשימת העסקים"
+      }
+    },
+    "checkout": {
+      "title": "ההזמנה שלכם",
+      "address": "כתובת למשלוח",
+      "addressPlaceholder": "מספר, רחוב, קוד, קומה",
+      "zone": "אזור משלוח",
+      "slot": "חלון זמן",
+      "noSlots": "העסק הזה טרם פתח חלונות זמן. ההזמנה תישלח בלי שעה והם יחזרו אליכם.",
+      "left": "{n, plural, one {נותר מקום אחד} two {נותרו # מקומות} other {נותרו # מקומות}}",
+      "note": "הערה לעסק",
+      "notePlaceholder": "בלי בצל, לצלצל אצל…",
+      "paymentNotice": "התשלום מתבצע מול העסק, באיסוף או במשלוח. הוא מאשר את ההזמנה לפני שהוא מכין אותה.",
+      "sending": "שולח…",
+      "submit": "שליחת ההזמנה",
+      "shopLine": "{shop} · {minutes} דקות הכנה",
+      "belowMinimum": "לא הגעתם למינימום"
+    },
+    "refusal": {
+      "generic": "ההזמנה לא יצאה. נסו שוב עוד רגע.",
+      "address_required": "ציינו את כתובת המשלוח.",
+      "signed_out": "התחברו מחדש כדי להזמין.",
+      "not_live": "העסק הזה לא מקבל הזמנות כרגע.",
+      "mode_unavailable": "העסק הזה לא מציע את האפשרות הזאת.",
+      "cart_empty": "הסל שלכם ריק.",
+      "slot_gone": "חלון הזמן הזה כבר לא קיים. בחרו אחר.",
+      "slot_closed": "העסק סגר זה עתה את חלון הזמן הזה.",
+      "slot_full": "חלון הזמן הזה מלא. בחרו אחר.",
+      "nothing_available": "אף מוצר בסל שלכם אינו זמין עדיין.",
+      "below_minimum": "לא הגעתם למינימום ההזמנה של האזור הזה.",
+      "shop_paused": "העסק הזה השהה זה עתה את ההזמנות."
+    },
+    "orders": {
+      "title": "ההזמנות שלי",
+      "live": "בתהליך",
+      "past": "קודמות",
+      "detail": "הפירוט",
+      "deliveryFee": "משלוח",
+      "total": "סה״כ",
+      "deliverTo": "משלוח אל",
+      "pickUpAt": "לאיסוף מ",
+      "callShop": "התקשרו לעסק · {phone}",
+      "yourNote": "ההערה שלכם: {note}",
+      "cancel": "ביטול ההזמנה",
+      "orderAgain": "להזמין שוב",
+      "empty": {
+        "title": "אין הזמנות",
+        "body": "ההזמנות שלכם והמעקב אחריהן יופיעו כאן.",
+        "cta": "לרשימת העסקים"
+      },
+      "slot": {
+        "pickup": "לאיסוף {when}",
+        "delivery": "משלוח {when}"
+      },
+      "status": {
+        "pending": "ממתינה",
+        "accepted": "אושרה",
+        "preparing": "בהכנה",
+        "ready": "מוכנה",
+        "delivering": "בדרך",
+        "completed": "נמסרה",
+        "cancelled": "בוטלה",
+        "refused": "נדחתה"
+      },
+      "headline": {
+        "pending": "ההזמנה נשלחה",
+        "accepted": "העסק אישר",
+        "preparing": "בהכנה",
+        "ready": "ההזמנה שלכם מוכנה",
+        "delivering": "בדרך אליכם",
+        "completed": "ההזמנה נמסרה",
+        "cancelled": "ההזמנה בוטלה",
+        "refused": "העסק לא יכול היה לקחת אותה"
+      },
+      "step": {
+        "pending": "ההזמנה נשלחה",
+        "accepted": "אושרה על ידי העסק",
+        "preparing": "בהכנה",
+        "ready": "מוכנה",
+        "delivering": "בדרך",
+        "completed": "נמסרה"
+      }
+    },
+    "mentions": {
+      "halav_israel": "חלב ישראל",
+      "pat_israel": "פת ישראל",
+      "bishoul_israel": "בישול ישראל",
+      "viande": "בשרי",
+      "parve": "פרווה"
+    },
+    "paused": "בהפסקה",
+    "pausedBanner": "העסק הזה השהה את ההזמנות לעת עתה. התפריט נשאר פתוח לעיון — חזרו מאוחר יותר.",
+    "addOne": "הוספת {name}",
+    "bestSellers": "הכי מוזמנים",
+    "seeMenu": "לתפריט המלא",
+    "wholeMenu": "כל התפריט",
+    "productCount": "{count, plural, one {מוצר אחד} two {# מוצרים} other {# מוצרים}}",
+    "noPhoto": "אין תמונה",
+    "unavailableToday": "לא זמין היום",
+    "noRating": "אין עדיין דירוג",
+    "favorite": "הוספה למועדפים",
+    "unfavorite": "הסרה מהמועדפים",
+    "freeMode": "ללא דמי משלוח",
+    "soonest": "בהקדם האפשרי · {minutes} דקות",
+    "fromPrice": "החל מ־{price}",
+    "tracesOf": "שאריות {allergen}",
+    "noteForShop": "הערה לעסק",
+    "options": {
+      "required": "חובה",
+      "chosen": "נבחר",
+      "pickToContinue": "{group}: נדרשת בחירה"
+    },
+    "favorites": {
+      "title": "המועדפים שלי",
+      "empty": {
+        "title": "אין מועדפים",
+        "body": "הקישו על הלב בעמוד של עסק כדי למצוא אותו כאן.",
+        "signedOut": "התחברו כדי למצוא את העסקים שסימנתם.",
+        "cta": "לרשימת העסקים"
+      }
+    }
+  }
+}

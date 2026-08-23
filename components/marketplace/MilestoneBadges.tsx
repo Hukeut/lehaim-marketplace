@@ -1,9 +1,11 @@
-import type { MilestoneBadge } from "@/lib/marketplace-types";
+import type { MilestoneBadge } from "@/lib/gamification";
 
 /**
  * Rangée de badges d'ancienneté / volume. Les badges non débloqués restent
  * visibles mais grisés : ça donne un objectif clair plutôt que de les
- * cacher, comme les succès verrouillés d'un jeu.
+ * cacher, comme les succès verrouillés d'un jeu. Porté depuis
+ * lehaim-marketplace (components/marketplace/MilestoneBadges.tsx) sans
+ * changement.
  */
 export function MilestoneBadges({ badges }: { badges: MilestoneBadge[] }) {
   return (

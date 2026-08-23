@@ -1,5 +1,5 @@
 /**
- * Modèles de Chabbat (S03). Le document produit prévoit une gestion via
+ * Modèles de Shabbat (S03). Le document produit prévoit une gestion via
  * back-office ; en attendant, ils vivent ici, en un seul endroit.
  */
 
@@ -14,14 +14,14 @@ export const MOMENTS: {
   kind: MomentKind;
   label: string;
   detail: string;
-  emoji: string;
+  icon: string;
   tone: "gold" | "coral" | "violet";
 }[] = [
-  { kind: "friday_dinner", label: "Vendredi soir", detail: "Dîner", emoji: "🕯️", tone: "gold" },
-  { kind: "saturday_lunch", label: "Samedi midi", detail: "Déjeuner", emoji: "🍲", tone: "coral" },
-  { kind: "sleepover", label: "Couchage sur place", detail: "Matelas ou canapé", emoji: "🛏️", tone: "violet" },
-  { kind: "synagogue_evening", label: "Synagogue le soir", detail: "Accueil du Chabbat", emoji: "🏛️", tone: "gold" },
-  { kind: "synagogue_morning", label: "Synagogue le matin", detail: "Départ groupé", emoji: "🏛️", tone: "gold" },
+  { kind: "friday_dinner", label: "Vendredi soir", detail: "Dîner", icon: "candles", tone: "gold" },
+  { kind: "saturday_lunch", label: "Samedi midi", detail: "Déjeuner", icon: "daytime-meal", tone: "coral" },
+  { kind: "sleepover", label: "Couchage sur place", detail: "Matelas ou canapé", icon: "bed", tone: "violet" },
+  { kind: "synagogue_evening", label: "Synagogue le soir", detail: "Accueil du Shabbat", icon: "synagogue", tone: "gold" },
+  { kind: "synagogue_morning", label: "Synagogue le matin", detail: "Départ groupé", icon: "synagogue", tone: "gold" },
 ];
 
 export type MissionSeed = {
@@ -64,7 +64,7 @@ export const TEMPLATES: Template[] = [
   },
   {
     key: "chabbat-complet",
-    name: "Chabbat complet",
+    name: "Shabbat complet",
     illustration: "/illustrations/famille-table-shabbat.jpg",
     difficulty: "Moyen",
     moments: ["friday_dinner", "saturday_lunch", "synagogue_evening", "synagogue_morning"],
@@ -134,24 +134,93 @@ export function templateStats(template: Template) {
 /* Rôles ludiques, dérivés du titre de la mission                       */
 /* ------------------------------------------------------------------ */
 
-const ROLE_BY_KEYWORD: [RegExp, string, string][] = [
-  [/dessert|pâtiss/i, "Le pâtissier du week-end", "Tu deviendras le pâtissier du week-end"],
-  [/vin|boisson|caviste/i, "Le caviste", "Le Kiddoush du vendredi, c'est un peu grâce à toi"],
-  [/salade/i, "Le chef des salades", "La fraîcheur de la table repose sur toi"],
-  [/challah|hallot|pain/i, "Le gardien des hallot", "Pas de Chabbat sans tes hallot"],
-  [/plat|chaud/i, "Le chef du chaud", "Le plat qu'on attend tous, c'est le tien"],
-  [/jus|soft|frais|glaç/i, "Le maître du frais", "Personne n'aura soif grâce à toi"],
-  [/vaisselle|assiette/i, "Le boss de la table", "La table sera impeccable"],
-  [/chaise|assise/i, "Le sauveur des assises", "Quatre convives te devront leur place assise"],
-  [/matelas|couchage|couverture/i, "Le maître des matelas", "Ceux qui dorment sur place te remercieront"],
-  [/bougie/i, "Le gardien de la flamme", "C'est toi qui fais entrer Chabbat"],
-  [/entrée/i, "L'ouvreur de bal", "Tu donnes le ton du repas"],
-  [/table|nappe/i, "Le décorateur", "La table aura de l'allure"],
+/**
+ * Rôles, par clé.
+ *
+ * Le premier motif qui correspond gagne — d'où l'ordre : « salade » avant
+ * « plat », sinon « salade composée » deviendrait un plat.
+ *
+ * La fonction ne rend qu'une clé : les libellés vivent dans `messages/*.json`
+ * (`roles.<clé>.name` et `.tagline`). Ils étaient du français en dur injecté
+ * dans des phrases traduites, ce qui donnait « Le chef du chaud » au milieu
+ * d'un écran en hébreu.
+ *
+ * Les mêmes motifs existent en SQL, dans 0033, pour rattraper les prises déjà
+ * faites. Les deux doivent rester d'accord — ils ne servent qu'une fois
+ * chacun, au moment où le rôle est attribué.
+ */
+/**
+ * La première règle qui accepte l'emporte : les motifs précis doivent donc
+ * passer avant les larges. Trois apports tombaient sur la mauvaise règle
+ * faute de cet ordre :
+ *
+ * - « Boissons softs » sur « boisson » — celui qui apportait les softs se
+ *   voyait annoncer qu'il était le caviste, bouteille de vin à l'appui ;
+ * - « Plata » sur « plat » — la plaque chauffante devenait le plat principal,
+ *   et deux convives partageaient « Le chef du chaud » ;
+ * - « Tables d'appoint » sur « table », règle écrite pour la nappe — porter
+ *   une table n'est pas décorer.
+ */
+const ROLE_BY_KEYWORD: [RegExp, RoleKey][] = [
+  [/plata/i, "support"],
+  [/soft|jus|soda|frais|glaç/i, "cold"],
+  [/dessert|pâtiss|gâteau/i, "pastry"],
+  [/vin|caviste|boisson/i, "wine"],
+  [/salade/i, "salad"],
+  [/challah|hallot|pain/i, "bread"],
+  [/plat|chaud/i, "main"],
+  [/vaisselle|assiette|table/i, "table"],
+  [/chaise|assise|tabouret/i, "seats"],
+  [/matelas|couchage|couverture|drap/i, "bedding"],
+  [/bougie|flamme/i, "candles"],
+  [/entrée/i, "starter"],
+  [/nappe|décor|fleur|bouquet/i, "decor"],
 ];
 
-export function roleFor(title: string): { name: string; tagline: string } {
-  for (const [pattern, name, tagline] of ROLE_BY_KEYWORD) {
-    if (pattern.test(title)) return { name, tagline };
+export const ROLE_KEYS = [
+  "pastry", "wine", "salad", "bread", "main", "cold",
+  "table", "seats", "bedding", "candles", "starter", "decor", "support",
+] as const;
+
+export type RoleKey = (typeof ROLE_KEYS)[number];
+
+/** Le rôle que vaut un titre de mission. `support` par défaut. */
+export function roleKeyFor(title: string): RoleKey {
+  for (const [pattern, key] of ROLE_BY_KEYWORD) {
+    if (pattern.test(title)) return key;
   }
-  return { name: "Le renfort", tagline: "Un coup de main qui compte" };
+  return "support";
 }
+
+/** Valide une clé lue en base : une colonne texte accepte n'importe quoi. */
+export function asRoleKey(value: unknown): RoleKey {
+  return ROLE_KEYS.includes(value as RoleKey) ? (value as RoleKey) : "support";
+}
+
+
+/* ------------------------------------------------------------------ */
+/* Catalogue de missions                                                */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Missions proposées à l'ajout. Remplace l'écran « choisir un modèle » :
+ * on part d'un Shabbat vide et on pioche ce dont on a besoin, plutôt que
+ * de retirer ce dont on n'a pas besoin.
+ */
+export const MISSION_PRESETS: (MissionSeed & { key: string })[] = [
+  { key: "entrees", title: "Entrées", emoji: "🥗", category: "food", slots: 1 },
+  { key: "plat", title: "Plat principal", emoji: "🍲", category: "food", slots: 1 },
+  { key: "second-plat", title: "Second plat", emoji: "🍛", category: "food", slots: 1 },
+  { key: "salades", title: "Salades", emoji: "🥙", category: "food", slots: 1 },
+  { key: "dessert", title: "Dessert", emoji: "🍰", category: "food", slots: 1 },
+  { key: "challah", title: "Hallot", emoji: "🥖", category: "food", slots: 1 },
+  { key: "vin", title: "Vin", emoji: "🍷", category: "drinks", slots: 1 },
+  { key: "softs", title: "Boissons softs", emoji: "🧃", category: "drinks", slots: 1 },
+  { key: "glacons", title: "Glaçons", emoji: "🧊", category: "drinks", slots: 1 },
+  { key: "vaisselle", title: "Vaisselle", emoji: "🍽️", category: "equipment", slots: 1 },
+  { key: "chaises", title: "Chaises", emoji: "🪑", category: "equipment", slots: 1 },
+  { key: "tables", title: "Tables d'appoint", emoji: "🪵", category: "equipment", slots: 1 },
+  { key: "matelas", title: "Matelas d'appoint", emoji: "🛏️", category: "equipment", slots: 1 },
+  { key: "bougies", title: "Bougies", emoji: "🕯️", category: "equipment", slots: 1 },
+  { key: "plata", title: "Plata", emoji: "🔥", category: "equipment", slots: 1 },
+];

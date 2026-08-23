@@ -2,34 +2,45 @@
 
 @theme {
   /* — Palette — */
-  --color-ink: #0d2b3e;
-  --color-sand: #ede6d6;
-  --color-cream: #f4f0e6;
-  --color-line: #e6e1da;
-  --color-line-soft: #f0ede4;
-  --color-mist: #5b6b74;
+  /* ------------------------------------------------------------------
+   * Palette de marque. Les noms de jetons sont hérités de la version
+   * précédente (« teal », « coral ») ; seules les valeurs ont changé.
+   * Correspondance avec la charte :
+   *   teal   → bleu principal, couleur identitaire
+   *   ink    → bleu nuit, contraste fort
+   *   coral  → orange chaleureux, action principale
+   *   cream  → blanc cassé, fond ; sand → crème, surfaces secondaires
+   * ------------------------------------------------------------------ */
+  --color-ink: #0f274d;
+  --color-sand: #f8f1e5;
+  --color-cream: #fff9f0;
+  --color-ivory: #fdf6ec;
+  --color-line: #e7ddcd;
+  --color-line-soft: #f3ebdd;
+  --color-mist: #5a6b86;
 
-  --color-teal: #2aa7a1;
-  --color-teal-deep: #1d7a75;
-  --color-teal-soft: #8fd4d0;
-  --color-teal-wash: #e7f3f2;
+  --color-teal: #224fa7;
+  --color-teal-deep: #173a72;
+  --color-teal-soft: #9db6e0;
 
-  --color-coral: #ff7a59;
-  --color-coral-deep: #b94a2e;
-  --color-coral-wash: #fdede7;
+  --color-coral: #e88a2e;
+  --color-coral-deep: #b0631a;
+  --color-coral-wash: #fbeeda;
 
-  --color-gold: #ffd166;
+  --color-gold: #f4b83f;
+  --color-gold-light: #ffd46a;
   --color-gold-deep: #b8860b;
-  --color-gold-ink: #8a6415;
-  --color-gold-wash: #fef3d9;
+  --color-gold-ink: #7a5a12;
+  --color-gold-wash: #fdf0d5;
 
-  --color-violet: #686bd6;
-  --color-violet-deep: #4548a8;
+  --color-violet: #8a2346;
+  --color-violet-deep: #6b1a36;
+  --color-violet-wash: #f6e7ec;
 
-  --color-olive: #7fa35a;
-  --color-olive-deep: #5b7a3e;
-  --color-olive-ink: #3e6b2a;
-  --color-olive-wash: #eaf0e1;
+  --color-olive: #6b8f42;
+  --color-olive-deep: #52702f;
+  --color-olive-ink: #3d5622;
+  --color-olive-wash: #e9efdf;
 
   /* — Type — */
   --font-display: var(--font-fredoka), ui-rounded, system-ui, sans-serif;
@@ -43,18 +54,34 @@
   --radius-sheet: 26px;
 
   /* — Elevation — */
-  --shadow-card: 0 1px 2px rgba(13, 43, 62, 0.04), 0 8px 20px rgba(13, 43, 62, 0.08);
-  --shadow-card-lg: 0 1px 2px rgba(13, 43, 62, 0.04), 0 10px 26px rgba(13, 43, 62, 0.1);
-  --shadow-dock: 0 -12px 32px rgba(13, 43, 62, 0.1);
-  --shadow-coral: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 8px 18px rgba(255, 122, 89, 0.28);
-  --shadow-coral-lg: 0 10px 22px rgba(255, 122, 89, 0.3);
-  --shadow-pill: 0 2px 6px rgba(13, 43, 62, 0.06);
+  --shadow-card: 0 1px 2px rgba(15, 39, 77, 0.04), 0 8px 20px rgba(15, 39, 77, 0.08);
+  --shadow-card-lg: 0 1px 2px rgba(15, 39, 77, 0.04), 0 10px 26px rgba(15, 39, 77, 0.1);
+  --shadow-dock: 0 -12px 32px rgba(15, 39, 77, 0.1);
+  --shadow-coral: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 8px 18px rgba(232, 138, 46, 0.28);
+  --shadow-coral-lg: 0 10px 22px rgba(232, 138, 46, 0.3);
+  --shadow-pill: 0 2px 6px rgba(15, 39, 77, 0.06);
   --shadow-inset-pill: inset 0 1px 3px rgba(0, 0, 0, 0.18);
-  --shadow-float: 0 2px 8px rgba(13, 43, 62, 0.08);
+  --shadow-float: 0 2px 8px rgba(15, 39, 77, 0.08);
 
+  --animate-landing-logo: landing-logo 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  --animate-landing-title: landing-title 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards;
+  --animate-landing-step: landing-step 0.5s cubic-bezier(0.25, 1.2, 0.4, 1) forwards;
+  --animate-landing-cta: landing-cta 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 1.05s forwards;
+  --animate-landing-bubble: landing-bubble 3.6s ease-in-out infinite;
+  --animate-landing-glow: landing-glow 2.6s ease-in-out 1.6s infinite;
   --animate-shimmer: shimmer 1.4s infinite linear;
   --animate-rise: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-pop: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Substitution ciblée : seulement là où la police par défaut n'a pas les
+   glyphes. Les composants ne changent pas, ils lisent déjà ces variables. */
+html[lang="he"] {
+  --font-sans: var(--font-assistant), ui-sans-serif, system-ui, sans-serif;
+}
+
+html[lang="ru"] {
+  --font-display: var(--font-rubik), ui-rounded, system-ui, sans-serif;
 }
 
 @keyframes shimmer {
@@ -63,6 +90,18 @@
   }
   100% {
     background-position: 400px 0;
+  }
+}
+
+/* Reflet qui balaie un badge "légendaire" (réactivité Or, niveaux),
+   porté depuis lehaim-marketplace. */
+@keyframes shine-sweep {
+  0% {
+    transform: translateX(-140%) skewX(-20deg);
+  }
+  35%,
+  100% {
+    transform: translateX(220%) skewX(-20deg);
   }
 }
 
@@ -85,69 +124,6 @@
   100% {
     opacity: 1;
     transform: scale(1);
-  }
-}
-
-/* Confettis de la page de confirmation de commande (voir ConfirmationCelebration). */
-@keyframes confetti-fall {
-  0% {
-    transform: translateY(-10vh) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(80vh) rotate(540deg);
-    opacity: 0;
-  }
-}
-
-/* Étoiles qui scintillent, utilisées par <Sparkles> et le badge de réactivité. */
-@keyframes sparkle-twinkle {
-  0%,
-  100% {
-    opacity: 0;
-    transform: scale(0.3) rotate(0deg);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1) rotate(18deg);
-  }
-}
-
-/* Halo pulsé autour d'un badge "au top" (palier Or, spotlight du mois). */
-@keyframes glow-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 209, 102, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 0 12px rgba(255, 209, 102, 0);
-  }
-}
-
-/* Reflet qui balaie un badge "légendaire", façon loot de jeu vidéo. */
-@keyframes shine-sweep {
-  0% {
-    transform: translateX(-140%) skewX(-20deg);
-  }
-  35%,
-  100% {
-    transform: translateX(220%) skewX(-20deg);
-  }
-}
-
-/* Entrée en fanfare de la bannière "Niveau débloqué". */
-@keyframes level-up-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.5) translateY(12px);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(1.08) translateY(0);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
   }
 }
 
@@ -177,7 +153,7 @@ select {
 
 input::placeholder,
 textarea::placeholder {
-  color: rgba(13, 43, 62, 0.4);
+  color: rgba(15, 39, 77, 0.4);
 }
 
 /* Hide scrollbars on the horizontal rails, keep the scroll */
@@ -197,4 +173,60 @@ textarea::placeholder {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+@keyframes landing-logo {
+  from { opacity: 0; transform: translateY(-10px) scale(0.94); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes landing-title {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes landing-step {
+  from { opacity: 0; transform: scale(0.6) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes landing-cta {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes landing-bubble {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.045); }
+}
+
+@keyframes landing-glow {
+  0%, 100% { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 10px 22px rgb(232 138 46 / 0.3); }
+  50% { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25), 0 14px 30px rgb(232 138 46 / 0.45); }
+}
+
+/* Personne ne doit subir une animation qu'il n'a pas demandée. */
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-"] {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Focus clavier.
+
+   Il n'existait aucun style de focus dans le projet, et 26 éléments posaient
+   `outline-none` sans rien mettre à la place : naviguer au clavier revenait à
+   avancer à l'aveugle, sans jamais savoir où l'on se trouvait.
+
+   `:focus-visible` ne se déclenche pas au clic ni au toucher — seulement au
+   clavier et aux technologies d'assistance. La maquette reste donc exactement
+   telle qu'elle est pour tout le monde, et devient utilisable pour les autres.
+
+   Le `!important` est délibéré : il doit l'emporter sur les `outline-none`
+   posés au fil des composants, qu'on ne va pas retirer un par un. */
+:focus-visible {
+  outline: 2px solid var(--color-teal) !important;
+  outline-offset: 2px;
+  border-radius: 4px;
 }

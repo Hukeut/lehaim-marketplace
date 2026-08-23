@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { FloatingBackButton } from "./BackButton";
 import { Button, Screen } from "./ui";
 import type { Option } from "@/lib/onboarding";
@@ -44,10 +45,11 @@ export function StepHero({
       />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/30 to-transparent" />
 
+      {/* i18n-ignore : le ">" ferme <CloseButton /> et le "<" ouvre <FloatingBackButton> ; le texte entre les deux est la suite du ternaire JS (": back &&"), pas du texte affiché. */}
       {close ? <CloseButton href={close} /> : back && <FloatingBackButton fallback={back} />}
 
       {step !== undefined && (
-        <span className="absolute top-[60px] right-5 rounded-full bg-white/92 px-[11px] py-[5px] text-[11px] font-extrabold text-ink backdrop-blur-sm">
+        <span className="absolute top-[60px] end-5 rounded-full bg-white/92 px-[11px] py-[5px] text-[12.5px] font-extrabold text-ink backdrop-blur-sm">
           {step} / {total}
         </span>
       )}
@@ -56,11 +58,12 @@ export function StepHero({
 }
 
 function CloseButton({ href }: { href: string }) {
+  const t = useTranslations("onboarding");
   return (
     <a
       href={href}
-      aria-label="Quitter"
-      className="absolute top-[54px] left-[18px] z-20 flex size-9 items-center justify-center rounded-full bg-white/92 text-[17px] text-ink shadow-[0_2px_10px_rgba(13,43,62,0.18)] backdrop-blur-sm transition-transform active:scale-95"
+      aria-label={t("stepHero.closeAriaLabel")}
+      className="absolute top-[54px] start-[18px] z-20 flex size-9 items-center justify-center rounded-full bg-white/92 text-[19px] text-ink shadow-[0_2px_10px_rgba(15,39,77,0.18)] backdrop-blur-sm transition-transform active:scale-95"
     >
       ✕
     </a>
@@ -89,7 +92,7 @@ export function StepBody({
       style={{ paddingLeft: padX, paddingRight: padX }}
     >
       <h1 className="font-display text-[21px] leading-[1.3] font-semibold">{title}</h1>
-      {subtitle && <p className="mt-1.5 text-[13px] text-ink/55">{subtitle}</p>}
+      {subtitle && <p className="mt-1.5 text-[14.5px] text-ink/55">{subtitle}</p>}
       {children && <div className={subtitle ? "mt-4" : "mt-3.5"}>{children}</div>}
     </div>
   );
@@ -159,7 +162,7 @@ export function ChoiceCard({
       aria-checked={selected}
       onClick={onSelect}
       className={[
-        "flex w-full items-center gap-3 border-2 bg-white text-left shadow-[var(--shadow-float)]",
+        "flex w-full items-center gap-3 border-2 bg-white text-start shadow-[var(--shadow-float)]",
         "transition-transform duration-100 active:scale-[0.99]",
         large ? "rounded-[18px] p-4" : "rounded-card px-[15px] py-3.5",
         selected ? "border-teal" : "border-transparent",
@@ -169,8 +172,8 @@ export function ChoiceCard({
         {emoji}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block font-display text-[14.5px] font-semibold">{title}</span>
-        {subtitle && <span className="block text-[11px] text-ink/50">{subtitle}</span>}
+        <span className="block font-display text-[16px] font-semibold">{title}</span>
+        {subtitle && <span className="block text-[12.5px] text-ink/65">{subtitle}</span>}
       </span>
       {trailing}
     </button>
@@ -197,16 +200,16 @@ export function CheckCard({
       onClick={onToggle}
       className={[
         "flex w-full items-center gap-[11px] rounded-[14px] border-2 bg-white px-[15px] py-3",
-        "text-left shadow-[var(--shadow-float)] transition-transform duration-100 active:scale-[0.99]",
+        "text-start shadow-[var(--shadow-float)] transition-transform duration-100 active:scale-[0.99]",
         checked ? "border-teal" : "border-transparent",
       ].join(" ")}
     >
-      <span className="text-[18px]" aria-hidden="true">
+      <span className="text-[20px]" aria-hidden="true">
         {emoji}
       </span>
-      <span className="flex-1 font-display text-[13.5px] font-semibold">{label}</span>
+      <span className="flex-1 font-display text-[15px] font-semibold">{label}</span>
       {checked && (
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#2AA7A1" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#224FA7" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M5 12l4 4 10-10" />
         </svg>
       )}
@@ -228,6 +231,7 @@ type ChoiceState = { error: string | null };
 export function ChoiceStep<T extends string>({
   action,
   name,
+  namespace,
   options,
   initial,
   image,
@@ -241,14 +245,18 @@ export function ChoiceStep<T extends string>({
   cta,
   large = false,
 }: {
+  // i18n-ignore : le ">" fait partie de la flèche "=>" et le "<" ouvre le générique TypeScript Promise<ChoiceState> ; aucun rapport avec du JSX.
   action: (previous: ChoiceState, formData: FormData) => Promise<ChoiceState>;
   name: string;
+  /** Espace de noms dont sont issues les labelKey/hintKey/textKey des options. */
+  namespace: string;
   options: Option<T>[];
   initial: T | null;
   image: string;
   imageHeight?: number;
   imagePosition?: string;
-  step: number;
+  /** Absent sur les écrans hors décompte (O01b Langue), comme dans StepHero. */
+  step?: number;
   back?: string;
   close?: string;
   title: ReactNode;
@@ -256,6 +264,7 @@ export function ChoiceStep<T extends string>({
   cta: string;
   large?: boolean;
 }) {
+  const t = useTranslations(namespace);
   const [state, formAction, pending] = useActionState(action, { error: null });
   const [choice, setChoice] = useState<T | null>(initial);
 
@@ -281,8 +290,8 @@ export function ChoiceStep<T extends string>({
               <ChoiceCard
                 key={option.value}
                 emoji={option.emoji}
-                title={option.label}
-                subtitle={option.hint}
+                title={t(option.labelKey)}
+                subtitle={option.hintKey ? t(option.hintKey) : undefined}
                 selected={option.value === choice}
                 onSelect={() => setChoice(option.value)}
                 large={large}
@@ -292,12 +301,12 @@ export function ChoiceStep<T extends string>({
 
           {chosen && (
             <InlineReaction emoji={chosen.reaction.emoji} tone={chosen.reaction.tone}>
-              {chosen.reaction.text}
+              {t(chosen.reaction.textKey)}
             </InlineReaction>
           )}
 
           {state.error && (
-            <p role="alert" className="mt-2.5 text-[12px] font-bold text-coral-deep">
+            <p role="alert" className="mt-2.5 text-[13.5px] font-bold text-coral-deep">
               {state.error}
             </p>
           )}

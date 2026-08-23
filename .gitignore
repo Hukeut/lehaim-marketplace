@@ -43,3 +43,10 @@ node_modules
 .next
 .vercel
 .env*.local
+
+# journal des mises à jour, refabriqué à chaque construction
+# (scripts/build-updates.mjs)
+lib/updates.generated.json
+
+# état local du lien Supabase CLI (contient la chaîne de connexion)
+supabase/.temp

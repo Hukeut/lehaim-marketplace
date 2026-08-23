@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { StarSolid } from "./icons";
 
 /** Le bloc logo : carré encre à coins arrondis + étoile or. */
@@ -13,5 +16,6 @@ export function LogoTile({ size = 64, radius = 20 }: { size?: number; radius?: n
 }
 
 export function Wordmark({ className = "text-2xl" }: { className?: string }) {
-  return <span className={`font-display font-semibold ${className}`}>lehaim</span>;
+  const t = useTranslations("common");
+  return <span className={`font-display font-semibold ${className}`}>{t("appName")}</span>;
 }
