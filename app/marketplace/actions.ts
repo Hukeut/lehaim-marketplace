@@ -297,6 +297,11 @@ function refreshValidation(id: string) {
   revalidatePath("/admin/validation");
   revalidatePath(`/admin/validation/${id}`);
   revalidatePath("/marketplace");
+  // Le badge "En attente" du menu admin (pendingTraiteurCount()) est calculé
+  // dans app/admin/layout.tsx, pas dans la page /admin/validation : sans
+  // revalidation du layout, il restait affiché avec l'ancien nombre après un
+  // approuver/rejeter, tant que la personne ne rechargeait pas la page.
+  revalidatePath("/admin", "layout");
 }
 
 /** Approuver : le dossier est clos et la fiche devient visible. */
