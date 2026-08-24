@@ -103,6 +103,15 @@ function Connexion() {
 
     let destination = mode === "signup" ? afterSignup : suite;
 
+    // Un compte administrateur qui se connecte depuis le tunnel fournisseur
+    // (/partenaire, /traiteur) atterrit directement sur /admin plutôt que sur
+    // la candidature ou le back-office traiteur : la liste blanche
+    // `marketplace_admins` fait foi, pas la page d'où vient la connexion.
+    if (backOfficeKind === "traiteur" && data.user) {
+      const { data: isAdmin } = await supabase.rpc("is_marketplace_admin");
+      if (isAdmin) destination = "/admin";
+    }
+
     // Pas de destination explicite : si ce compte a déjà un dossier
     // fournisseur, on l'emmène directement sur son espace (statut, menu,
     // commandes...) plutôt que sur l'accueil participant.
