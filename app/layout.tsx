@@ -59,8 +59,11 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${fredoka.variable} ${nunito.variable}`}>
       <body className="bg-sand">
-        {/* Colonne mobile : plein écran sur téléphone, maquette centrée au-delà */}
-        <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-cream sm:my-6 sm:min-h-[calc(100dvh-3rem)] sm:rounded-[36px] sm:shadow-[0_30px_70px_rgba(13,43,62,0.16)]">
+        {/* Colonne mobile : plein écran sur téléphone, maquette centrée au-delà.
+            Une page qui se déclare `data-fullwidth` (le back-office traiteur,
+            /admin et /partenaire) la relâche : c'est une interface d'ordinateur
+            et de tablette, pas un écran d'app mobile. */}
+        <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-cream has-[[data-fullwidth]]:max-w-none sm:my-6 sm:min-h-[calc(100dvh-3rem)] sm:rounded-[36px] sm:shadow-[0_30px_70px_rgba(13,43,62,0.16)] sm:has-[[data-fullwidth]]:my-0 sm:has-[[data-fullwidth]]:min-h-dvh sm:has-[[data-fullwidth]]:rounded-none sm:has-[[data-fullwidth]]:shadow-none">
           {children}
         </div>
       </body>
