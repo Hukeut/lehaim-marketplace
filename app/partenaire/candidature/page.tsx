@@ -4,6 +4,7 @@ import { ButtonLink, Card, StatusPill } from "@/components/ui";
 import { LogoTile } from "@/components/Wordmark";
 import { currentUser } from "@/lib/supabase/user";
 import { myTraiteur, marketplaceClient, type MyTraiteur } from "@/lib/shops";
+import { run } from "@/lib/db";
 import { TraiteurOnboardingForm } from "@/components/marketplace/TraiteurOnboardingForm";
 
 /**
@@ -136,23 +137,29 @@ export default async function Candidature() {
  */
 async function createPendingTraiteur(ownerId: string, email: string | null): Promise<MyTraiteur> {
   const supabase = await marketplaceClient();
-  const { data, error } = await supabase
-    .from("traiteurs")
-    .insert({ owner_id: ownerId, name: email ?? "Nouveau traiteur", status: "pending" })
-    .select("id, name, status, rejection_reason, created_at, address")
-    .single();
+  const { data, failed, code } = await run(
+    "createPendingTraiteur",
+    supabase
+      .from("traiteurs")
+      .insert({ owner_id: ownerId, name: email ?? "Nouveau traiteur", status: "pending" })
+      .select("id, name, status, rejection_reason, created_at, address")
+      .single(),
+  );
 
   // Course entre deux requêtes simultanées (deux onglets, double clic) : la
   // policy d'unicité n'existe pas sur owner_id, mais si l'insertion échoue
   // pour une autre raison, la ligne créée par l'autre requête est relue.
-  if (error || !data) {
-    const { data: existing } = await supabase
-      .from("traiteurs")
-      .select("id, name, status, rejection_reason, created_at, address")
-      .eq("owner_id", ownerId)
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
+  if (failed || !data) {
+    const { data: existing } = await run(
+      "createPendingTraiteur/relecture",
+      supabase
+        .from("traiteurs")
+        .select("id, name, status, rejection_reason, created_at, address")
+        .eq("owner_id", ownerId)
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle(),
+    );
     if (existing) {
       const row = existing as unknown as Record<string, unknown>;
       return {
@@ -164,16 +171,11 @@ async function createPendingTraiteur(ownerId: string, email: string | null): Pro
         address: (row.address as string) ?? null,
       };
     }
-    // Dernier recours : un dossier en mémoire, non persisté, plutôt qu'un
-    // écran cassé — la prochaine visite retentera l'insertion.
-    return {
-      id: ownerId,
-      name: email ?? "Nouveau traiteur",
-      status: "pending",
-      rejectionReason: null,
-      createdAt: new Date().toISOString(),
-      address: null,
-    };
+    // L'insertion a vraiment échoué (RLS, colonne manquante...) : le journal
+    // [lehaim] createPendingTraiteur ci-dessus porte le code d'erreur. Pas de
+    // faux dossier "en attente" qui n'existerait nulle part en base — la
+    // personne verrait un statut qui n'a jamais atteint l'admin.
+    throw new Error(`createPendingTraiteur a échoué (${code ?? "sans code"}) pour ${ownerId}`);
   }
 
   const row = data as unknown as Record<string, unknown>;
