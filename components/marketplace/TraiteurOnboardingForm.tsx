@@ -27,17 +27,8 @@ const inputClass =
  * Porté depuis lehaim-marketplace (TraiteurOnboardingForm) : trois étapes,
  * une seule soumission — un traiteur sans catalogue n'aurait rien à montrer
  * une fois approuvé, donc son premier produit fait partie du dossier.
- *
- * `mode` ne change que le texte du bouton final : "application" (dossier pas
- * encore envoyé) parle de validation à venir, "setup" (dossier déjà approuvé,
- * ligne créée dès l'inscription — voir app/connexion/page.tsx) parle
- * d'enregistrer la fiche, puisqu'il n'y a plus rien à valider.
  */
-export function TraiteurOnboardingForm({
-  mode = "application",
-}: {
-  mode?: "application" | "setup";
-}) {
+export function TraiteurOnboardingForm() {
   const [state, formAction, pending] = useActionState(registerTraiteur, initial);
   const [step, setStep] = useState(0);
 
@@ -190,11 +181,7 @@ export function TraiteurOnboardingForm({
             </Button>
           ) : (
             <Button type="submit" size="lg" disabled={pending || !productTitle.trim() || !productPrice.trim()}>
-              {pending
-                ? "Envoi…"
-                : mode === "setup"
-                  ? "Enregistrer ma fiche"
-                  : "Soumettre pour validation"}
+              {pending ? "Envoi…" : "Soumettre pour validation"}
             </Button>
           )}
         </div>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ButtonLink, Card, StatusPill } from "@/components/ui";
 import { LogoTile } from "@/components/Wordmark";
 import { currentUser } from "@/lib/supabase/user";
-import { myTraiteur, marketplaceClient, type MyTraiteur } from "@/lib/shops";
+import { myTraiteur } from "@/lib/shops";
 import { TraiteurOnboardingForm } from "@/components/marketplace/TraiteurOnboardingForm";
 
 /**
@@ -11,32 +11,24 @@ import { TraiteurOnboardingForm } from "@/components/marketplace/TraiteurOnboard
  * en un seul écran plutôt que le tunnel à 8 étapes de /partenaire/dossier
  * (pensé pour shop_applications, que ce backend n'a pas).
  *
- * Un dossier minimal, en attente, existe TOUJOURS dès qu'on atteint cet
- * écran connecté — créé ici même s'il manque encore, plutôt que compté sur
- * app/connexion/page.tsx pour le faire. Cette page est le seul endroit qui
- * fait vraiment foi : /connexion ne voit pas toujours passer une inscription
- * (compte déjà existant → Supabase répond sans session, voir le correctif
- * dans /connexion pour ce cas), alors qu'ici la personne est forcément
- * connectée. Trois états, un seul écran : en attente ou refusé → suivi ;
- * approuvé mais fiche vide → formulaire pour l'enregistrer ; approuvé et
- * complet → renvoi vers le back-office (/traiteur/boutique et consorts).
+ * Le parcours voulu est : inscription → confirmation par e-mail (gérée par
+ * app/connexion/page.tsx) → dépôt du dossier ICI → attente → décision admin.
+ * Pas de ligne créée avant que ce formulaire ne soit vraiment soumis : un
+ * dossier "en attente" sans nom, sans adresse ni produit ne donnerait à
+ * l'admin (/admin/validation) rien de concret sur quoi se prononcer. Trois
+ * états, un seul écran : pas encore de dossier → formulaire ; en attente ou
+ * refusé → suivi ; approuvé → renvoi vers le back-office (/traiteur/boutique
+ * et consorts).
  *
  * Même habillage bureau/tablette que /partenaire et le tunnel /connexion
  * (data-fullwidth) : c'est le même parcours fournisseur du début à la fin.
  */
 export default async function Candidature() {
-  const user = await currentUser();
-  if (!user) redirect("/connexion?suite=/partenaire/candidature");
+  if (!(await currentUser())) redirect("/connexion?suite=/partenaire/candidature");
 
-  let traiteur = await myTraiteur();
+  const traiteur = await myTraiteur();
 
-  if (!traiteur) {
-    traiteur = await createPendingTraiteur(user.id, user.email ?? null);
-  }
-
-  if (traiteur.status === "approved" && traiteur.address) redirect("/traiteur/boutique");
-
-  const needsSetup = traiteur.status === "approved" && !traiteur.address;
+  if (traiteur?.status === "approved") redirect("/traiteur/boutique");
 
   return (
     <div data-fullwidth className="min-h-dvh bg-sand text-ink">
@@ -53,40 +45,39 @@ export default async function Candidature() {
         <LogoTile size={56} radius={18} />
         <h1 className="mt-5 mb-2 font-display text-[23px] font-semibold">Espace fournisseur</h1>
 
-        {needsSetup && (
+        {!traiteur && (
           <>
             <p className="mb-5 text-[13.5px] leading-relaxed text-ink/60">
-              Votre compte est validé : nom, coordonnées, et un premier produit pour mettre votre
-              fiche en ligne.
+              Nom, coordonnées, et un premier produit : votre dossier part en vérification dès
+              l&apos;envoi.
             </p>
             <div className="rounded-[20px] bg-white p-7 shadow-[var(--shadow-card)]">
-              <TraiteurOnboardingForm mode="setup" />
+              <TraiteurOnboardingForm />
             </div>
           </>
         )}
 
-        {traiteur.status === "pending" && (
+        {traiteur?.status === "pending" && (
           <>
             <p className="mb-5 text-[13.5px] leading-relaxed text-ink/60">
-              Votre compte est en cours de vérification par l&apos;équipe lehaim.
+              Votre dossier est en cours de vérification par l&apos;équipe lehaim.
             </p>
             <Card className="p-6">
               <h2 className="mb-1 font-display text-[16px] font-semibold">{traiteur.name}</h2>
               <StatusPill tone="warning">En attente de validation</StatusPill>
               <p className="mt-3 text-[13px] leading-relaxed text-ink/60">
-                Votre compte a été créé le{" "}
+                Votre dossier a été envoyé le{" "}
                 {new Date(traiteur.createdAt).toLocaleDateString("fr-FR", {
                   day: "numeric",
                   month: "long",
                 })}
-                . L&apos;équipe lehaim le vérifie sous deux jours ouvrés — vous recevrez alors le
-                formulaire pour mettre votre fiche en ligne.
+                . L&apos;équipe lehaim le vérifie sous deux jours ouvrés.
               </p>
             </Card>
           </>
         )}
 
-        {traiteur.status === "rejected" && (
+        {traiteur?.status === "rejected" && (
           <Card className="overflow-hidden p-0">
             <div className="bg-coral-deep p-5 text-white">
               <div className="font-display text-[17px] font-semibold">Dossier refusé</div>
@@ -112,7 +103,7 @@ export default async function Candidature() {
           </Link>
         </p>
 
-        {!needsSetup && (
+        {traiteur && (
           <ButtonLink
             href="/marketplace"
             variant="secondary"
@@ -126,63 +117,4 @@ export default async function Candidature() {
       </main>
     </div>
   );
-}
-
-/**
- * Ligne minimale, en attente, pour un compte qui atteint cet écran sans
- * dossier — création tout juste inscrit, ou compte "profil" préexistant qui
- * se connecte pour la première fois côté fournisseur (voir le commentaire de
- * la fonction plus haut).
- */
-async function createPendingTraiteur(ownerId: string, email: string | null): Promise<MyTraiteur> {
-  const supabase = await marketplaceClient();
-  const { data, error } = await supabase
-    .from("traiteurs")
-    .insert({ owner_id: ownerId, name: email ?? "Nouveau traiteur", status: "pending" })
-    .select("id, name, status, rejection_reason, created_at, address")
-    .single();
-
-  // Course entre deux requêtes simultanées (deux onglets, double clic) : la
-  // policy d'unicité n'existe pas sur owner_id, mais si l'insertion échoue
-  // pour une autre raison, la ligne créée par l'autre requête est relue.
-  if (error || !data) {
-    const { data: existing } = await supabase
-      .from("traiteurs")
-      .select("id, name, status, rejection_reason, created_at, address")
-      .eq("owner_id", ownerId)
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
-    if (existing) {
-      const row = existing as unknown as Record<string, unknown>;
-      return {
-        id: row.id as string,
-        name: row.name as string,
-        status: row.status as MyTraiteur["status"],
-        rejectionReason: (row.rejection_reason as string) ?? null,
-        createdAt: row.created_at as string,
-        address: (row.address as string) ?? null,
-      };
-    }
-    // Dernier recours : un dossier en mémoire, non persisté, plutôt qu'un
-    // écran cassé — la prochaine visite retentera l'insertion.
-    return {
-      id: ownerId,
-      name: email ?? "Nouveau traiteur",
-      status: "pending",
-      rejectionReason: null,
-      createdAt: new Date().toISOString(),
-      address: null,
-    };
-  }
-
-  const row = data as unknown as Record<string, unknown>;
-  return {
-    id: row.id as string,
-    name: row.name as string,
-    status: row.status as MyTraiteur["status"],
-    rejectionReason: (row.rejection_reason as string) ?? null,
-    createdAt: row.created_at as string,
-    address: (row.address as string) ?? null,
-  };
 }
