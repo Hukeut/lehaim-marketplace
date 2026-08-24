@@ -127,177 +127,195 @@ function Connexion() {
     }
   }
 
-  return (
-    <main
-      className={`flex min-h-dvh flex-1 flex-col px-7 pb-4 sm:min-h-0 ${
-        isTraiteurFlow ? "bg-teal-wash pt-[64px]" : "pt-[54px]"
-      }`}
-    >
-      {!isTraiteurFlow && (
-        <div className="mb-4">
-          <BackButton fallback="/onboarding" />
-        </div>
-      )}
-      <LogoTile size={56} radius={18} />
+  const heading = isTraiteurFlow
+    ? mode === "signin"
+      ? "Espace fournisseur"
+      : "Devenir fournisseur"
+    : mode === "signin"
+      ? "Bon retour"
+      : "Créer votre compte";
 
-      <h1 className="mt-5 mb-2 font-display text-[23px] font-semibold">
-        {isTraiteurFlow
-          ? mode === "signin"
-            ? "Espace fournisseur"
-            : "Devenir fournisseur"
-          : mode === "signin"
-            ? "Bon retour"
-            : "Créer votre compte"}
-      </h1>
-      <p className="mb-5 text-[13.5px] leading-relaxed text-ink/60">
-        {isTraiteurFlow
-          ? mode === "signin"
-            ? "Connectez-vous pour gérer votre menu et vos commandes sur la marketplace lehaim."
-            : "Créez votre compte pour proposer vos plats sur la marketplace lehaim."
-          : mode === "signin"
-            ? "Connectez-vous pour retrouver votre table et vos proches."
-            : "Quelques secondes, et votre première table est ouverte."}
-      </p>
+  const subtitle = isTraiteurFlow
+    ? mode === "signin"
+      ? "Connectez-vous pour gérer votre menu et vos commandes sur la marketplace lehaim."
+      : "Créez votre compte pour proposer vos plats sur la marketplace lehaim."
+    : mode === "signin"
+      ? "Connectez-vous pour retrouver votre table et vos proches."
+      : "Quelques secondes, et votre première table est ouverte.";
 
-      <form onSubmit={submit} className="flex flex-1 flex-col">
-        <Field label="Adresse e-mail" className="mb-3">
-          <TextInput
-            type="email"
-            required
-            autoComplete="email"
-            placeholder="vous@exemple.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </Field>
+  const form = (
+    <form onSubmit={submit} className="flex flex-1 flex-col">
+      <Field label="Adresse e-mail" className="mb-3">
+        <TextInput
+          type="email"
+          required
+          autoComplete="email"
+          placeholder="vous@exemple.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </Field>
 
-        <Field label="Mot de passe" className="mb-3">
+      <Field label="Mot de passe" className="mb-3">
+        <TextInput
+          type="password"
+          required
+          minLength={mode === "signup" ? MIN_PASSWORD : undefined}
+          autoComplete={mode === "signup" ? "new-password" : "current-password"}
+          placeholder="••••••••"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {mode === "signup" && tooShort && (
+          <p className="mt-1.5 text-[11px] font-bold text-ink/45">
+            Encore {MIN_PASSWORD - password.length} caractère
+            {MIN_PASSWORD - password.length > 1 ? "s" : ""}.
+          </p>
+        )}
+      </Field>
+
+      {mode === "signup" && (
+        <Field label="Confirmer le mot de passe" className="mb-4">
           <TextInput
             type="password"
             required
-            minLength={mode === "signup" ? MIN_PASSWORD : undefined}
-            autoComplete={mode === "signup" ? "new-password" : "current-password"}
+            autoComplete="new-password"
             placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            className={mismatch ? "ring-2 ring-coral/50" : ""}
           />
-          {mode === "signup" && tooShort && (
-            <p className="mt-1.5 text-[11px] font-bold text-ink/45">
-              Encore {MIN_PASSWORD - password.length} caractère
-              {MIN_PASSWORD - password.length > 1 ? "s" : ""}.
+          {mismatch && (
+            <p className="mt-1.5 text-[11px] font-bold text-coral-deep">
+              Les deux saisies diffèrent.
+            </p>
+          )}
+          {matches && (
+            <p className="mt-1.5 flex items-center gap-1 text-[11px] font-bold text-olive-deep">
+              <Check size={11} strokeWidth={3} /> Les mots de passe correspondent.
             </p>
           )}
         </Field>
+      )}
 
-        {mode === "signup" && (
-          <Field label="Confirmer le mot de passe" className="mb-4">
-            <TextInput
-              type="password"
-              required
-              autoComplete="new-password"
-              placeholder="••••••••"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              className={mismatch ? "ring-2 ring-coral/50" : ""}
-            />
-            {mismatch && (
-              <p className="mt-1.5 text-[11px] font-bold text-coral-deep">
-                Les deux saisies diffèrent.
-              </p>
-            )}
-            {matches && (
-              <p className="mt-1.5 flex items-center gap-1 text-[11px] font-bold text-olive-deep">
-                <Check size={11} strokeWidth={3} /> Les mots de passe correspondent.
-              </p>
-            )}
-          </Field>
-        )}
-
-        {error && (
-          <p
-            role="alert"
-            className="mb-3 rounded-field bg-coral-wash px-3.5 py-2.5 text-[12px] leading-snug font-bold text-coral-deep"
-          >
-            {error}
-          </p>
-        )}
-
-        <Button
-          type="submit"
-          size="lg"
-          disabled={busy || (mode === "signup" && (tooShort || mismatch))}
-          className="mb-3.5 shadow-[var(--shadow-coral-lg)]"
+      {error && (
+        <p
+          role="alert"
+          className="mb-3 rounded-field bg-coral-wash px-3.5 py-2.5 text-[12px] leading-snug font-bold text-coral-deep"
         >
-          {busy
-            ? mode === "signup"
-              ? "Création…"
-              : "Connexion…"
-            : mode === "signup"
-              ? "Créer mon compte"
-              : "Se connecter"}
-        </Button>
-
-        <div className="my-1.5 mb-4 flex items-center gap-2.5">
-          <span className="h-px flex-1 bg-line" />
-          <span className="text-[11.5px] text-ink/40">ou</span>
-          <span className="h-px flex-1 bg-line" />
-        </div>
-
-        <Button
-          type="button"
-          variant="secondary"
-          size="sm"
-          disabled={busy}
-          onClick={signInWithGoogle}
-        >
-          <Google size={17} />
-          Continuer avec Google
-        </Button>
-
-        {isTraiteurFlow ? (
-          <Link
-            href="/onboarding"
-            className="mt-2.5 flex items-center justify-center gap-2 rounded-full border-[1.5px] border-line-soft bg-white px-4 py-3 text-[12.5px] font-bold text-ink shadow-[var(--shadow-pill)]"
-          >
-            <Home size={16} className="text-teal" />
-            Organisateur
-          </Link>
-        ) : (
-          <Link
-            href="/partenaire"
-            className="mt-2.5 flex items-center justify-center gap-2 rounded-full border-[1.5px] border-line-soft bg-white px-4 py-3 text-[12.5px] font-bold text-ink shadow-[var(--shadow-pill)]"
-          >
-            <Basket size={16} className="text-coral" />
-            Fournisseur, traiteur ou restaurateur ?
-          </Link>
-        )}
-
-        <p className="mt-auto pt-6 text-center text-xs text-ink/50">
-          {mode === "signin" ? (
-            <>
-              Pas encore de compte ?{" "}
-              <button
-                type="button"
-                onClick={() => switchMode("signup")}
-                className="font-bold text-teal underline underline-offset-2"
-              >
-                En créer un
-              </button>
-            </>
-          ) : (
-            <>
-              Vous avez déjà un compte ?{" "}
-              <button
-                type="button"
-                onClick={() => switchMode("signin")}
-                className="font-bold text-teal underline underline-offset-2"
-              >
-                Se connecter
-              </button>
-            </>
-          )}
+          {error}
         </p>
-      </form>
+      )}
+
+      <Button
+        type="submit"
+        size="lg"
+        disabled={busy || (mode === "signup" && (tooShort || mismatch))}
+        className="mb-3.5 shadow-[var(--shadow-coral-lg)]"
+      >
+        {busy
+          ? mode === "signup"
+            ? "Création…"
+            : "Connexion…"
+          : mode === "signup"
+            ? "Créer mon compte"
+            : "Se connecter"}
+      </Button>
+
+      <div className="my-1.5 mb-4 flex items-center gap-2.5">
+        <span className="h-px flex-1 bg-line" />
+        <span className="text-[11.5px] text-ink/40">ou</span>
+        <span className="h-px flex-1 bg-line" />
+      </div>
+
+      <Button type="button" variant="secondary" size="sm" disabled={busy} onClick={signInWithGoogle}>
+        <Google size={17} />
+        Continuer avec Google
+      </Button>
+
+      {isTraiteurFlow ? (
+        <Link
+          href="/onboarding"
+          className="mt-2.5 flex items-center justify-center gap-2 rounded-full border-[1.5px] border-line-soft bg-white px-4 py-3 text-[12.5px] font-bold text-ink shadow-[var(--shadow-pill)]"
+        >
+          <Home size={16} className="text-teal" />
+          Organisateur
+        </Link>
+      ) : (
+        <Link
+          href="/partenaire"
+          className="mt-2.5 flex items-center justify-center gap-2 rounded-full border-[1.5px] border-line-soft bg-white px-4 py-3 text-[12.5px] font-bold text-ink shadow-[var(--shadow-pill)]"
+        >
+          <Basket size={16} className="text-coral" />
+          Fournisseur, traiteur ou restaurateur ?
+        </Link>
+      )}
+
+      <p className="mt-auto pt-6 text-center text-xs text-ink/50">
+        {mode === "signin" ? (
+          <>
+            Pas encore de compte ?{" "}
+            <button
+              type="button"
+              onClick={() => switchMode("signup")}
+              className="font-bold text-teal underline underline-offset-2"
+            >
+              En créer un
+            </button>
+          </>
+        ) : (
+          <>
+            Vous avez déjà un compte ?{" "}
+            <button
+              type="button"
+              onClick={() => switchMode("signin")}
+              className="font-bold text-teal underline underline-offset-2"
+            >
+              Se connecter
+            </button>
+          </>
+        )}
+      </p>
+    </form>
+  );
+
+  // Le tunnel fournisseur est une interface d'ordinateur/tablette (même
+  // convention que /partenaire et /admin : data-fullwidth relâche le cadre
+  // mobile de 430px posé par le layout racine) — même en-tête, même fond,
+  // pour que l'utilisateur ne sente pas de rupture en passant de l'un à
+  // l'autre. Le tunnel participant, lui, reste dans le cadre téléphone.
+  if (isTraiteurFlow) {
+    return (
+      <div data-fullwidth className="min-h-dvh bg-sand text-ink">
+        <header className="flex items-center gap-4 border-b border-line bg-white px-6 py-4 lg:px-9">
+          <span className="font-display text-[18px] font-semibold">
+            Lehaim<span className="text-teal">partner</span>
+          </span>
+          <Link href="/partenaire" className="ms-auto text-[12.5px] font-bold text-ink/45">
+            Retour au site
+          </Link>
+        </header>
+
+        <main className="mx-auto flex w-full max-w-[420px] flex-col px-6 py-12 lg:py-16">
+          <LogoTile size={56} radius={18} />
+          <h1 className="mt-5 mb-2 font-display text-[23px] font-semibold">{heading}</h1>
+          <p className="mb-5 text-[13.5px] leading-relaxed text-ink/60">{subtitle}</p>
+
+          <div className="rounded-[20px] bg-white p-7 shadow-[var(--shadow-card)]">{form}</div>
+        </main>
+      </div>
+    );
+  }
+
+  return (
+    <main className="flex min-h-dvh flex-1 flex-col px-7 pt-[54px] pb-4 sm:min-h-0">
+      <div className="mb-4">
+        <BackButton fallback="/onboarding" />
+      </div>
+      <LogoTile size={56} radius={18} />
+      <h1 className="mt-5 mb-2 font-display text-[23px] font-semibold">{heading}</h1>
+      <p className="mb-5 text-[13.5px] leading-relaxed text-ink/60">{subtitle}</p>
+      {form}
     </main>
   );
 }
