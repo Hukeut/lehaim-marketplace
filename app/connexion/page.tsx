@@ -24,9 +24,10 @@ function Connexion() {
   const searchParams = useSearchParams();
   const requested = searchParams.get("suite");
   const suite = requested ?? "/accueil";
-  // Arrivé ici via le lien "Fournisseur..." : pas la peine de reproposer le
-  // même bouton, qui mènerait exactement là où on va déjà.
-  const isTraiteurFlow = requested === "/devenir-traiteur";
+  // Arrivé ici via le lien "Fournisseur..." ou via /partenaire/candidature :
+  // pas la peine de reproposer le même bouton, qui mènerait exactement là où
+  // on va déjà.
+  const isTraiteurFlow = Boolean(requested?.startsWith("/partenaire"));
   // Un compte tout juste créé n'a encore répondu à aucune question.
   const afterSignup = requested ?? "/onboarding/prenom";
 
@@ -104,7 +105,7 @@ function Connexion() {
         .select("id")
         .eq("owner_id", data.user.id)
         .maybeSingle();
-      if (traiteur) destination = "/devenir-traiteur";
+      if (traiteur) destination = "/partenaire/candidature";
     }
 
     router.push(destination);
@@ -263,7 +264,7 @@ function Connexion() {
           </Link>
         ) : (
           <Link
-            href="/devenir-traiteur"
+            href="/partenaire"
             className="mt-2.5 flex items-center justify-center gap-2 rounded-full border-[1.5px] border-line-soft bg-white px-4 py-3 text-[12.5px] font-bold text-ink shadow-[var(--shadow-pill)]"
           >
             <Basket size={16} className="text-coral" />

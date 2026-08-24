@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       .select("id")
       .eq("owner_id", data.user.id)
       .maybeSingle();
-    if (traiteur) suite = "/devenir-traiteur";
+    if (traiteur) suite = "/partenaire/candidature";
   }
 
   // Derrière un proxy (Vercel), on reconstruit l'URL publique.

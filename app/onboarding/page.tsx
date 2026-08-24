@@ -59,7 +59,7 @@ function Welcome() {
             </p>
 
             <Link
-              href="/devenir-traiteur"
+              href="/partenaire"
               className="mt-1 flex items-center justify-center gap-2 rounded-full border-[1.5px] border-line-soft bg-white px-4 py-3 text-[12.5px] font-bold text-ink shadow-[var(--shadow-pill)]"
             >
               <Basket size={16} className="text-coral" />
