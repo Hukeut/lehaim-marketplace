@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ButtonLink, Card, StatusPill } from "@/components/ui";
 import { LogoTile } from "@/components/Wordmark";
 import { currentUser } from "@/lib/supabase/user";
-import { myTraiteur } from "@/lib/shops";
+import { myTraiteur, marketplaceClient, type MyTraiteur } from "@/lib/shops";
 import { TraiteurOnboardingForm } from "@/components/marketplace/TraiteurOnboardingForm";
 
 /**
@@ -11,25 +11,32 @@ import { TraiteurOnboardingForm } from "@/components/marketplace/TraiteurOnboard
  * en un seul écran plutôt que le tunnel à 8 étapes de /partenaire/dossier
  * (pensé pour shop_applications, que ce backend n'a pas).
  *
- * L'inscription (app/connexion/page.tsx) crée un dossier minimal, en
- * attente, dès le mot de passe confirmé — pas de formulaire à remplir avant
- * de savoir si le compte est retenu. Quatre états, un seul écran : jamais
- * appliqué (compte antérieur à ce changement) → formulaire ; en attente ou
- * refusé → suivi ; approuvé mais fiche vide → formulaire à nouveau, cette
- * fois pour l'enregistrer ; approuvé et complet → renvoi vers le back-office
- * (/traiteur/boutique et consorts).
+ * Un dossier minimal, en attente, existe TOUJOURS dès qu'on atteint cet
+ * écran connecté — créé ici même s'il manque encore, plutôt que compté sur
+ * app/connexion/page.tsx pour le faire. Cette page est le seul endroit qui
+ * fait vraiment foi : /connexion ne voit pas toujours passer une inscription
+ * (compte déjà existant → Supabase répond sans session, voir le correctif
+ * dans /connexion pour ce cas), alors qu'ici la personne est forcément
+ * connectée. Trois états, un seul écran : en attente ou refusé → suivi ;
+ * approuvé mais fiche vide → formulaire pour l'enregistrer ; approuvé et
+ * complet → renvoi vers le back-office (/traiteur/boutique et consorts).
  *
  * Même habillage bureau/tablette que /partenaire et le tunnel /connexion
  * (data-fullwidth) : c'est le même parcours fournisseur du début à la fin.
  */
 export default async function Candidature() {
-  if (!(await currentUser())) redirect("/connexion?suite=/partenaire/candidature");
+  const user = await currentUser();
+  if (!user) redirect("/connexion?suite=/partenaire/candidature");
 
-  const traiteur = await myTraiteur();
+  let traiteur = await myTraiteur();
 
-  if (traiteur?.status === "approved" && traiteur.address) redirect("/traiteur/boutique");
+  if (!traiteur) {
+    traiteur = await createPendingTraiteur(user.id, user.email ?? null);
+  }
 
-  const needsSetup = !traiteur || (traiteur.status === "approved" && !traiteur.address);
+  if (traiteur.status === "approved" && traiteur.address) redirect("/traiteur/boutique");
+
+  const needsSetup = traiteur.status === "approved" && !traiteur.address;
 
   return (
     <div data-fullwidth className="min-h-dvh bg-sand text-ink">
@@ -49,17 +56,16 @@ export default async function Candidature() {
         {needsSetup && (
           <>
             <p className="mb-5 text-[13.5px] leading-relaxed text-ink/60">
-              {traiteur
-                ? "Votre compte est validé : nom, coordonnées, et un premier produit pour mettre votre fiche en ligne."
-                : "Nom, coordonnées, et un premier produit : votre dossier part en vérification dès l'envoi."}
+              Votre compte est validé : nom, coordonnées, et un premier produit pour mettre votre
+              fiche en ligne.
             </p>
             <div className="rounded-[20px] bg-white p-7 shadow-[var(--shadow-card)]">
-              <TraiteurOnboardingForm mode={traiteur ? "setup" : "application"} />
+              <TraiteurOnboardingForm mode="setup" />
             </div>
           </>
         )}
 
-        {traiteur?.status === "pending" && (
+        {traiteur.status === "pending" && (
           <>
             <p className="mb-5 text-[13.5px] leading-relaxed text-ink/60">
               Votre compte est en cours de vérification par l&apos;équipe lehaim.
@@ -80,7 +86,7 @@ export default async function Candidature() {
           </>
         )}
 
-        {traiteur?.status === "rejected" && (
+        {traiteur.status === "rejected" && (
           <Card className="overflow-hidden p-0">
             <div className="bg-coral-deep p-5 text-white">
               <div className="font-display text-[17px] font-semibold">Dossier refusé</div>
@@ -106,7 +112,7 @@ export default async function Candidature() {
           </Link>
         </p>
 
-        {traiteur && !needsSetup && (
+        {!needsSetup && (
           <ButtonLink
             href="/marketplace"
             variant="secondary"
@@ -120,4 +126,63 @@ export default async function Candidature() {
       </main>
     </div>
   );
+}
+
+/**
+ * Ligne minimale, en attente, pour un compte qui atteint cet écran sans
+ * dossier — création tout juste inscrit, ou compte "profil" préexistant qui
+ * se connecte pour la première fois côté fournisseur (voir le commentaire de
+ * la fonction plus haut).
+ */
+async function createPendingTraiteur(ownerId: string, email: string | null): Promise<MyTraiteur> {
+  const supabase = await marketplaceClient();
+  const { data, error } = await supabase
+    .from("traiteurs")
+    .insert({ owner_id: ownerId, name: email ?? "Nouveau traiteur", status: "pending" })
+    .select("id, name, status, rejection_reason, created_at, address")
+    .single();
+
+  // Course entre deux requêtes simultanées (deux onglets, double clic) : la
+  // policy d'unicité n'existe pas sur owner_id, mais si l'insertion échoue
+  // pour une autre raison, la ligne créée par l'autre requête est relue.
+  if (error || !data) {
+    const { data: existing } = await supabase
+      .from("traiteurs")
+      .select("id, name, status, rejection_reason, created_at, address")
+      .eq("owner_id", ownerId)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (existing) {
+      const row = existing as unknown as Record<string, unknown>;
+      return {
+        id: row.id as string,
+        name: row.name as string,
+        status: row.status as MyTraiteur["status"],
+        rejectionReason: (row.rejection_reason as string) ?? null,
+        createdAt: row.created_at as string,
+        address: (row.address as string) ?? null,
+      };
+    }
+    // Dernier recours : un dossier en mémoire, non persisté, plutôt qu'un
+    // écran cassé — la prochaine visite retentera l'insertion.
+    return {
+      id: ownerId,
+      name: email ?? "Nouveau traiteur",
+      status: "pending",
+      rejectionReason: null,
+      createdAt: new Date().toISOString(),
+      address: null,
+    };
+  }
+
+  const row = data as unknown as Record<string, unknown>;
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    status: row.status as MyTraiteur["status"],
+    rejectionReason: (row.rejection_reason as string) ?? null,
+    createdAt: row.created_at as string,
+    address: (row.address as string) ?? null,
+  };
 }

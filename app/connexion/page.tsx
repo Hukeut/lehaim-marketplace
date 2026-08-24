@@ -80,7 +80,7 @@ function Connexion() {
 
     // Le prénom n'est pas demandé ici : c'est la première question de
     // l'onboarding (O02), qui l'écrit dans `profiles`.
-    const { data, error } =
+    let { data, error } =
       mode === "signup"
         ? await supabase.auth.signUp({ email, password })
         : await supabase.auth.signInWithPassword({ email, password });
@@ -89,6 +89,25 @@ function Connexion() {
       setBusy(false);
       setError(frenchAuthError(error.message, error.code, mode));
       return;
+    }
+
+    // Compte déjà existant : par anti-énumération, Supabase répond 200 sans
+    // erreur ni session pour un signUp() sur une adresse déjà enregistrée
+    // (tableau `identities` vide, plutôt qu'un message clair). Fréquent ici
+    // puisqu'un même compte peut avoir commencé côté participant (/onboarding)
+    // avant de revenir s'inscrire côté fournisseur — on retente une connexion
+    // normale avec les mêmes identifiants plutôt que de bloquer la personne
+    // sur un message de confirmation qui ne correspond à rien.
+    if (mode === "signup" && !data.session && data.user?.identities?.length === 0) {
+      const retry = await supabase.auth.signInWithPassword({ email, password });
+      if (retry.error) {
+        setBusy(false);
+        setError(
+          "Un compte existe déjà avec cette adresse, mais ce mot de passe ne correspond pas. Connectez-vous avec le bon mot de passe.",
+        );
+        return;
+      }
+      data = retry.data;
     }
 
     // Filet de sécurité : si « Confirm email » était réactivé côté Supabase,
@@ -102,25 +121,6 @@ function Connexion() {
     }
 
     let destination = mode === "signup" ? afterSignup : suite;
-
-    // Une inscription fournisseur part avec un dossier minimal en attente :
-    // le formulaire détaillé (nom, coordonnées, premier produit) se remplit
-    // après validation par l'équipe, pas avant — voir /partenaire/candidature,
-    // qui affiche directement l'écran d'attente dès que ce dossier existe.
-    if (mode === "signup" && backOfficeKind === "traiteur" && data.user) {
-      const { data: existingTraiteur } = await supabase
-        .from("traiteurs")
-        .select("id")
-        .eq("owner_id", data.user.id)
-        .maybeSingle();
-      if (!existingTraiteur) {
-        await supabase.from("traiteurs").insert({
-          owner_id: data.user.id,
-          name: data.user.email ?? "Nouveau traiteur",
-          status: "pending",
-        });
-      }
-    }
 
     // Un compte administrateur qui se connecte depuis le tunnel fournisseur
     // (/partenaire, /traiteur) atterrit directement sur /admin plutôt que sur
