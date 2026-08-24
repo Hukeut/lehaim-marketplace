@@ -51,17 +51,23 @@ export default function Partenaire() {
             Pas d&apos;abonnement, pas de frais d&apos;entrée : une commission sur ce que vous
             vendez, et rien du tout si vous ne vendez rien.
           </p>
-          <div className="mt-1 flex flex-wrap items-center gap-4">
+          <div className="mt-1 flex flex-wrap items-center gap-3">
             <Link
-              href="/partenaire/candidature"
+              href="/connexion?suite=/partenaire/candidature&mode=signup"
               className="rounded-full bg-coral-deep px-7 py-3.5 font-display text-[15px] font-semibold text-white"
             >
-              Ouvrir mon dossier
+              Créer mon compte
             </Link>
-            <span className="text-[13px] text-ink/50">
-              Environ vingt minutes, reprise possible à tout moment.
-            </span>
+            <Link
+              href="/connexion?suite=/partenaire/candidature"
+              className="rounded-full border-[1.5px] border-line bg-white px-7 py-3.5 font-display text-[15px] font-semibold text-ink"
+            >
+              J&apos;ai déjà un compte
+            </Link>
           </div>
+          <span className="text-[13px] text-ink/50">
+            Environ vingt minutes, reprise possible à tout moment.
+          </span>
         </section>
 
         <section className="grid gap-4 sm:grid-cols-3">
