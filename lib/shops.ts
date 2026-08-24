@@ -3,7 +3,7 @@ import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient as createTypedClient } from "@/lib/supabase/server";
 import { currentUser } from "@/lib/supabase/user";
-import { run } from "@/lib/db";
+import { pickPrimaryTraiteurRow, run } from "@/lib/db";
 
 // Réexporté pour que les écrans n'aient qu'un import à faire.
 export { money } from "@/lib/money";
@@ -293,19 +293,25 @@ export const myTraiteur = cache(async function myTraiteur(): Promise<MyTraiteur 
   const [supabase, user] = await Promise.all([marketplaceClient(), currentUser()]);
   if (!user) return null;
 
-  // .limit(1) plutôt que .maybeSingle() : reste robuste même si un compte
-  // finit par posséder plusieurs lignes.
+  // Pas de .limit(1) côté requête : s'il existe plusieurs lignes pour ce
+  // compte, pickPrimaryTraiteurRow() choisit celle-ci de façon déterministe
+  // (approuvée en priorité) — même choix que myShop() dans lib/merchant.ts,
+  // pour que les deux s'accordent toujours sur la même ligne (voir le
+  // commentaire de pickPrimaryTraiteurRow pour le bug que ça évite).
   const { data } = await run(
     "myTraiteur",
     supabase
       .from("traiteurs")
       .select("id, name, status, rejection_reason, created_at")
-      .eq("owner_id", user.id)
-      .order("created_at", { ascending: true })
-      .limit(1),
+      .eq("owner_id", user.id),
   );
 
-  const row = (data as unknown as Record<string, unknown>[] | null)?.[0];
+  const rows = (data as unknown as (Record<string, unknown> & {
+    status: string;
+    created_at: string;
+    id: string;
+  })[] | null) ?? [];
+  const row = pickPrimaryTraiteurRow(rows);
   if (!row) return null;
 
   return {

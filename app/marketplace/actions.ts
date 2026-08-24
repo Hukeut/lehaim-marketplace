@@ -219,6 +219,20 @@ export async function registerTraiteur(
 
   const supabase = await marketplaceClient();
 
+  // Un double-clic sur "Envoyer" (avant que le formulaire ne disparaisse au
+  // profil de l'écran de suivi) créait deux lignes pour le même compte — et
+  // myShop()/myTraiteur() n'étaient alors plus garanties de choisir la même,
+  // d'où une boucle de redirection entre /partenaire/candidature et
+  // /traiteur. pickPrimaryTraiteurRow() les départage maintenant de façon
+  // déterministe, mais autant ne pas créer le doublon.
+  const { data: existing } = await supabase
+    .from("traiteurs")
+    .select("id")
+    .eq("owner_id", user.id)
+    .limit(1)
+    .maybeSingle();
+  if (existing) return { ok: false, message: "Vous avez déjà un dossier en cours." };
+
   const { data: traiteur, error } = await supabase
     .from("traiteurs")
     .insert({

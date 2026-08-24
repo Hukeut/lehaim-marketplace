@@ -5,7 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient as createTypedClient } from "@/lib/supabase/server";
 import { currentUser } from "@/lib/supabase/user";
 import { backOfficeRole } from "@/lib/admin";
-import { run } from "@/lib/db";
+import { pickPrimaryTraiteurRow, run } from "@/lib/db";
 
 /**
  * Le client Supabase, hors du typage généré.
@@ -108,21 +108,25 @@ export const myShop = cache(async function myShop(): Promise<MerchantShop | null
   const [supabase, user] = await Promise.all([createClient(), currentUser()]);
   if (!user) return null;
 
-  // .limit(1) plutôt que .maybeSingle() : reste robuste même si un compte
-  // finit par posséder plusieurs lignes, au lieu d'échouer silencieusement.
+  // Pas de .limit(1) côté requête : s'il existe plusieurs lignes pour ce
+  // compte, pickPrimaryTraiteurRow() choisit celle-ci de façon déterministe
+  // (approuvée en priorité) — voir son commentaire pour le bug que ça évite.
   const { data } = await run(
     "myShop",
     supabase
       .from("traiteurs")
       .select(
-        "id, name, status, description, address, city, phone, paused, prep_minutes, logo_url, cover_url",
+        "id, name, status, description, address, city, phone, paused, prep_minutes, logo_url, cover_url, created_at",
       )
-      .eq("owner_id", user.id)
-      .order("created_at", { ascending: true })
-      .limit(1),
+      .eq("owner_id", user.id),
   );
 
-  const row = (data as unknown as Record<string, unknown>[] | null)?.[0];
+  const rows = (data as unknown as (Record<string, unknown> & {
+    status: string;
+    created_at: string;
+    id: string;
+  })[] | null) ?? [];
+  const row = pickPrimaryTraiteurRow(rows);
   return row ? shopFrom(row) : null;
 });
 

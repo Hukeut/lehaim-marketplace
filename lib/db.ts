@@ -100,6 +100,39 @@ export function asMessageKey(value: unknown): DbMessageKey | null {
     : null;
 }
 
+/**
+ * Choisit LA ligne `traiteurs` d'un compte, de façon déterministe, quand il
+ * peut en exister plusieurs (une candidature relancée après une première
+ * abandonnée, par exemple).
+ *
+ * Bug corrigé : `myShop()` (lib/merchant.ts) et `myTraiteur()` (lib/shops.ts)
+ * lisaient chacune `.order("created_at", { ascending: true }).limit(1)` —
+ * suffisant tant qu'une seule ligne existe, mais Postgres ne garantit aucun
+ * ordre stable entre deux lignes dont `created_at` est identique (deux
+ * requêtes séparées pouvaient alors renvoyer une ligne différente). Deux
+ * pages qui redirigent l'une vers l'autre selon le statut du traiteur — la
+ * candidature vers /traiteur si approuvé, /traiteur vers la candidature si
+ * aucun traiteur trouvé — tombaient alors en boucle de redirection : l'une
+ * voyait la ligne "approved", l'autre la ligne "pending" du même compte.
+ *
+ * La priorité va à la ligne approuvée si une existe (c'est celle qui compte
+ * pour l'accès au back-office), puis à la plus ancienne, `id` en dernier
+ * recours pour départager un ex æquo — un ordre total, donc toujours le même
+ * résultat pour les deux appelantes.
+ */
+export function pickPrimaryTraiteurRow<
+  T extends { status: string; created_at: string; id: string },
+>(rows: T[]): T | null {
+  if (rows.length === 0) return null;
+  return [...rows].sort((a, b) => {
+    if (a.status === "approved" && b.status !== "approved") return -1;
+    if (b.status === "approved" && a.status !== "approved") return 1;
+    const byDate = a.created_at.localeCompare(b.created_at);
+    if (byDate !== 0) return byDate;
+    return a.id.localeCompare(b.id);
+  })[0];
+}
+
 export function messageKeyFor(code: string | null): DbMessageKey {
   switch (code) {
     // check_violation : capacité d'un apport ou d'une chambre dépassée (0020).
