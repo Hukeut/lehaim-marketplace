@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { BackButton } from "@/components/BackButton";
 import { Button, Field, TextInput } from "@/components/ui";
-import { Basket, Check, Google, Home } from "@/components/icons";
+import { Basket, Check, Envelope, Google, Home } from "@/components/icons";
 import { LogoTile } from "@/components/Wordmark";
 import { createClient } from "@/lib/supabase/client";
 
@@ -47,6 +47,12 @@ function Connexion() {
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Inscription qui vient d'aboutir, en attente du clic sur le lien reçu par
+  // e-mail — étape 2 du parcours (inscription → confirmation → attente de
+  // validation admin), distincte d'une erreur : le compte existe déjà et
+  // rien n'est cassé, il manque juste la confirmation.
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent">("idle");
 
   const supabase = createClient();
 
@@ -78,11 +84,17 @@ function Connexion() {
 
     setBusy(true);
 
+    // Le lien reçu par e-mail ramène ici via /auth/callback, avec la même
+    // destination que si la confirmation n'existait pas — sans ça, Supabase
+    // renvoie vers la Site URL du projet, brute, sans jamais recréer la
+    // session côté app.
+    const emailRedirectTo = `${window.location.origin}/auth/callback?suite=${encodeURIComponent(suite)}`;
+
     // Le prénom n'est pas demandé ici : c'est la première question de
     // l'onboarding (O02), qui l'écrit dans `profiles`.
     let { data, error } =
       mode === "signup"
-        ? await supabase.auth.signUp({ email, password })
+        ? await supabase.auth.signUp({ email, password, options: { emailRedirectTo } })
         : await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
@@ -97,26 +109,32 @@ function Connexion() {
     // puisqu'un même compte peut avoir commencé côté participant (/onboarding)
     // avant de revenir s'inscrire côté fournisseur — on retente une connexion
     // normale avec les mêmes identifiants plutôt que de bloquer la personne
-    // sur un message de confirmation qui ne correspond à rien.
+    // sur un écran de confirmation qui ne correspond à rien.
     if (mode === "signup" && !data.session && data.user?.identities?.length === 0) {
       const retry = await supabase.auth.signInWithPassword({ email, password });
       if (retry.error) {
         setBusy(false);
         setError(
-          "Un compte existe déjà avec cette adresse, mais ce mot de passe ne correspond pas. Connectez-vous avec le bon mot de passe.",
+          retry.error.code === "email_not_confirmed"
+            ? "Un compte existe déjà avec cette adresse, mais n'a jamais été confirmé. Renvoyez le mail de confirmation ci-dessous."
+            : "Un compte existe déjà avec cette adresse, mais ce mot de passe ne correspond pas. Connectez-vous avec le bon mot de passe.",
         );
+        if (retry.error.code === "email_not_confirmed") {
+          setAwaitingConfirmation(true);
+          setError(null);
+        }
         return;
       }
       data = retry.data;
     }
 
-    // Filet de sécurité : si « Confirm email » était réactivé côté Supabase,
-    // signUp ne renverrait pas de session et le compte resterait en attente.
+    // Première inscription, tout juste créée : étape 2 du parcours, on
+    // attend le clic sur le lien envoyé par e-mail avant de continuer. Le
+    // dossier fournisseur (statut "en attente") ne se crée qu'à l'étape 3,
+    // une fois la session confirmée — voir app/partenaire/candidature/page.tsx.
     if (!data.session) {
       setBusy(false);
-      setError(
-        "Ce compte attend une confirmation par e-mail. Vérifiez le réglage « Confirm email » du projet Supabase, ou utilisez Google.",
-      );
+      setAwaitingConfirmation(true);
       return;
     }
 
@@ -145,6 +163,19 @@ function Connexion() {
 
     router.push(destination);
     router.refresh();
+  }
+
+  async function resendConfirmation() {
+    setResendState("sending");
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?suite=${encodeURIComponent(suite)}`,
+      },
+    });
+    setResendState(error ? "idle" : "sent");
+    if (error) setError(frenchAuthError(error.message, error.code, "signup"));
   }
 
   async function signInWithGoogle() {
@@ -320,6 +351,59 @@ function Connexion() {
     </form>
   );
 
+  const confirmationScreen = (
+    <div className="flex flex-1 flex-col items-center text-center">
+      <div className="mb-4 flex size-14 items-center justify-center rounded-full bg-teal/12 text-teal">
+        <Envelope size={26} />
+      </div>
+      <h2 className="mb-2 font-display text-[17px] font-semibold">Vérifiez votre boîte mail</h2>
+      <p className="mb-1 text-[13px] leading-relaxed text-ink/60">On a envoyé un lien de confirmation à</p>
+      <p className="mb-5 font-display text-[14px] font-semibold">{email}</p>
+      <p className="mb-6 max-w-[320px] text-[12.5px] leading-relaxed text-ink/50">
+        Cliquez dessus pour activer votre compte
+        {backOfficeKind === "traiteur"
+          ? " — votre dossier passera ensuite en attente de validation par l'équipe lehaim."
+          : "."}{" "}
+        Pensez à vérifier vos spams si rien n&apos;arrive.
+      </p>
+
+      {error && (
+        <p
+          role="alert"
+          className="mb-3 w-full rounded-field bg-coral-wash px-3.5 py-2.5 text-[12px] leading-snug font-bold text-coral-deep"
+        >
+          {error}
+        </p>
+      )}
+
+      <Button
+        type="button"
+        variant="secondary"
+        size="sm"
+        full={false}
+        disabled={resendState === "sending"}
+        onClick={resendConfirmation}
+        className="mb-3"
+      >
+        {resendState === "sending" ? "Envoi…" : resendState === "sent" ? "Mail renvoyé" : "Renvoyer le mail"}
+      </Button>
+
+      <button
+        type="button"
+        onClick={() => {
+          setAwaitingConfirmation(false);
+          setError(null);
+          setResendState("idle");
+        }}
+        className="text-[12px] font-bold text-teal underline underline-offset-2"
+      >
+        Retour
+      </button>
+    </div>
+  );
+
+  const body = awaitingConfirmation ? confirmationScreen : form;
+
   // Le tunnel fournisseur est une interface d'ordinateur/tablette (même
   // convention que /partenaire et /admin : data-fullwidth relâche le cadre
   // mobile de 430px posé par le layout racine) — même en-tête, même fond,
@@ -343,10 +427,18 @@ function Connexion() {
 
         <main className="mx-auto flex w-full max-w-[420px] flex-col px-6 py-12 lg:py-16">
           <LogoTile size={56} radius={18} />
-          <h1 className="mt-5 mb-2 font-display text-[23px] font-semibold">{heading}</h1>
-          <p className="mb-5 text-[13.5px] leading-relaxed text-ink/60">{subtitle}</p>
+          {!awaitingConfirmation && (
+            <>
+              <h1 className="mt-5 mb-2 font-display text-[23px] font-semibold">{heading}</h1>
+              <p className="mb-5 text-[13.5px] leading-relaxed text-ink/60">{subtitle}</p>
+            </>
+          )}
 
-          <div className="rounded-[20px] bg-white p-7 shadow-[var(--shadow-card)]">{form}</div>
+          <div
+            className={`rounded-[20px] bg-white p-7 shadow-[var(--shadow-card)] ${awaitingConfirmation ? "mt-5" : ""}`}
+          >
+            {body}
+          </div>
         </main>
       </div>
     );
@@ -358,9 +450,15 @@ function Connexion() {
         <BackButton fallback="/onboarding" />
       </div>
       <LogoTile size={56} radius={18} />
-      <h1 className="mt-5 mb-2 font-display text-[23px] font-semibold">{heading}</h1>
-      <p className="mb-5 text-[13.5px] leading-relaxed text-ink/60">{subtitle}</p>
-      {form}
+      {!awaitingConfirmation && (
+        <>
+          <h1 className="mt-5 mb-2 font-display text-[23px] font-semibold">{heading}</h1>
+          <p className="mb-5 text-[13.5px] leading-relaxed text-ink/60">{subtitle}</p>
+        </>
+      )}
+      <div className={awaitingConfirmation ? "mt-5 flex flex-1 flex-col" : "flex flex-1 flex-col"}>
+        {body}
+      </div>
     </main>
   );
 }

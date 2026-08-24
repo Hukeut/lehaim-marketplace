@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { backOfficeRole } from "@/lib/admin";
 import { pendingTraiteurCount } from "@/lib/shops";
 import { currentUser } from "@/lib/supabase/user";
+import { AutoRefresh } from "@/components/AutoRefresh";
 
 /**
  * Coquille du back-office admin — plateforme uniquement.
@@ -30,6 +31,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div data-fullwidth className="flex min-h-dvh flex-col bg-cream text-ink lg:flex-row">
+      {/* Revérifie le compteur et le contenu des pages toutes les 20 s : un
+          dossier fournisseur déposé pendant la session ne doit pas attendre
+          un rechargement manuel pour apparaître. */}
+      <AutoRefresh intervalMs={20_000} />
       <nav className="flex shrink-0 flex-row gap-1 overflow-x-auto bg-ink px-5 py-4 lg:w-[252px] lg:flex-col lg:px-5 lg:py-8">
         <div className="mb-0 hidden px-2.5 font-display text-[19px] font-semibold text-white lg:mb-7 lg:block">
           Lehaim<span className="text-teal">admin</span>
