@@ -12,7 +12,7 @@ export function SignOutButton({ className = "" }: { className?: string }) {
     // Rechargement complet (pas de router.push) : le cache client du
     // routeur Next.js peut sinon réafficher une page déjà visitée
     // (profil, accueil...) avec ses données périmées d'avant déconnexion.
-    window.location.href = "/connexion";
+    window.location.href = "/onboarding";
   }
 
   return (
