@@ -29,7 +29,7 @@ export default function Splash() {
         Entrer
       </Link>
       <Link
-        href="/devenir-traiteur"
+        href="/partenaire"
         className="absolute bottom-8 flex items-center gap-1.5 text-[12px] font-bold text-ink/50"
       >
         <Basket size={13} className="text-coral" />
