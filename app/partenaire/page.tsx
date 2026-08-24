@@ -56,13 +56,13 @@ export default function Partenaire() {
               href="/connexion?suite=/partenaire/candidature&mode=signup"
               className="rounded-full bg-coral-deep px-7 py-3.5 font-display text-[15px] font-semibold text-white"
             >
-              Créer mon compte
+              S&apos;inscrire
             </Link>
             <Link
               href="/connexion?suite=/partenaire/candidature"
               className="rounded-full border-[1.5px] border-line bg-white px-7 py-3.5 font-display text-[15px] font-semibold text-ink"
             >
-              J&apos;ai déjà un compte
+              Se connecter
             </Link>
           </div>
           <span className="text-[13px] text-ink/50">

@@ -1,7 +1,5 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { ButtonLink, ProgressBar, Screen } from "@/components/ui";
-import { Basket } from "@/components/icons";
 import { STEP_PATH, stepProgress, stepsLeft } from "@/lib/onboarding";
 import { getOnboardingState } from "@/lib/onboarding-state";
 
@@ -44,27 +42,22 @@ function Welcome() {
           </p>
 
           <div className="mt-auto flex w-full flex-col gap-2.5 pt-6">
-            <ButtonLink
-              href="/connexion?mode=signup&suite=/onboarding/prenom"
-              size="lg"
-              className="shadow-[var(--shadow-coral-lg)]"
-            >
-              C&apos;est parti
-            </ButtonLink>
-            <p className="text-center text-xs text-ink/50">
-              Déjà un compte ?{" "}
-              <Link href="/connexion?suite=/accueil" className="font-bold text-teal">
-                Se connecter
-              </Link>
-            </p>
+            <div className="flex flex-col gap-1.5">
+              <ButtonLink
+                href="/onboarding/commencer"
+                size="lg"
+                className="shadow-[var(--shadow-coral-lg)]"
+              >
+                Organisateur
+              </ButtonLink>
+              <p className="px-2 text-center text-[12px] leading-relaxed text-ink/50">
+                Vous invitez et organisez le Chabbat.
+              </p>
+            </div>
 
-            <Link
-              href="/partenaire"
-              className="mt-1 flex items-center justify-center gap-2 rounded-full border-[1.5px] border-line-soft bg-white px-4 py-3 text-[12.5px] font-bold text-ink shadow-[var(--shadow-pill)]"
-            >
-              <Basket size={16} className="text-coral" />
-              Fournisseur, traiteur ou restaurateur ?
-            </Link>
+            <ButtonLink href="/partenaire" variant="dark" size="lg">
+              Restaurateur
+            </ButtonLink>
           </div>
         </div>
       </div>
