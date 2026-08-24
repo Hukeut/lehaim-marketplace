@@ -8,7 +8,7 @@ import { currentUser } from "@/lib/supabase/user";
  *
  * Les deux métiers partageaient jusqu'ici /admin/**, avec une nav qui
  * n'affichait que les entrées propres au rôle connecté : un commerçant
- * pouvait naviguer manuellement vers les écrans admin (validation, pilotage),
+ * pouvait naviguer manuellement vers les écrans admin (validation),
  * et le mélange des deux publics sous une même coquille prêtait à confusion.
  * Ici, la garde ne regarde que la boutique : posséder un traiteur, quel que
  * soit son statut de validation — pas d'accès plateforme mêlé dedans.

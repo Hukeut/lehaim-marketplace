@@ -10,7 +10,7 @@ import { currentUser } from "@/lib/supabase/user";
  * Séparée du back-office traiteur (/traiteur/**) : les deux métiers
  * partageaient auparavant /admin/**, avec une nav qui se limitait aux
  * entrées du rôle connecté. Un commerçant pouvait quand même naviguer
- * manuellement vers les écrans admin (validation, pilotage) puisque la garde
+ * manuellement vers les écrans admin (validation) puisque la garde
  * de page se contentait de vérifier qu'un rôle back-office existait, sans
  * exiger précisément "admin". Ici, la garde est stricte : seuls les comptes
  * de la liste blanche marketplace_admins entrent.
@@ -26,7 +26,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const items = [
     { href: "/admin", label: "Vue d'ensemble" },
     { href: "/admin/validation", label: "Validation", badge: pending > 0 ? pending : undefined },
-    { href: "/admin/pilotage", label: "Pilotage live" },
   ];
 
   return (
