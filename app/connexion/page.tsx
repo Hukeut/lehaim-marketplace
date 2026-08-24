@@ -24,10 +24,17 @@ function Connexion() {
   const searchParams = useSearchParams();
   const requested = searchParams.get("suite");
   const suite = requested ?? "/accueil";
-  // Arrivé ici via le lien "Fournisseur..." ou via /partenaire/candidature :
-  // pas la peine de reproposer le même bouton, qui mènerait exactement là où
-  // on va déjà.
-  const isTraiteurFlow = Boolean(requested?.startsWith("/partenaire"));
+  // Arrivé ici via le lien "Fournisseur..." (page 1, /traiteur, /partenaire)
+  // ou "Espace admin" (/admin) : interface bureau/tablette dans les deux cas,
+  // avec un texte propre à chacune plutôt que de reproposer le bouton qui a
+  // mené jusqu'ici.
+  const backOfficeKind: "traiteur" | "admin" | null =
+    requested?.startsWith("/partenaire") || requested?.startsWith("/traiteur")
+      ? "traiteur"
+      : requested?.startsWith("/admin")
+        ? "admin"
+        : null;
+  const isTraiteurFlow = backOfficeKind !== null;
   // Un compte tout juste créé n'a encore répondu à aucune question.
   const afterSignup = requested ?? "/onboarding/prenom";
 
@@ -127,21 +134,27 @@ function Connexion() {
     }
   }
 
-  const heading = isTraiteurFlow
-    ? mode === "signin"
-      ? "Espace fournisseur"
-      : "Devenir fournisseur"
-    : mode === "signin"
-      ? "Bon retour"
-      : "Créer votre compte";
+  const heading =
+    backOfficeKind === "traiteur"
+      ? mode === "signin"
+        ? "Espace fournisseur"
+        : "Devenir fournisseur"
+      : backOfficeKind === "admin"
+        ? "Espace admin"
+        : mode === "signin"
+          ? "Bon retour"
+          : "Créer votre compte";
 
-  const subtitle = isTraiteurFlow
-    ? mode === "signin"
-      ? "Connectez-vous pour gérer votre menu et vos commandes sur la marketplace lehaim."
-      : "Créez votre compte pour proposer vos plats sur la marketplace lehaim."
-    : mode === "signin"
-      ? "Connectez-vous pour retrouver votre table et vos proches."
-      : "Quelques secondes, et votre première table est ouverte.";
+  const subtitle =
+    backOfficeKind === "traiteur"
+      ? mode === "signin"
+        ? "Connectez-vous pour gérer votre menu et vos commandes sur la marketplace lehaim."
+        : "Créez votre compte pour proposer vos plats sur la marketplace lehaim."
+      : backOfficeKind === "admin"
+        ? "Connectez-vous avec un compte de la liste des administrateurs."
+        : mode === "signin"
+          ? "Connectez-vous pour retrouver votre table et vos proches."
+          : "Quelques secondes, et votre première table est ouverte.";
 
   const form = (
     <form onSubmit={submit} className="flex flex-1 flex-col">
@@ -289,9 +302,13 @@ function Connexion() {
       <div data-fullwidth className="min-h-dvh bg-sand text-ink">
         <header className="flex items-center gap-4 border-b border-line bg-white px-6 py-4 lg:px-9">
           <span className="font-display text-[18px] font-semibold">
-            Lehaim<span className="text-teal">partner</span>
+            Lehaim
+            <span className="text-teal">{backOfficeKind === "admin" ? "admin" : "partner"}</span>
           </span>
-          <Link href="/partenaire" className="ms-auto text-[12.5px] font-bold text-ink/45">
+          <Link
+            href={backOfficeKind === "admin" ? "/" : "/partenaire"}
+            className="ms-auto text-[12.5px] font-bold text-ink/45"
+          >
             Retour au site
           </Link>
         </header>

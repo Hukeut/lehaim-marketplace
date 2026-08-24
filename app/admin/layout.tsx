@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { backOfficeRole } from "@/lib/admin";
 import { pendingTraiteurCount } from "@/lib/shops";
+import { currentUser } from "@/lib/supabase/user";
 
 /**
  * Coquille du back-office admin — plateforme uniquement.
@@ -15,6 +16,8 @@ import { pendingTraiteurCount } from "@/lib/shops";
  * de la liste blanche marketplace_admins entrent.
  */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  if (!(await currentUser())) redirect("/connexion?suite=/admin");
+
   const role = await backOfficeRole();
   if (role !== "admin") redirect(role === "merchant" ? "/traiteur" : "/accueil");
 

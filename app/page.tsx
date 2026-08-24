@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LogoTile, Wordmark } from "@/components/Wordmark";
-import { Basket } from "@/components/icons";
+import { Basket, Sliders } from "@/components/icons";
 
 /** 01 · Splash */
 export default function Splash() {
@@ -24,17 +24,26 @@ export default function Splash() {
       <p className="text-[13px] text-ink/50">Chargement de votre Shabbat…</p>
       <Link
         href="/onboarding"
-        className="absolute bottom-16 text-[12px] font-bold text-teal"
+        className="absolute bottom-20 text-[12px] font-bold text-teal"
       >
         Entrer
       </Link>
-      <Link
-        href="/partenaire"
-        className="absolute bottom-8 flex items-center gap-1.5 text-[12px] font-bold text-ink/50"
-      >
-        <Basket size={13} className="text-coral" />
-        Fournisseur, traiteur ou restaurateur ?
-      </Link>
+      <div className="absolute bottom-6 flex flex-col items-center gap-2.5">
+        <Link
+          href="/traiteur"
+          className="flex items-center gap-1.5 text-[12px] font-bold text-ink/50"
+        >
+          <Basket size={13} className="text-coral" />
+          Fournisseur, traiteur ou restaurateur ?
+        </Link>
+        <Link
+          href="/admin"
+          className="flex items-center gap-1.5 text-[12px] font-bold text-ink/50"
+        >
+          <Sliders size={13} className="text-coral" />
+          Espace admin
+        </Link>
+      </div>
     </main>
   );
 }
