@@ -195,11 +195,14 @@ export async function cancelOrder(formData: FormData): Promise<void> {
  * app/marketplace/actions.ts), avec l'admin de ce dépôt (`is_admin()`,
  * `backOfficeRole()`) plutôt que `marketplace_admins`.
  *
- * Une candidature crée le traiteur ET son premier produit d'un coup : une
- * fiche sans rien à vendre n'aurait rien à montrer une fois approuvée. C'est
- * aussi ce dossier complet que l'admin voit dans /admin/validation — pas une
- * ligne vide créée à l'inscription : sans nom, adresse ni produit, il n'y
- * aurait rien de concret sur quoi se prononcer.
+ * Complète le dossier ET ajoute le premier produit d'un coup : une fiche
+ * sans rien à vendre n'aurait rien à montrer une fois approuvée.
+ *
+ * L'inscription (app/connexion/page.tsx) crée déjà une ligne minimale, en
+ * attente, dès le mot de passe confirmé — ce formulaire ne crée donc plus un
+ * dossier : il complète celui qui existe déjà. Il ne reste à insérer que
+ * pour un compte plus ancien, créé avant ce changement, qui n'en a encore
+ * aucune.
  */
 export async function registerTraiteur(
   _previous: ActionState,
@@ -232,11 +235,6 @@ export async function registerTraiteur(
     delivery_zone: text(formData, "delivery_zone"),
   };
 
-  // Un double-clic sur "Envoyer" (avant que le formulaire ne disparaisse au
-  // profit de l'écran de suivi) créait autrefois deux lignes pour le même
-  // compte. Ici, la seconde tentative complète la ligne déjà posée plutôt que
-  // d'en recréer une — pas d'erreur qui bloquerait la personne pour un simple
-  // double envoi.
   const { data: existing } = await supabase
     .from("traiteurs")
     .select("id")
@@ -244,6 +242,7 @@ export async function registerTraiteur(
     .maybeSingle();
 
   let traiteurId: string;
+  let justCreated = false;
 
   if (existing) {
     const existingId = (existing as unknown as { id: string }).id;
@@ -262,6 +261,7 @@ export async function registerTraiteur(
       return { ok: false, message: await userMessage("registerTraiteur", error!) };
     }
     traiteurId = (traiteur as unknown as { id: string }).id;
+    justCreated = true;
   }
 
   const { error: productError } = await supabase.from("traiteur_products").insert({
@@ -278,7 +278,13 @@ export async function registerTraiteur(
   }
 
   revalidatePath("/partenaire/candidature");
-  redirect("/partenaire/candidature");
+
+  // Dossier tout juste créé (compte antérieur à l'inscription en deux temps) :
+  // pas encore approuvé, direction l'écran d'attente. Dossier complété après
+  // validation : direction le back-office, la fiche est prête.
+  if (justCreated) redirect("/partenaire/candidature");
+  revalidatePath("/traiteur/boutique");
+  redirect("/traiteur/boutique");
 }
 
 async function requireAdminForTraiteurs() {
