@@ -282,6 +282,14 @@ export type MyTraiteur = {
   status: "pending" | "approved" | "rejected";
   rejectionReason: string | null;
   createdAt: string;
+  /**
+   * Signal qu'un dossier approuvé n'a pas encore été complété : un compte créé
+   * à l'inscription (voir app/connexion/page.tsx) part avec une ligne
+   * minimale, sans adresse — /partenaire/candidature s'en sert pour proposer
+   * le formulaire d'enregistrement plutôt que d'envoyer directement au
+   * back-office.
+   */
+  address: string | null;
 };
 
 /**
@@ -302,7 +310,7 @@ export const myTraiteur = cache(async function myTraiteur(): Promise<MyTraiteur 
     "myTraiteur",
     supabase
       .from("traiteurs")
-      .select("id, name, status, rejection_reason, created_at")
+      .select("id, name, status, rejection_reason, created_at, address")
       .eq("owner_id", user.id),
   );
 
@@ -320,6 +328,7 @@ export const myTraiteur = cache(async function myTraiteur(): Promise<MyTraiteur 
     status: row.status as MyTraiteur["status"],
     rejectionReason: (row.rejection_reason as string) ?? null,
     createdAt: row.created_at as string,
+    address: (row.address as string) ?? null,
   };
 });
 

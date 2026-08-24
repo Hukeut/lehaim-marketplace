@@ -195,8 +195,14 @@ export async function cancelOrder(formData: FormData): Promise<void> {
  * app/marketplace/actions.ts), avec l'admin de ce dépôt (`is_admin()`,
  * `backOfficeRole()`) plutôt que `marketplace_admins`.
  *
- * Une candidature crée le traiteur ET son premier produit d'un coup : une
- * fiche sans rien à vendre n'aurait rien à montrer une fois approuvée.
+ * Complète le dossier ET ajoute le premier produit d'un coup : une fiche
+ * sans rien à vendre n'aurait rien à montrer une fois approuvée.
+ *
+ * L'inscription (app/connexion/page.tsx) crée déjà une ligne minimale, en
+ * attente, dès le mot de passe confirmé — ce formulaire ne crée donc plus un
+ * dossier : il complète celui qui existe déjà. Il ne reste à insérer que
+ * pour un compte plus ancien, créé avant ce changement, qui n'en a encore
+ * aucune.
  */
 export async function registerTraiteur(
   _previous: ActionState,
@@ -219,41 +225,44 @@ export async function registerTraiteur(
 
   const supabase = await marketplaceClient();
 
-  // Un double-clic sur "Envoyer" (avant que le formulaire ne disparaisse au
-  // profil de l'écran de suivi) créait deux lignes pour le même compte — et
-  // myShop()/myTraiteur() n'étaient alors plus garanties de choisir la même,
-  // d'où une boucle de redirection entre /partenaire/candidature et
-  // /traiteur. pickPrimaryTraiteurRow() les départage maintenant de façon
-  // déterministe, mais autant ne pas créer le doublon.
+  const fields = {
+    name,
+    address: text(formData, "address"),
+    phone: text(formData, "phone"),
+    patente_number: text(formData, "patente_number"),
+    hechsher_name: text(formData, "hechsher_name"),
+    delivery_available: formData.get("delivery_available") === "on",
+    delivery_zone: text(formData, "delivery_zone"),
+  };
+
   const { data: existing } = await supabase
     .from("traiteurs")
     .select("id")
     .eq("owner_id", user.id)
-    .limit(1)
     .maybeSingle();
-  if (existing) return { ok: false, message: "Vous avez déjà un dossier en cours." };
 
-  const { data: traiteur, error } = await supabase
-    .from("traiteurs")
-    .insert({
-      owner_id: user.id,
-      name,
-      address: text(formData, "address"),
-      phone: text(formData, "phone"),
-      patente_number: text(formData, "patente_number"),
-      hechsher_name: text(formData, "hechsher_name"),
-      delivery_available: formData.get("delivery_available") === "on",
-      delivery_zone: text(formData, "delivery_zone"),
-      status: "pending",
-    })
-    .select("id")
-    .single();
+  let traiteurId: string;
+  let justCreated = false;
 
-  if (error || !traiteur) {
-    return { ok: false, message: await userMessage("registerTraiteur", error!) };
+  if (existing) {
+    const existingId = (existing as unknown as { id: string }).id;
+    const { error } = await supabase.from("traiteurs").update(fields).eq("id", existingId);
+    if (error) {
+      return { ok: false, message: await userMessage("registerTraiteur/update", error) };
+    }
+    traiteurId = existingId;
+  } else {
+    const { data: traiteur, error } = await supabase
+      .from("traiteurs")
+      .insert({ owner_id: user.id, status: "pending", ...fields })
+      .select("id")
+      .single();
+    if (error || !traiteur) {
+      return { ok: false, message: await userMessage("registerTraiteur", error!) };
+    }
+    traiteurId = (traiteur as unknown as { id: string }).id;
+    justCreated = true;
   }
-
-  const traiteurId = (traiteur as unknown as { id: string }).id;
 
   const { error: productError } = await supabase.from("traiteur_products").insert({
     traiteur_id: traiteurId,
@@ -268,8 +277,14 @@ export async function registerTraiteur(
     return { ok: false, message: await userMessage("registerTraiteur/product", productError) };
   }
 
-  revalidatePath("/partenaire");
-  redirect("/partenaire");
+  revalidatePath("/partenaire/candidature");
+
+  // Dossier tout juste créé (compte antérieur à l'inscription en deux temps) :
+  // pas encore approuvé, direction l'écran d'attente. Dossier complété après
+  // validation : direction le back-office, la fiche est prête.
+  if (justCreated) redirect("/partenaire/candidature");
+  revalidatePath("/traiteur/boutique");
+  redirect("/traiteur/boutique");
 }
 
 async function requireAdminForTraiteurs() {

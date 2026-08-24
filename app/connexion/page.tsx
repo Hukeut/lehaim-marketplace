@@ -103,6 +103,25 @@ function Connexion() {
 
     let destination = mode === "signup" ? afterSignup : suite;
 
+    // Une inscription fournisseur part avec un dossier minimal en attente :
+    // le formulaire détaillé (nom, coordonnées, premier produit) se remplit
+    // après validation par l'équipe, pas avant — voir /partenaire/candidature,
+    // qui affiche directement l'écran d'attente dès que ce dossier existe.
+    if (mode === "signup" && backOfficeKind === "traiteur" && data.user) {
+      const { data: existingTraiteur } = await supabase
+        .from("traiteurs")
+        .select("id")
+        .eq("owner_id", data.user.id)
+        .maybeSingle();
+      if (!existingTraiteur) {
+        await supabase.from("traiteurs").insert({
+          owner_id: data.user.id,
+          name: data.user.email ?? "Nouveau traiteur",
+          status: "pending",
+        });
+      }
+    }
+
     // Un compte administrateur qui se connecte depuis le tunnel fournisseur
     // (/partenaire, /traiteur) atterrit directement sur /admin plutôt que sur
     // la candidature ou le back-office traiteur : la liste blanche
