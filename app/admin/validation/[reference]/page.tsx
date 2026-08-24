@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { AdminTitle, StatusTag } from "@/components/admin";
-import { requireBackOffice } from "@/lib/admin";
 import { money, traiteurForAdmin } from "@/lib/shops";
 import { DecisionPanel } from "./DecisionPanel";
 
@@ -30,9 +29,7 @@ export default async function DossierTraiteur({
 }: {
   params: Promise<{ reference: string }>;
 }) {
-  const role = await requireBackOffice();
-  if (role !== "admin") redirect("/admin");
-
+  // Garde déjà posée par app/admin/layout.tsx (réservé aux admins).
   const { reference: id } = await params;
   const dossier = await traiteurForAdmin(id);
   if (!dossier) notFound();

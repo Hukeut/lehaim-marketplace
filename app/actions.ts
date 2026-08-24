@@ -110,8 +110,8 @@ export async function deleteShabbat(shabbatId: string) {
   await supabase.from("shabbats").delete().eq("id", shabbatId);
   revalidatePath("/shabbats");
   revalidatePath("/accueil");
-  revalidatePath("/admin/commandes");
-  revalidatePath("/admin/service");
+  revalidatePath("/traiteur/commandes");
+  revalidatePath("/traiteur/service");
   revalidatePath("/commandes");
   redirect("/shabbats");
 }

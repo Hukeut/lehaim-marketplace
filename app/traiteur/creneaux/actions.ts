@@ -13,7 +13,7 @@ import { myShop, createClient } from "@/lib/merchant";
  */
 
 function refresh() {
-  revalidatePath("/admin/creneaux");
+  revalidatePath("/traiteur/creneaux");
   revalidatePath("/marketplace", "layout");
 }
 

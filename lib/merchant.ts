@@ -77,7 +77,7 @@ export type MerchantShop = {
   prepMinutes: number;
   logoUrl: string | null;
   coverUrl: string | null;
-  // Repris tels quels pour /admin/reversements : pas de modèle de commission
+  // Repris tels quels pour /traiteur/reversements : pas de modèle de commission
   // dans ce schéma pour l'instant (chantier finance, non commencé — voir le
   // même report côté panneau IBAN de "Ma boutique").
   commissionRate: number;

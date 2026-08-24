@@ -13,14 +13,14 @@ import { TraiteurOnboardingForm } from "@/components/marketplace/TraiteurOnboard
  *
  * Trois états, un seul écran : pas encore de dossier → formulaire ; en
  * attente ou refusé → suivi ; approuvé → renvoi vers le back-office déjà
- * porté (/admin/boutique et consorts, voir les phases précédentes).
+ * porté (/traiteur/boutique et consorts, voir les phases précédentes).
  */
 export default async function Candidature() {
   if (!(await currentUser())) redirect("/connexion?suite=/partenaire/candidature");
 
   const traiteur = await myTraiteur();
 
-  if (traiteur?.status === "approved") redirect("/admin/boutique");
+  if (traiteur?.status === "approved") redirect("/traiteur/boutique");
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[560px] flex-1 flex-col px-5 pt-[54px] pb-10 sm:min-h-0">

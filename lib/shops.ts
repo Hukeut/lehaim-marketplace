@@ -14,7 +14,7 @@ export { money } from "@/lib/money";
  *
  * Volontairement plus simple que l'écran d'origine de Rraven666/lehaim : pas
  * de variantes de produit, pas de zones de livraison à frais, pas de notes ni
- * d'avis, pas de favoris, pas d'horaires (le même choix qu'à /admin/creneaux,
+ * d'avis, pas de favoris, pas d'horaires (le même choix qu'à /traiteur/creneaux,
  * resté à ajout manuel). Ce que ce backend sait faire aujourd'hui, pas plus —
  * décision prise avec l'utilisateur plutôt que devinée.
  */

@@ -22,8 +22,8 @@ async function context() {
 }
 
 function refresh() {
-  revalidatePath("/admin/service");
-  revalidatePath("/admin/commandes");
+  revalidatePath("/traiteur/service");
+  revalidatePath("/traiteur/commandes");
   revalidatePath("/admin/pilotage");
   revalidatePath("/commandes", "layout");
 }

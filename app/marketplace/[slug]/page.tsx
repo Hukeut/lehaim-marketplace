@@ -12,7 +12,7 @@ import { toggleFavorite } from "@/app/marketplace/actions";
  * La fiche d'un traiteur.
  *
  * Version simplifiée : pas d'horaires — juste ce que le commerçant a
- * renseigné (voir /admin/boutique), la note moyenne calculée depuis les avis
+ * renseigné (voir /traiteur/boutique), la note moyenne calculée depuis les avis
  * clients, et deux produits pour donner une idée avant d'aller voir la carte
  * complète.
  */

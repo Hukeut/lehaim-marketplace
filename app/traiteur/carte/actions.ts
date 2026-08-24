@@ -20,7 +20,7 @@ function text(formData: FormData, name: string) {
 }
 
 function refresh() {
-  revalidatePath("/admin/carte");
+  revalidatePath("/traiteur/carte");
   revalidatePath("/marketplace", "layout");
 }
 

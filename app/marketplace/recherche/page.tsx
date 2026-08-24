@@ -6,7 +6,7 @@ import { listShops } from "@/lib/shops";
 
 /**
  * La recherche — par nom de traiteur uniquement (pas de catégories de
- * commerce dans ce schéma : seuls les produits en ont une, voir /admin/carte).
+ * commerce dans ce schéma : seuls les produits en ont une, voir /traiteur/carte).
  */
 export default async function Recherche({
   searchParams,

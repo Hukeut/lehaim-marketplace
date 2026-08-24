@@ -161,7 +161,7 @@ export async function createOrder(
   if (itemsError) return { ok: false, message: await userMessage("createOrder/items", itemsError) };
 
   revalidatePath("/commandes", "layout");
-  revalidatePath("/admin/service");
+  revalidatePath("/traiteur/service");
   redirect(`/commandes/${orderId}?cleared=${shopId}`);
 }
 
@@ -182,7 +182,7 @@ export async function cancelOrder(formData: FormData): Promise<void> {
     .eq("status", "nouvelle");
 
   revalidatePath("/commandes", "layout");
-  revalidatePath("/admin/service");
+  revalidatePath("/traiteur/service");
 }
 
 /* ------------------------------------------------------------------ */

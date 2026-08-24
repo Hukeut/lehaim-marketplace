@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { AdminEmpty, AdminTable, AdminTitle, Kpi, KpiGrid, StatusTag, Td } from "@/components/admin";
-import { requireBackOffice } from "@/lib/admin";
 import { run } from "@/lib/db";
 import { money } from "@/lib/money";
 import { OPEN_STATUSES, type OrderStatus } from "@/lib/merchant";
@@ -30,9 +28,7 @@ const time = new Intl.DateTimeFormat("fr-FR", { hour: "2-digit", minute: "2-digi
 const STALE_MINUTES = 15;
 
 export default async function Pilotage() {
-  const role = await requireBackOffice();
-  if (role !== "admin") redirect("/admin/service");
-
+  // Garde déjà posée par app/admin/layout.tsx (réservé aux admins).
   const supabase = await marketplaceClient();
   const { data } = await run(
     "pilotage",

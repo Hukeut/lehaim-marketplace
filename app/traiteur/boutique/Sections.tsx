@@ -117,7 +117,7 @@ export function Identity({ shop }: { shop: MerchantShop }) {
 /**
  * Réglage de service — remplace le panneau "Horaires et remise" de Rraven.
  * Notre schéma ne porte ni grille d'horaires ni capacité par créneau (voir
- * /admin/creneaux, qui reste à ajout manuel) ; seul le temps de préparation
+ * /traiteur/creneaux, qui reste à ajout manuel) ; seul le temps de préparation
  * par défaut est réellement branché aujourd'hui.
  */
 export function ServiceSettings({ shop }: { shop: MerchantShop }) {

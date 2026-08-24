@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { AdminEmpty, AdminTable, AdminTitle, StatusTag, Td } from "@/components/admin";
-import { requireBackOffice } from "@/lib/admin";
 import { allTraiteursForAdmin } from "@/lib/shops";
 
 /**
@@ -34,9 +32,7 @@ function ageTone(days: number): string {
 const dateFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long" });
 
 export default async function Validation() {
-  const role = await requireBackOffice();
-  if (role !== "admin") redirect("/admin");
-
+  // Garde déjà posée par app/admin/layout.tsx (réservé aux admins).
   const traiteurs = await allTraiteursForAdmin();
   const pending = traiteurs.filter((t) => t.status === "pending");
   const now = Date.now();

@@ -1,6 +1,4 @@
-import { redirect } from "next/navigation";
 import { AdminTitle, Kpi, KpiGrid } from "@/components/admin";
-import { backOfficeRole } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -11,11 +9,12 @@ import { createClient } from "@/lib/supabase/server";
  * invitations et l'ancien système `shops`/`shop_products` — hors périmètre
  * de cette fusion (marketplace uniquement). Ici, uniquement des chiffres
  * traiteurs/commandes, tirés des tables réellement présentes dans ce dépôt.
+ *
+ * Pas de branche commerçant : /admin est réservé aux admins par son layout
+ * (voir app/admin/layout.tsx) depuis la séparation admin/traiteur — un
+ * commerçant n'atteint plus cet écran.
  */
 export default async function AdminDashboard() {
-  const role = await backOfficeRole();
-  if (role === "merchant") redirect("/admin/service");
-
   const supabase = await createClient();
   const [traiteurs, approved, produits, commandes] = await Promise.all([
     supabase.from("traiteurs").select("*", { count: "exact", head: true }),

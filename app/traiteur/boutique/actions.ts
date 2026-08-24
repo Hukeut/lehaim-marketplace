@@ -19,8 +19,8 @@ function text(formData: FormData, name: string) {
 }
 
 function refresh() {
-  revalidatePath("/admin/boutique");
-  revalidatePath("/admin/service");
+  revalidatePath("/traiteur/boutique");
+  revalidatePath("/traiteur/service");
   revalidatePath("/marketplace", "layout");
 }
 
