@@ -304,36 +304,55 @@ function refreshValidation(id: string) {
   revalidatePath("/admin", "layout");
 }
 
-/** Approuver : le dossier est clos et la fiche devient visible. */
-export async function approveTraiteur(id: string): Promise<void> {
+/**
+ * Approuver : le dossier est clos et la fiche devient visible.
+ *
+ * Renvoie un résultat plutôt qu'un simple `void` : avant, un refus de la
+ * garde admin (rôle qui aurait changé) ou une erreur RLS/base disparaissaient
+ * en silence — le bouton semblait ne rien faire, sans aucun message pour
+ * comprendre pourquoi. DecisionPanel affiche maintenant ce que ce renvoie.
+ */
+export async function approveTraiteur(id: string): Promise<ActionState> {
   const ctx = await requireAdminForTraiteurs();
-  if (!ctx) return;
+  if (!ctx) {
+    return { ok: false, message: "Vous n'êtes plus reconnu comme administrateur — reconnectez-vous." };
+  }
 
-  await run(
+  const { failed, code } = await run(
     "approveTraiteur",
     ctx.supabase
       .from("traiteurs")
       .update({ status: "approved", rejection_reason: null })
       .eq("id", id),
   );
+  if (failed) {
+    return { ok: false, message: `L'approbation a échoué (${code ?? "erreur inconnue"}).` };
+  }
 
   refreshValidation(id);
+  return { ok: true, message: null };
 }
 
 /** Rejeter, avec un motif — c'est ce texte que le candidat lira. */
-export async function rejectTraiteur(id: string, reason: string): Promise<void> {
+export async function rejectTraiteur(id: string, reason: string): Promise<ActionState> {
   const ctx = await requireAdminForTraiteurs();
-  if (!ctx) return;
+  if (!ctx) {
+    return { ok: false, message: "Vous n'êtes plus reconnu comme administrateur — reconnectez-vous." };
+  }
 
   const motif = reason.trim();
-  if (!motif) return;
+  if (!motif) return { ok: false, message: "Indiquez un motif de refus." };
 
-  await run(
+  const { failed, code } = await run(
     "rejectTraiteur",
     ctx.supabase.from("traiteurs").update({ status: "rejected", rejection_reason: motif }).eq("id", id),
   );
+  if (failed) {
+    return { ok: false, message: `Le refus a échoué (${code ?? "erreur inconnue"}).` };
+  }
 
   refreshValidation(id);
+  return { ok: true, message: null };
 }
 
 /* ------------------------------------------------------------------ */
