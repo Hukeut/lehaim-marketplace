@@ -8,10 +8,17 @@ export default async function OnboardingEntry() {
   const state = await getOnboardingState();
 
   if (state?.step === "done") redirect("/accueil");
-  if (state && state.step !== "prenom") {
+
+  // Un compte connecté mais qui n'a encore rien répondu (step === "prenom")
+  // partait tout droit sur /onboarding/prenom sans passer par cet écran — et
+  // son bouton "retour" ramène justement ici, donc /onboarding renvoyait
+  // aussitôt vers /onboarding/prenom : une boucle qui bloquait la personne,
+  // incapable de revoir l'écran d'accueil (voir le bug remonté en session).
+  // "Reprise" gère maintenant ce cas comme n'importe quel autre en cours,
+  // avec un bouton "Continuer" plutôt qu'un renvoi automatique.
+  if (state) {
     return <Resume step={state.step} firstName={state.firstName} />;
   }
-  if (state) redirect(STEP_PATH.prenom);
 
   return <Welcome />;
 }
