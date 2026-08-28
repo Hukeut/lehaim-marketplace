@@ -1,5 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import {
+  ACCOUNTS_COOKIE,
+  ACCOUNTS_COOKIE_OPTIONS,
+  parseAccounts,
+  serializeAccounts,
+  type SavedAccount,
+} from "@/lib/accounts";
 
 /**
  * Écrans accessibles sans être connecté.
@@ -57,6 +64,44 @@ export async function proxy(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Sélecteur multi-comptes (voir lib/accounts.ts) : dès qu'une session est
+  // active, on la mémorise dans une liste à part pour pouvoir y rebasculer
+  // plus tard sans se reconnecter — y compris après une rotation du jeton
+  // de rafraîchissement, d'où la resynchronisation à chaque requête.
+  if (user) {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const session = sessionData.session;
+    if (session) {
+      const existing = parseAccounts(request.cookies.get(ACCOUNTS_COOKIE)?.value);
+      const idx = existing.findIndex((a) => a.userId === user.id);
+      let firstName = idx >= 0 ? existing[idx].firstName : null;
+
+      if (!firstName) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("first_name")
+          .eq("id", user.id)
+          .maybeSingle();
+        firstName = (profile as { first_name: string | null } | null)?.first_name ?? null;
+      }
+
+      const entry: SavedAccount = {
+        userId: user.id,
+        email: user.email ?? "",
+        firstName,
+        accessToken: session.access_token,
+        refreshToken: session.refresh_token,
+        updatedAt: new Date().toISOString(),
+      };
+
+      const next =
+        idx >= 0
+          ? existing.map((a, i) => (i === idx ? entry : a))
+          : [entry, ...existing];
+      response.cookies.set(ACCOUNTS_COOKIE, serializeAccounts(next), ACCOUNTS_COOKIE_OPTIONS);
+    }
+  }
 
   const { pathname } = request.nextUrl;
   const isPublic = PUBLIC_PATHS.some(
