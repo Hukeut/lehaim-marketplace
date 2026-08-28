@@ -1,12 +1,32 @@
 "use server";
 
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/supabase/user";
 import { marketplaceClient } from "@/lib/shops";
 import { backOfficeRole } from "@/lib/admin";
 import { run, userMessage } from "@/lib/db";
+import {
+  createPaymentProcess,
+  createTransactionWithToken,
+  pageCodeFor,
+  refundTransaction,
+  uniqueTransactionIdentifier,
+  type GrowMethod,
+} from "@/lib/grow";
 import type { ActionState } from "@/app/actions";
+
+async function siteOrigin(): Promise<string> {
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  return `${proto}://${host}`;
+}
+
+function isGrowMethod(value: string): value is GrowMethod {
+  return value === "card_bit" || value === "google_pay" || value === "apple_pay";
+}
 
 function text(formData: FormData, name: string) {
   const value = formData.get(name);
@@ -52,10 +72,26 @@ export async function createOrder(
   const slotId = String(formData.get("slot_id") ?? "") || null;
   const cartLines = parseCart(String(formData.get("cart") ?? "[]"));
 
+  // Grow exige un nom complet (prénom + nom) et un téléphone valide sur
+  // chaque paiement — demandés ici plutôt que devinés depuis le profil, qui
+  // peut être incomplet pour un compte créé avant l'ajout du paiement.
+  const fullName = String(formData.get("full_name") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+  const savedCardId = String(formData.get("saved_card_id") ?? "") || null;
+  const methodRaw = String(formData.get("payment_method") ?? "card_bit");
+  const method: GrowMethod = isGrowMethod(methodRaw) ? methodRaw : "card_bit";
+  const saveCard = formData.get("save_card") === "on";
+
   if (!shopId) return { ok: false, message: "Commerce introuvable." };
   if (cartLines.length === 0) return { ok: false, message: "Votre panier est vide." };
   if (mode === "livraison" && !address) {
     return { ok: false, message: "Indiquez une adresse de livraison." };
+  }
+  if (fullName.split(" ").filter(Boolean).length < 2) {
+    return { ok: false, message: "Indiquez votre nom complet (prénom et nom)." };
+  }
+  if (!phone) {
+    return { ok: false, message: "Indiquez votre numéro de téléphone." };
   }
 
   const supabase = await marketplaceClient();
@@ -160,9 +196,91 @@ export async function createOrder(
   );
   if (itemsError) return { ok: false, message: await userMessage("createOrder/items", itemsError) };
 
+  // Carte déjà mémorisée : charge directe côté serveur, sans redirection —
+  // le client atterrit immédiatement sur la confirmation.
+  if (savedCardId) {
+    const { data: cardRow } = await supabase
+      .from("payment_methods")
+      .select("card_token")
+      .eq("id", savedCardId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    const card = cardRow as unknown as { card_token: string } | null;
+
+    if (!card) {
+      return { ok: false, message: "Ce moyen de paiement n'est plus disponible." };
+    }
+
+    try {
+      const charge = await createTransactionWithToken({
+        cardToken: card.card_token,
+        sum: total,
+        description: `Commande ${orderId}`,
+        fullName,
+        phone,
+        transactionUniqueIdentifier: uniqueTransactionIdentifier(),
+      });
+      await supabase
+        .from("marketplace_orders")
+        .update({
+          payment_status: "paid",
+          grow_transaction_id: charge.transactionId,
+          grow_transaction_token: charge.transactionToken,
+          grow_asmachta: charge.asmachta ?? null,
+        })
+        .eq("id", orderId);
+    } catch (err) {
+      console.error("[lehaim] createOrder/token —", orderId, err);
+      await supabase.from("marketplace_orders").update({ payment_status: "failed" }).eq("id", orderId);
+      return {
+        ok: false,
+        message: "Le paiement avec cette carte a échoué. Réessayez ou choisissez un autre moyen de paiement.",
+      };
+    }
+
+    revalidatePath("/commandes", "layout");
+    revalidatePath("/traiteur/service");
+    redirect(`/commandes/${orderId}?cleared=${shopId}`);
+  }
+
+  // Nouvelle carte, Bit, Google Pay ou Apple Pay : ouverture de la page de
+  // paiement hébergée par Grow, redirection, puis confirmation asynchrone
+  // via le webhook (voir app/api/grow/webhook/order/route.ts).
+  const origin = await siteOrigin();
+  const pageCode = pageCodeFor(method);
+
+  let process;
+  try {
+    process = await createPaymentProcess({
+      pageCode,
+      sum: total,
+      successUrl: `${origin}/commandes/${orderId}?cleared=${shopId}`,
+      cancelUrl: `${origin}/marketplace/${shopId}/reserver`,
+      description: `Commande ${orderId}`,
+      fullName,
+      phone,
+      email: user.email ?? undefined,
+      notifyUrl: `${origin}/api/grow/webhook/order`,
+      saveCardToken: saveCard,
+      cField1: orderId,
+    });
+  } catch (err) {
+    console.error("[lehaim] createOrder/grow —", orderId, err);
+    return { ok: false, message: "Le paiement n'a pas pu démarrer. Réessayez dans un instant." };
+  }
+
+  await supabase
+    .from("marketplace_orders")
+    .update({
+      grow_page_code: pageCode,
+      grow_process_id: process.processId,
+      grow_process_token: process.processToken,
+    })
+    .eq("id", orderId);
+
   revalidatePath("/commandes", "layout");
   revalidatePath("/traiteur/service");
-  redirect(`/commandes/${orderId}?cleared=${shopId}`);
+  redirect(process.url);
 }
 
 /** Renoncer, tant que le traiteur n'a encore rien accepté. */
@@ -174,9 +292,44 @@ export async function cancelOrder(formData: FormData): Promise<void> {
   if (!id) return;
 
   const supabase = await marketplaceClient();
+
+  // Une commande annulée après paiement doit être remboursée.
+  const { data: existing } = await supabase
+    .from("marketplace_orders")
+    .select("total_amount, payment_status, grow_transaction_id, grow_transaction_token")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  const row = existing as unknown as
+    | {
+        total_amount: number;
+        payment_status: string;
+        grow_transaction_id: string | null;
+        grow_transaction_token: string | null;
+      }
+    | null;
+  const wasPaid = row?.payment_status === "paid" && row.grow_transaction_id && row.grow_transaction_token;
+
+  if (wasPaid) {
+    try {
+      await refundTransaction({
+        transactionId: row.grow_transaction_id!,
+        transactionToken: row.grow_transaction_token!,
+        refundSum: row.total_amount,
+      });
+    } catch (err) {
+      console.error("[lehaim] cancelOrder/refund —", id, err);
+      return;
+    }
+  }
+
   await supabase
     .from("marketplace_orders")
-    .update({ status: "annulee", cancelled_by: "client" })
+    .update({
+      status: "annulee",
+      cancelled_by: "client",
+      ...(wasPaid ? { payment_status: "refunded" } : {}),
+    })
     .eq("id", id)
     .eq("user_id", user.id)
     .eq("status", "nouvelle");

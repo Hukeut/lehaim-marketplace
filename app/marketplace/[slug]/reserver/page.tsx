@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { BackButton } from "@/components/BackButton";
 import { shopBySlug, shopSlots } from "@/lib/shops";
+import { getCurrentProfile } from "@/lib/profile";
+import { myPaymentMethods } from "@/lib/payment-methods";
 import { ReserverForm } from "./ReserverForm";
 
 /**
@@ -16,7 +18,11 @@ export default async function Reserver({
   const shop = await shopBySlug(slug);
   if (!shop) notFound();
 
-  const slots = await shopSlots(shop.id);
+  const [slots, profile, savedCards] = await Promise.all([
+    shopSlots(shop.id),
+    getCurrentProfile(),
+    myPaymentMethods(),
+  ]);
 
   return (
     <main className="flex min-h-dvh flex-1 flex-col sm:min-h-0">
@@ -31,6 +37,9 @@ export default async function Reserver({
         products={shop.products}
         deliveryAvailable={shop.deliveryAvailable}
         slots={slots}
+        defaultFullName={profile?.fullName ?? ""}
+        defaultPhone={profile?.phone ?? ""}
+        savedCards={savedCards}
       />
     </main>
   );

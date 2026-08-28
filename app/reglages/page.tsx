@@ -16,7 +16,8 @@ export default async function Reglages() {
         <Overline>Compte</Overline>
         <Card className="mb-4.5">
           <Row href="/profil/modifier" label="Modifier le profil" />
-          <Row href="/profil/modifier" label="Numéro & e-mail" last />
+          <Row href="/profil/modifier" label="Numéro & e-mail" />
+          <Row href="/profil/paiement" label="Moyens de paiement" last />
         </Card>
 
         <Overline>Notifications</Overline>

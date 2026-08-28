@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BackButton } from "@/components/BackButton";
-import { Card } from "@/components/ui";
+import { Card, StatusPill } from "@/components/ui";
 import { ReviewForm } from "@/components/marketplace/ReviewForm";
 import { money } from "@/lib/money";
 import { HAPPY_PATH, myReviewForOrder, orderByReference, type OrderStatus } from "@/lib/orders";
@@ -133,6 +133,15 @@ export default async function Commande({
             <span className="font-display text-[15px] font-semibold">Total</span>
             <span className="font-display text-[18px] font-semibold">{money(order.total)}</span>
           </div>
+
+          <div>
+            {order.paymentStatus === "paid" && <StatusPill tone="success">Payé</StatusPill>}
+            {order.paymentStatus === "refunded" && <StatusPill tone="neutral">Remboursé</StatusPill>}
+            {order.paymentStatus === "failed" && <StatusPill tone="urgent">Échec du paiement</StatusPill>}
+            {order.paymentStatus === "unpaid" && !failed && (
+              <StatusPill tone="warning">Paiement en attente</StatusPill>
+            )}
+          </div>
         </Card>
 
         <Card className="mb-3 flex flex-col gap-1.5 p-4 text-[13px]">
@@ -170,6 +179,11 @@ export default async function Commande({
             >
               Annuler la commande
             </button>
+            {order.paymentStatus === "paid" && (
+              <p className="mt-2 text-center text-[11.5px] text-ink/45">
+                Vous avez déjà payé — l&apos;annulation déclenche un remboursement automatique.
+              </p>
+            )}
           </form>
         )}
 

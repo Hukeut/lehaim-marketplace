@@ -6,5 +6,5 @@
  * prop — il faut que le composant client l'importe lui-même.
  */
 export function money(amount: number) {
-  return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount);
+  return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "ILS" }).format(amount);
 }

@@ -16,6 +16,8 @@ export { ORDER_STATUSES, type OrderStatus };
 /** Les cinq états d'un parcours qui se passe bien, dans l'ordre. */
 export const HAPPY_PATH: OrderStatus[] = ["nouvelle", "acceptee", "en_preparation", "prete", "recuperee"];
 
+export type PaymentStatus = "unpaid" | "paid" | "refunded" | "failed";
+
 export type OrderCard = {
   id: string;
   status: OrderStatus;
@@ -26,6 +28,7 @@ export type OrderCard = {
   placedAt: string;
   pickupDate: string | null;
   pickupSlot: string | null;
+  paymentStatus: PaymentStatus;
 };
 
 export type OrderDetail = OrderCard & {
@@ -40,7 +43,7 @@ export type OrderDetail = OrderCard & {
 };
 
 const CARD_FIELDS =
-  "id, status, fulfillment, total_amount, created_at, pickup_date, pickup_slot, traiteurs(id, name, phone, address)";
+  "id, status, fulfillment, total_amount, created_at, pickup_date, pickup_slot, payment_status, traiteurs(id, name, phone, address)";
 
 type CardRow = Record<string, unknown> & {
   traiteurs: { id: string; name: string; phone: string | null; address: string | null } | null;
@@ -57,6 +60,7 @@ function toCard(row: CardRow): OrderCard {
     placedAt: row.created_at as string,
     pickupDate: (row.pickup_date as string) ?? null,
     pickupSlot: (row.pickup_slot as string) ?? null,
+    paymentStatus: (row.payment_status as PaymentStatus) ?? "unpaid",
   };
 }
 

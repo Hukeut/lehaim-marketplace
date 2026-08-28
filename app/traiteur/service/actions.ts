@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { backOfficeRole } from "@/lib/admin";
 import { myShop, nextStatus, createClient, type OrderStatus } from "@/lib/merchant";
+import { refundTransaction } from "@/lib/grow";
 
 /**
  * Le service, côté gestes.
@@ -59,9 +60,44 @@ export async function refuseOrder(formData: FormData): Promise<void> {
   const reason = String(formData.get("reason") ?? "").trim();
   if (!id || !reason) return;
 
+  // Une commande refusée après paiement doit être remboursée — le client ne
+  // doit jamais payer pour une commande que le traiteur n'honore pas.
+  const { data: existing } = await ctx.supabase
+    .from("marketplace_orders")
+    .select("total_amount, payment_status, grow_transaction_id, grow_transaction_token")
+    .eq("id", id)
+    .maybeSingle();
+  const row = existing as unknown as
+    | {
+        total_amount: number;
+        payment_status: string;
+        grow_transaction_id: string | null;
+        grow_transaction_token: string | null;
+      }
+    | null;
+  const wasPaid = row?.payment_status === "paid" && row.grow_transaction_id && row.grow_transaction_token;
+
+  if (wasPaid) {
+    try {
+      await refundTransaction({
+        transactionId: row.grow_transaction_id!,
+        transactionToken: row.grow_transaction_token!,
+        refundSum: row.total_amount,
+      });
+    } catch (err) {
+      console.error("[lehaim] refuseOrder/refund —", id, err);
+      return;
+    }
+  }
+
   await ctx.supabase
     .from("marketplace_orders")
-    .update({ status: "annulee", cancelled_by: "traiteur", refusal_reason: reason })
+    .update({
+      status: "annulee",
+      cancelled_by: "traiteur",
+      refusal_reason: reason,
+      ...(wasPaid ? { payment_status: "refunded" } : {}),
+    })
     .eq("id", id);
 
   refresh();
