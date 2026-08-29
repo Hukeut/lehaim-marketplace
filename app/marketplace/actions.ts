@@ -348,8 +348,9 @@ export async function cancelOrder(formData: FormData): Promise<void> {
  * app/marketplace/actions.ts), avec l'admin de ce dépôt (`is_admin()`,
  * `backOfficeRole()`) plutôt que `marketplace_admins`.
  *
- * Complète le dossier ET ajoute le premier produit d'un coup : une fiche
- * sans rien à vendre n'aurait rien à montrer une fois approuvée.
+ * Complète le dossier (nom, adresse, documents, livraison) — le premier
+ * produit ne fait plus partie de cette étape, il se remplit ensuite depuis
+ * /traiteur/carte, qui a son propre formulaire d'ajout.
  *
  * L'inscription (app/connexion/page.tsx) crée déjà une ligne minimale, en
  * attente, dès le mot de passe confirmé — ce formulaire ne crée donc plus un
@@ -367,12 +368,14 @@ export async function registerTraiteur(
   const name = text(formData, "name");
   if (!name) return { ok: false, message: "Le nom de votre commerce est obligatoire." };
 
+  // Le premier produit ne fait plus partie de ce formulaire (onboarding
+  // réduit à deux étapes) : ces champs ne sont plus soumis, mais on les lit
+  // quand même pour ne pas casser un compte plus ancien dont le formulaire
+  // en trois étapes serait encore en cache côté client. S'ils sont absents,
+  // aucun produit n'est créé ici — le traiteur en ajoute depuis /traiteur/carte.
   const productTitle = text(formData, "product_title");
   const productPrice = Number(String(formData.get("product_price") ?? "0").replace(",", "."));
-  if (!productTitle) {
-    return { ok: false, message: "Ajoutez au moins un produit à votre catalogue." };
-  }
-  if (!Number.isFinite(productPrice) || productPrice <= 0) {
+  if (productTitle && (!Number.isFinite(productPrice) || productPrice <= 0)) {
     return { ok: false, message: "Le prix du produit doit être un nombre positif." };
   }
 
@@ -417,17 +420,19 @@ export async function registerTraiteur(
     justCreated = true;
   }
 
-  const { error: productError } = await supabase.from("traiteur_products").insert({
-    traiteur_id: traiteurId,
-    title: productTitle,
-    description: text(formData, "product_description"),
-    price: productPrice,
-    category: String(formData.get("product_category") ?? "plat"),
-    quantity_hint: text(formData, "product_quantity_hint"),
-    allergens: formData.getAll("product_allergens").map(String),
-  });
-  if (productError) {
-    return { ok: false, message: await userMessage("registerTraiteur/product", productError) };
+  if (productTitle) {
+    const { error: productError } = await supabase.from("traiteur_products").insert({
+      traiteur_id: traiteurId,
+      title: productTitle,
+      description: text(formData, "product_description"),
+      price: productPrice,
+      category: String(formData.get("product_category") ?? "plat"),
+      quantity_hint: text(formData, "product_quantity_hint"),
+      allergens: formData.getAll("product_allergens").map(String),
+    });
+    if (productError) {
+      return { ok: false, message: await userMessage("registerTraiteur/product", productError) };
+    }
   }
 
   revalidatePath("/partenaire/candidature");

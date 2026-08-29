@@ -7,26 +7,16 @@ import { Button, Field, Overline } from "@/components/ui";
 
 const initial: ActionState = { ok: false, message: null };
 
-const ALLERGEN_OPTIONS: [string, string][] = [
-  ["gluten", "🌾 Gluten"],
-  ["fruits_a_coque", "🥜 Fruits à coque"],
-  ["oeufs", "🥚 Œufs"],
-  ["lactose", "🥛 Lactose"],
-  ["soja", "🫘 Soja"],
-  ["arachide", "🥜 Arachide"],
-  ["poisson", "🐟 Poisson"],
-  ["sesame", "🫙 Sésame"],
-];
-
-const STEPS = ["Informations de base", "Documents & livraison", "Votre premier produit"];
+const STEPS = ["Informations de base", "Documents & livraison"];
 
 const inputClass =
   "w-full rounded-field bg-white px-4 py-3.5 text-[13px] font-bold shadow-[var(--shadow-card)] outline-none focus:ring-2 focus:ring-teal/40";
 
 /**
- * Porté depuis lehaim-marketplace (TraiteurOnboardingForm) : trois étapes,
- * une seule soumission — un traiteur sans catalogue n'aurait rien à montrer
- * une fois approuvé, donc son premier produit fait partie du dossier.
+ * Porté depuis lehaim-marketplace (TraiteurOnboardingForm) : deux étapes,
+ * une seule soumission. Le premier produit ne fait plus partie du dossier —
+ * il se remplit ensuite dans /traiteur/carte, qui a déjà son propre
+ * formulaire d'ajout (voir CatalogueEditor.tsx).
  *
  * `mode` ne change que le texte du bouton final : "application" (dossier pas
  * encore envoyé) parle de validation à venir, "setup" (dossier déjà approuvé,
@@ -45,8 +35,6 @@ export function TraiteurOnboardingForm({
   // en CSS) pour que la FormData contienne bien tous les champs à l'envoi
   // final, quelle que soit l'étape affichée.
   const [name, setName] = useState("");
-  const [productTitle, setProductTitle] = useState("");
-  const [productPrice, setProductPrice] = useState("");
 
   const canContinueStep0 = name.trim().length > 0;
 
@@ -116,61 +104,6 @@ export function TraiteurOnboardingForm({
         </Field>
       </section>
 
-      <section className={step === 2 ? "flex flex-col gap-3" : "hidden"}>
-        <Field label="Nom du plat">
-          <input
-            name="product_title"
-            value={productTitle}
-            onChange={(e) => setProductTitle(e.target.value)}
-            placeholder="Plat principal pour 8 personnes"
-            className={inputClass}
-          />
-        </Field>
-        <Field label="Description (optionnel)">
-          <input name="product_description" placeholder="Poulet rôti, pommes de terre…" className={inputClass} />
-        </Field>
-        <div className="flex gap-2.5">
-          <Field label="Prix (€)" className="flex-1">
-            <input
-              name="product_price"
-              value={productPrice}
-              onChange={(e) => setProductPrice(e.target.value)}
-              inputMode="decimal"
-              placeholder="45"
-              className={inputClass}
-            />
-          </Field>
-          <Field label="Catégorie" className="flex-1">
-            <select name="product_category" defaultValue="plat" className={inputClass}>
-              <option value="plat">Plat</option>
-              <option value="entree">Entrée</option>
-              <option value="salade">Salade</option>
-              <option value="dessert">Dessert</option>
-              <option value="boisson">Boisson</option>
-              <option value="autre">Autre</option>
-            </select>
-          </Field>
-        </div>
-        <Field label="Quantité (optionnel)">
-          <input name="product_quantity_hint" placeholder="Pour 8 personnes" className={inputClass} />
-        </Field>
-
-        <div>
-          <div className="mb-1.5 text-[11px] font-bold text-ink/55">Allergènes potentiels (optionnel)</div>
-          <div className="flex flex-wrap gap-2">
-            {ALLERGEN_OPTIONS.map(([code, label]) => (
-              <label
-                key={code}
-                className="flex items-center gap-1.5 rounded-full border-[1.5px] border-line-soft bg-white px-3 py-2 text-[11.5px] font-bold shadow-[var(--shadow-pill)] has-[:checked]:border-coral has-[:checked]:bg-coral-wash"
-              >
-                <input type="checkbox" name="product_allergens" value={code} className="size-3.5" />
-                {label}
-              </label>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {state.message && (
         <p role="alert" className="rounded-field bg-coral-wash px-3.5 py-2.5 text-[12px] font-bold text-coral-deep">
           {state.message}
@@ -189,7 +122,7 @@ export function TraiteurOnboardingForm({
               Continuer
             </Button>
           ) : (
-            <Button type="submit" size="lg" disabled={pending || !productTitle.trim() || !productPrice.trim()}>
+            <Button type="submit" size="lg" disabled={pending}>
               {pending
                 ? "Envoi…"
                 : mode === "setup"
